@@ -1,7 +1,8 @@
-#include <iostream>
+#include "./src/ChessLogic.cpp"
 
 int main()
 {
-    std::cout << "Hello world!";
+    ChessLogic chessLogic;
+    chessLogic.printHello();
     return 0;
 }
