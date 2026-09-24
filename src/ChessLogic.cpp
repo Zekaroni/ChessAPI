@@ -20,6 +20,9 @@ ChessLogic::ChessLogic()
     pieceBitboards[BLACK].rookBitboard   = (uint64_t)0b10000001 << 56;
     pieceBitboards[BLACK].queenBitboard  = (uint64_t)0b00010000 << 56;
     pieceBitboards[BLACK].kingBitboard   = (uint64_t)0b00001000 << 56;
+
+    //Init knight moves
+    calculateKnightMoves();
 }
 
 void ChessLogic::printBoard()
@@ -31,7 +34,7 @@ void ChessLogic::printBoard()
                   | pieceBitboards[BLACK].pawnBitboard   | pieceBitboards[BLACK].rookBitboard
                   | pieceBitboards[BLACK].queenBitboard  | pieceBitboards[BLACK].kingBitboard;
 
-    print_bits(knightMoveTable[3]);
+    print_bits(knightMoveTable[0]);
 }
 void ChessLogic::print_bits(uint64_t value)
 {
@@ -46,21 +49,21 @@ void ChessLogic::print_bits(uint64_t value)
 }
 void ChessLogic::calculateKnightMoves()
 {
-    for (int i = 63; i >= 0; i--)
+    for (int i = 63; i >= 0; i--) // Loops through all squares
     {
-        int y = int(i/8);
-        int x = int(i%8);
-        uint64_t currentBitBoard = 0;
-        std::array<Point,8> point = {{{-2,1},{-2,-1},{2,1},{2,-1},{1,-2},{-1,-2},{1,2},{-1,2}}};
+        int y = int(i/8); // Gets the column
+        int x = int(i%8); // Gets the row
+        uint64_t currentBitBoard = 0; // Temporrary bit board
+        std::array<Point,8> point = {{{-2,1},{-2,-1},{2,1},{2,-1},{1,-2},{-1,-2},{1,2},{-1,2}}}; // the knights offsets
        
-        for (int j=0;j<8;j++)
+        for (int j=0;j<8;j++) // loops though each offset
         {
-            if (!(x+point[j].x < 0 || x+point[j].x > 7 || y+point[j].y < 0 || y+point[j].y > 7))
+            if (!(x+point[j].x < 0 || x+point[j].x > 7 || y+point[j].y < 0 || y+point[j].y > 7)) // checks if the offset plus the current square is a valid square
             {
-                currentBitBoard |= (1ull<<(8*(y+point[j].y))+x+point[j].x);
+                currentBitBoard |= (1ull<<(8*(y+point[j].y))+x+point[j].x); // appends the legal kngiht offsets to the bitboard
             }
         }
 
-        knightMoveTable[i] = currentBitBoard;
+        knightMoveTable[i] = currentBitBoard; // sets the knight at index i equal to the current bitBoard
     }
 }

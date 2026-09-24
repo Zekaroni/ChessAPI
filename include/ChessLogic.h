@@ -25,10 +25,10 @@ private:
     pieceBitboard pieceBitboards[2] = {0};
     uint64_t occupiedBoard          =  0 ;
     uint64_t knightMoveTable[63] = {0};
+    void calculateKnightMoves();//Calculates every single possible knight move ~512 bytes
 
 public:
     ChessLogic(); // Constructor
-    void calculateKnightMoves();//Calculates every single possible knight move ~512 bytes
     void printBoard(); // Prints a BitBoard
     void print_bits(uint64_t value);
 };
