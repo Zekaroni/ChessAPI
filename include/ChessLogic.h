@@ -5,12 +5,12 @@
 
 struct pieceBitboard
 {
-    uint64_t pawnBitborad;
-    uint64_t knightBitborad;
-    uint64_t bishopBitborad;
-    uint64_t rookBitborad;
-    uint64_t queenBitborad;
-    uint64_t kingBitborad;
+    uint64_t pawnBitboard;
+    uint64_t knightBitboard;
+    uint64_t bishopBitboard;
+    uint64_t rookBitboard;
+    uint64_t queenBitboard;
+    uint64_t kingBitboard;
 };
 
 
