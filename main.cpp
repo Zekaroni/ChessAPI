@@ -3,6 +3,6 @@
 int main()
 {
     ChessLogic chessLogic;
-    chessLogic.printHello();
+    chessLogic.printBoard();
     return 0;
 }

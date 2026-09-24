@@ -17,8 +17,21 @@ struct pieceBitboard
 class ChessLogic
 {
 private:
-    pieceBitboard pieceBitboards[2];
+    pieceBitboard pieceBitboards[2] = {0};
+    uint64_t occupiedBoard          =  0 ;
 
 public:
-    void printHello();
+    ChessLogic();
+    void printBoard();
+    void print_bits(uint64_t value)
+    {
+        for (int i = 63; i >= 0; i--)
+        {
+            std::cout << ((value >> i) & 1);
+            if ((i) % 8 == 0)
+            {
+                std::cout << '\n';
+            }
+        }
+    }
 };
