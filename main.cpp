@@ -3,6 +3,7 @@
 int main()
 {
     ChessLogic chessLogic;
+    chessLogic.calculateKnightMoves();
     chessLogic.printBoard();
     return 0;
 }

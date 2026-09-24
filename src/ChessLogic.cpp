@@ -1,4 +1,5 @@
 #include <iostream>
+#include <array>
 #include <cmath>
 
 #include "../include/ChessLogic.h"
@@ -30,7 +31,7 @@ void ChessLogic::printBoard()
                   | pieceBitboards[BLACK].pawnBitboard   | pieceBitboards[BLACK].rookBitboard
                   | pieceBitboards[BLACK].queenBitboard  | pieceBitboards[BLACK].kingBitboard;
 
-    print_bits(occupiedBoard);
+    print_bits(knightMoveTable[3]);
 }
 void ChessLogic::print_bits(uint64_t value)
 {
@@ -41,5 +42,25 @@ void ChessLogic::print_bits(uint64_t value)
         {
             std::cout << '\n';
         }
+    }
+}
+void ChessLogic::calculateKnightMoves()
+{
+    for (int i = 63; i >= 0; i--)
+    {
+        int y = int(i/8);
+        int x = int(i%8);
+        uint64_t currentBitBoard = 0;
+        std::array<Point,8> point = {{{-2,1},{-2,-1},{2,1},{2,-1},{1,-2},{-1,-2},{1,2},{-1,2}}};
+       
+        for (int j=0;j<8;j++)
+        {
+            if (!(x+point[j].x < 0 || x+point[j].x > 7 || y+point[j].y < 0 || y+point[j].y > 7))
+            {
+                currentBitBoard |= (1ull<<(8*(y+point[j].y))+x+point[j].x);
+            }
+        }
+
+        knightMoveTable[i] = currentBitBoard;
     }
 }
