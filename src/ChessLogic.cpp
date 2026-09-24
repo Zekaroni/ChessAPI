@@ -32,3 +32,14 @@ void ChessLogic::printBoard()
 
     print_bits(occupiedBoard);
 }
+void ChessLogic::print_bits(uint64_t value)
+{
+    for (int i = 63; i >= 0; i--)
+    {
+        std::cout << ((value >> i) & 1);
+        if ((i) % 8 == 0)
+        {
+            std::cout << '\n';
+        }
+    }
+}

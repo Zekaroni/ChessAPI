@@ -21,17 +21,7 @@ private:
     uint64_t occupiedBoard          =  0 ;
 
 public:
-    ChessLogic();
-    void printBoard();
-    void print_bits(uint64_t value)
-    {
-        for (int i = 63; i >= 0; i--)
-        {
-            std::cout << ((value >> i) & 1);
-            if ((i) % 8 == 0)
-            {
-                std::cout << '\n';
-            }
-        }
-    }
+    ChessLogic(); // Constructor
+    void printBoard(); // Prints a BitBoard
+    void print_bits(uint64_t value);
 };
