@@ -10,10 +10,30 @@ using bitboard_t = std::uint64_t;
 #define WHITESIDE 0
 #define BLACKSIDE 1
 
-namespace CHESS_COLORS
+namespace CHESS_GLOBALS
 {
-    Color HIGHLIGHT = {255,0,0,128};
+    namespace COLORS
+    {
+        Color HIGHLIGHT = {255,0,0,128};
+    }
+
+    namespace PIECE_VALUE
+    {
+        
+    }
 }
+
+enum PIECES 
+{
+    EMPTY,
+    PAWN,
+    KNIGHT,
+    BISHOP,
+    ROOK,
+    QUEEN,
+    KING
+};
+
 
 
 struct playerPiecesBitboard
