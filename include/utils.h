@@ -12,6 +12,23 @@ using bitboard_t = std::uint64_t;
 
 namespace CHESS_COLORS
 {
-    Color HIGHLIGHT = {0,0,0,0};
+    Color HIGHLIGHT = {255,0,0,128};
 }
+
+
+struct playerPiecesBitboard
+{
+    bitboard_t pawnBitboard;
+    bitboard_t knightBitboard;
+    bitboard_t bishopBitboard;
+    bitboard_t rookBitboard;
+    bitboard_t queenBitboard;
+    bitboard_t kingBitboard;
+};
+
+struct Point
+{
+    int x;
+    int y;
+};
 

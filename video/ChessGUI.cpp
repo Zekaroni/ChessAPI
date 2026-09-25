@@ -1,7 +1,9 @@
 #include "ChessGUI.h"
 
-ChessGUI::ChessGUI(int screenWidth,int screenHeight)
+ChessGUI::ChessGUI(ChessLogic chessInstance, int screenWidth,int screenHeight)
 {
+    ChessGUI::internalChessLogic = chessInstance;
+
     ChessGUI::screenWidth  = screenWidth;
     ChessGUI::screenHeight = screenHeight;
 
@@ -10,6 +12,7 @@ ChessGUI::ChessGUI(int screenWidth,int screenHeight)
     boardX      = 0;
     boardY      = 0;
     cellSize    = boardSize / cellsPerRow;
+    currentHightlightBitboard = 0;
     
     SetTraceLogLevel(LOG_NONE);
     InitWindow(screenWidth, screenHeight, "Chess");
@@ -50,32 +53,57 @@ void ChessGUI::renderBoard()
     }
 };
 
-void ChessGUI::hightlightCells(bitboard_t bitboard)
+void ChessGUI::hightlightCells()
 {
-    for (int i = 0; i < sizeof(bitboard); i++)
+    Point currentPosition;
+    for (int i = 63; i >= 0; i--)
     {
-        bitboard = bitboard >> 1;
-        if (bitboard)
+        if ((currentHightlightBitboard >> i) & 1)
+        {
+            currentPosition = getColumnAndRow(i);
             DrawRectangle(
-                boardX,
-                boardY,
+                boardX + ((cellsPerRow - currentPosition.x - 1) * cellSize),
+                boardY + ((cellsPerRow - currentPosition.y - 1) * cellSize),
                 cellSize,
                 cellSize,
-                sideColors[1]
+                CHESS_COLORS::HIGHLIGHT
             );
+        }
     }
+}
+
+void ChessGUI::setCurrentHighlightBitboard(bitboard_t bitboard)
+{
+    currentHightlightBitboard = bitboard;
 }
 
 void ChessGUI::runGUI()
 {
+    int currentBitboardPosition = 0;
     while (!WindowShouldClose())
     {
+        if (IsKeyPressed(KEY_SPACE))
+        {
+            currentHightlightBitboard = internalChessLogic.getKnightBitboard(currentBitboardPosition);
+            currentBitboardPosition++;
+            if (currentBitboardPosition > 63) currentBitboardPosition = 0;
+        }
         BeginDrawing();
         ClearBackground(Color{125,125,0,255});
-        // All actions here
         renderBoard();
-
+        if (currentHightlightBitboard)
+        {
+            hightlightCells();
+        }
         EndDrawing();
     }
     CloseWindow();
 };
+
+Point ChessGUI::getColumnAndRow(int index)
+{
+    int row = int(index/cellsPerRow);
+    int column = int(index%cellsPerRow);
+    Point columnAndRow = {column,row};
+    return columnAndRow;
+}

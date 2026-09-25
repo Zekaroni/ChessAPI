@@ -46,7 +46,14 @@ void ChessLogic::print_bitboard(bitboard_t value)
     }
 }
 
-// Beautiful function to derive knight moves
+bitboard_t ChessLogic::getKnightBitboard(int position)
+{
+    if (position >= 0 && position < 64) return knightPositions[position];
+    else return 0;
+}
+
+/* 
+// // Beautiful function to derive knight moves
 // void ChessLogic::calculateKnightMoves()
 // {
 //     for (int i = 64; i >= 0; i--) // Loops through all squares
@@ -65,3 +72,4 @@ void ChessLogic::print_bitboard(bitboard_t value)
 //         knightMoveTable[i] = currentBitBoard; // sets the knight at index i equal to the current bitBoard
 //     }
 // }
+*/

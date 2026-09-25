@@ -1,25 +1,9 @@
 #include "../include/utils.h"
+// NOTE: Position on board is bottom-right to top-left, 0-63
 
-struct playerPiecesBitboard
-{
-    bitboard_t pawnBitboard;
-    bitboard_t knightBitboard;
-    bitboard_t bishopBitboard;
-    bitboard_t rookBitboard;
-    bitboard_t queenBitboard;
-    bitboard_t kingBitboard;
-};
-
-struct Point
-{
-    int x;
-    int y;
-};
-
-// void calculateKnightMoves();//Calculates every single possible knight move ~512 bytes
 class ChessLogic
 {
-    private:
+private:
     playerPiecesBitboard pieceBitboards[2] = {0};
     bitboard_t occupiedBoard          =  0 ;
     static constexpr bitboard_t knightPositions[64] = {
@@ -43,4 +27,5 @@ public:
     ChessLogic(); // Constructor
     void printBoard(); // Prints a BitBoard
     void print_bitboard(bitboard_t value);
+    bitboard_t getKnightBitboard(int position);
 };
