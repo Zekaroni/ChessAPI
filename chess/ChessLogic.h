@@ -1,6 +1,18 @@
 #include "../include/utils.h"
 // NOTE: Position on board is bottom-right to top-left, 0-63
 
+
+// NOTE: Checking for enpassent
+//       00000000
+//       00000000
+//       00000000
+//       11111111
+//       00000000
+//       00000000
+//       00000000
+//       00000000
+//       00000000
+
 class ChessLogic
 {
 private:
