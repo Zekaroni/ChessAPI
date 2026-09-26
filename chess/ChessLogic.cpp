@@ -48,13 +48,13 @@ bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
         for (int j=0;j<64;j++) // loops though each offset
         {
             int currentX = int(j/8);
-            int currentY = int(j/8);
+            int currentY = int(j%8);
             if (((currentX == x) && (currentY != currentY)) || ((currentY == y) && (currentX != x))) // checks if the offset plus the current square is a valid square
             {
                 currentBoard |= (uint64_t)1<<8*y+x; // appends the legal kngiht offsets to the bitboard
             }
         }
-        std::cout << currentBoard << std::endl;
+        print_bitboard(currentBoard);
         //rookPositions[i] =  currentBoard;
     }
  }
