@@ -80,7 +80,7 @@ void ChessGUI::setCurrentHighlightBitboard(bitboard_t bitboard)
 
 void ChessGUI::handleInputs()
 {
-    if (IsKeyPressed(CHESS_CONTROLS::CYCLE_BITBOARD_UP))
+    if (IsKeyPressed(CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_UP))
     {
         if(cursorPosition + 8)
         {
