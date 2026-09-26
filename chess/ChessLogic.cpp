@@ -49,7 +49,7 @@ bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
         {
             int currentY = int(j/8);
             int currentX = int(j%8);
-            if (((currentX == x) && (currentY != currentY)) || ((currentY == y) && (currentX != x))) // checks if the offset plus the current square is a valid square
+            if (((currentX == x) && (currentY != currentY)) || ((currentY == y))) // checks if the offset plus the current square is a valid square
             {
                 currentBoard |= (uint64_t)1<<j; // appends the legal kngiht offsets to the bitboard
             }
