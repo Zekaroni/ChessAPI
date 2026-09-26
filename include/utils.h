@@ -5,6 +5,7 @@
 #include <array>
 #include <cmath>
 
+
 using bitboard_t = std::uint64_t;
 
 #define WHITESIDE 0
@@ -34,7 +35,10 @@ enum PIECES
     KING
 };
 
-
+namespace CHESS_CONTROLS
+{
+    int CYCLE_BITBOARD = KEY_SPACE;
+}
 
 struct playerPiecesBitboard
 {

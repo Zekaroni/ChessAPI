@@ -27,5 +27,6 @@ public:
     Point getColumnAndRow(int index);
     void setCurrentHighlightBitboard(bitboard_t bitboard);
     void renderBoard();
+    void handleInputs();
     void runGUI();
 };
