@@ -21,13 +21,14 @@ ChessLogic::ChessLogic()
     
     
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::KNIGHT] = knightPositions;
-    boardState[0] = CHESS_GLOBALS::PLAYER_PIECES::WHITE_KNIGHT;
-    calculateMoves();
-    for (bitboard_t position: kingPositions)
-    {
-        std::cout << position;
-        std::cout << "\n\n";
-    }
+    pieceBitmapLookup[CHESS_GLOBALS::PIECES::KING] = kingPositions;
+    boardState[0] = CHESS_GLOBALS::PLAYER_PIECES::WHITE_KING;
+    // calculateMoves();
+    // for (bitboard_t position: kingPositions)
+    // {
+    //     std::cout << position;
+    //     std::cout << "\n\n";
+    // }
 }
 
 void ChessLogic::printBoard()
@@ -79,6 +80,6 @@ bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
                 currentBoard |= ((uint64_t)1<<(8*(y+point[j].y))+x+point[j].x); // appends the legal kngiht offsets to the bitboard
             }
         }
-        kingPositions[i] =  currentBoard;
+        //kingPositions[i] =  currentBoard;
     }
  }
