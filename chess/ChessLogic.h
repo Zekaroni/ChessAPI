@@ -36,7 +36,7 @@ private:
     bitboard_t kingPositions[64] = {0};
 
     uint8_t boardState[64] = {0};
-    const uint64_t* pieceBitmapLookup[8];
+    const bitboard_t* pieceBitmapLookup[8];
 
     static constexpr piece_t playerPieceToPieceHash[16] = {
         CHESS_GLOBALS::PIECES::EMPTY,CHESS_GLOBALS::PIECES::PAWN,CHESS_GLOBALS::PIECES::KNIGHT,CHESS_GLOBALS::PIECES::BISHOP,
