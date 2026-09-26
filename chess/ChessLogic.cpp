@@ -22,7 +22,6 @@ ChessLogic::ChessLogic()
         print_bitboard(position);
         std::cout << "\n\n";
     }
-{   
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::KNIGHT] = knightPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::BISHOP] = bishopPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::ROOK] = rookPositions;
@@ -36,10 +35,10 @@ ChessLogic::ChessLogic()
 void ChessLogic::printBoard()
 {
     int i = 0;
-    for (bitboard_t position: bishopPositions)
+    for (bitboard_t position: knightPositions)
     {
-        std::cout << position << "ull,";
-        std::cout << "\n";
+        std::cout << position;
+        std::cout << "\n\n";
     }
 }
 
@@ -55,16 +54,14 @@ void ChessLogic::print_bitboard(bitboard_t value)
     }
 }
 
-bitboard_t ChessLogic::getKnightBitboard(int position)
+bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
 {
-    if (position >= 0 && position < 64) return knightPositions[position];
-    else return 0;
+    return pieceBitmapLookup[playerPieceToPieceHash[piece]][position];
 }
 
- 
  // Beautiful function to derive moves
- void ChessLogic::calculateMoves()
- {
+void ChessLogic::calculateMoves()
+{
     for (int i = 0; i <64; i++) // Loops through all squares
     {
         bitboard_t currentBoard = {0};
@@ -72,4 +69,4 @@ bitboard_t ChessLogic::getKnightBitboard(int position)
         //queenPositions[i] =  currentBoard;
         std::cout << currentBoard << "ull,\n";
     }
- }
+}
