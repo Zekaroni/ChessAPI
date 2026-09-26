@@ -77,19 +77,18 @@ void ChessGUI::setCurrentHighlightBitboard(bitboard_t bitboard)
     currentHightlightBitboard = bitboard;
 }
 
+void ChessGUI::handleInputs()
+{
+    IsKeyPressed(CHESS_CONTROLS::CYCLE_BITBOARD);
+}
+
 void ChessGUI::runGUI()
 {
-    int currentBitboardPosition = 0;
     while (!WindowShouldClose())
     {
-        if (IsKeyPressed(KEY_SPACE))
-        {
-            currentHightlightBitboard = internalChessLogic.getKnightBitboard(currentBitboardPosition);
-            currentBitboardPosition++;
-            if (currentBitboardPosition > 63) currentBitboardPosition = 0;
-        }
         BeginDrawing();
         ClearBackground(Color{125,125,0,255});
+        
         renderBoard();
         if (currentHightlightBitboard)
         {
