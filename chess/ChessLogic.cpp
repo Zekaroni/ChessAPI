@@ -28,8 +28,7 @@ ChessLogic::ChessLogic()
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::QUEEN] = queenPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::KING] = kingPositions;
 
-    boardState[1] = CHESS_GLOBALS::PIECES::QUEEN;
-    calculateMoves();
+    boardState[0] = CHESS_GLOBALS::PIECES::QUEEN;
 }
 
 void ChessLogic::printBoard()

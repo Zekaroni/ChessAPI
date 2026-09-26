@@ -24,8 +24,6 @@ namespace CHESS_GLOBALS
         Color HIGHLIGHT   = {255,   0,   0, 128};
         Color BACKGROUND  = {100, 120, 100, 255};
         Color CURSOR      = {000, 200,  50, 128};
-
-        Color* PLAYERS[2] = {&WHITE_SIDE, &BLACK_SIDE};
     }
 
     uint8_t PIECE_VALUE[7] =
@@ -68,11 +66,6 @@ namespace CHESS_GLOBALS
         constexpr int CYCLE_BITBOARD_DOWN  = KEY_DOWN;
         constexpr int CYCLE_BITBOARD_RIGHT = KEY_RIGHT;
         constexpr int CYCLE_BITBOARD_LEFT  = KEY_LEFT;
-    }
-
-    namespace FILES
-    {
-        constexpr const char* STRING = "abcdefgh";
     }
 }
 

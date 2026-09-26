@@ -1,18 +1,18 @@
 #include "ChessGUI.h"
 
-ChessGUI::ChessGUI(ChessLogic chessInstance, int screenWidth,int screenHeight)
+ChessGUI::ChessGUI(ChessLogic* chessInstance, int screenWidth,int screenHeight)
 {
     ChessGUI::internalChessLogic = chessInstance;
+    ChessGUI::screenWidth        = screenWidth;
+    ChessGUI::screenHeight       = screenHeight;
 
-    ChessGUI::screenWidth  = screenWidth;
-    ChessGUI::screenHeight = screenHeight;
-
-    cellsPerRow = 8;
-    boardSize   = 800;
-    boardX      = 0;
-    boardY      = 0;
-    cellSize    = boardSize / cellsPerRow;
+    cellsPerRow               = 8;
+    boardSize                 = 800;
+    boardX                    = 0;
+    boardY                    = 0;
+    cellSize                  = boardSize / cellsPerRow;
     currentHightlightBitboard = 0;
+    cursorPosition            = 0;
     
     SetTraceLogLevel(LOG_NONE);
     InitWindow(screenWidth, screenHeight, "Chess");
@@ -53,6 +53,18 @@ void ChessGUI::renderBoard()
     }
 };
 
+void ChessGUI::highlightCursor()
+{
+    Point cursor = getColumnAndRow(cursorPosition);
+    DrawRectangle(
+        boardX + ((cellsPerRow - cursor.x - 1) * cellSize),
+        boardY + ((cellsPerRow - cursor.y - 1) * cellSize),
+        cellSize,
+        cellSize,
+        CHESS_GLOBALS::COLORS::CURSOR
+    );
+}
+
 void ChessGUI::hightlightCells()
 {
     Point currentPosition;
@@ -77,11 +89,9 @@ void ChessGUI::setCurrentHighlightBitboard(bitboard_t bitboard)
     currentHightlightBitboard = bitboard;
 }
 
-<<<<<<< Updated upstream
-=======
 void ChessGUI::handleInputs()
 {
-    piece_t piece = internalChessLogic->boardState[1];
+    piece_t piece = internalChessLogic->boardState[0];
     int currentKey = GetKeyPressed();    
     int cursorTranslation = 0;
     bool updateBitboard = false;
@@ -112,25 +122,18 @@ void ChessGUI::handleInputs()
     }
 }
 
->>>>>>> Stashed changes
 void ChessGUI::runGUI()
 {
-    int currentBitboardPosition = 0;
     while (!WindowShouldClose())
     {
-        if (IsKeyPressed(KEY_SPACE))
-        {
-            currentHightlightBitboard = internalChessLogic.getKnightBitboard(currentBitboardPosition);
-            currentBitboardPosition++;
-            if (currentBitboardPosition > 63) currentBitboardPosition = 0;
-        }
         BeginDrawing();
-        ClearBackground(Color{125,125,0,255});
+        ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
         renderBoard();
-        if (currentHightlightBitboard)
-        {
-            hightlightCells();
-        }
+        
+        highlightCursor();
+        hightlightCells();
+        handleInputs();
+
         EndDrawing();
     }
     CloseWindow();
