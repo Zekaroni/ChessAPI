@@ -55,8 +55,8 @@ bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
                 currentBoard |= (uint64_t)1<<j; // appends the legal kngiht offsets to the bitboard
             }
         }
-        std::cout << currentBoard << "ULL,\n" << std::endl;
-        print_bitboard(currentBoard);
+        // std::cout << currentBoard << "ULL,\n" << std::endl;
+        // print_bitboard(currentBoard);
         // std:: cout << "\n" << std::endl;
         rookPositions[i] =  currentBoard;
     }
