@@ -16,7 +16,7 @@ namespace CHESS_GLOBALS
     namespace COLORS
     {
         Color HIGHLIGHT  = {255,0,0,128};
-        Color BACKGROUND = {100,0,100,255};
+        Color BACKGROUND = {100,120,100,255};
     }
 
     namespace PIECE_VALUE
