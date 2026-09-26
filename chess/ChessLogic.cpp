@@ -56,7 +56,7 @@ void ChessLogic::print_bitboard(bitboard_t value)
 
 bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
 {
-    return pieceBitmapLookup[2][0];
+    return pieceBitmapLookup[2][position];
 }
 
 // Beautiful function to derive moves
