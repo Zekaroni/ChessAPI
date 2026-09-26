@@ -16,6 +16,12 @@ ChessLogic::ChessLogic()
     pieceBitboards[BLACKSIDE].rookBitboard   = (bitboard_t)0b10000001 << 56;
     pieceBitboards[BLACKSIDE].queenBitboard  = (bitboard_t)0b00010000 << 56;
     pieceBitboards[BLACKSIDE].kingBitboard   = (bitboard_t)0b00001000 << 56;
+    calculateMoves();
+    for (bitboard_t position: kingPositions)
+    {
+        print_bitboard(position);
+        std::cout << "\n\n";
+    }
 }
 
 void ChessLogic::printBoard()
@@ -52,24 +58,23 @@ bitboard_t ChessLogic::getKnightBitboard(int position)
     else return 0;
 }
 
-/* 
-// // Beautiful function to derive knight moves
-// void ChessLogic::calculateKnightMoves()
-// {
-//     for (int i = 64; i >= 0; i--) // Loops through all squares
-//     {
-//         int y = int(i/8); // Gets the column
-//         int x = int(i%8); // Gets the row
-//         uint64_t currentBitBoard = 0; // Temporrary bit board
-//         std::array<Point,8> point = {{{-2,1},{-2,-1},{2,1},{2,-1},{1,-2},{-1,-2},{1,2},{-1,2}}}; // the knights offsets
-//         for (int j=0;j<8;j++) // loops though each offset
-//         {
-//             if (!(x+point[j].x < 0 || x+point[j].x > 7 || y+point[j].y < 0 || y+point[j].y > 7)) // checks if the offset plus the current square is a valid square
-//             {
-//                 currentBitBoard |= ((uint64_t)1<<(8*(y+point[j].y))+x+point[j].x); // appends the legal kngiht offsets to the bitboard
-//             }
-//         }
-//         knightMoveTable[i] = currentBitBoard; // sets the knight at index i equal to the current bitBoard
-//     }
-// }
-*/
+ 
+ // Beautiful function to derive moves
+ void ChessLogic::calculateMoves()
+ {
+    for (int i = 64; i >= 0; i--) // Loops through all squares
+    {
+        bitboard_t currentBoard = {0};
+        int y = int(i/8); // Gets the column
+        int x = int(i%8); // Gets the row
+        std::array<Point,8> point = {{{0,1},{0,-1},{1,0},{-1,0}}}; // the knights offsets
+        for (int j=0;j<8;j++) // loops though each offset
+        {
+            if (!(x+point[j].x < 0 || x+point[j].x > 7 || y+point[j].y < 0 || y+point[j].y > 7)) // checks if the offset plus the current square is a valid square
+            {
+                currentBoard |= ((uint64_t)1<<(8*(y+point[j].y))+x+point[j].x); // appends the legal kngiht offsets to the bitboard
+            }
+        }
+        kingPositions[i] =  currentBoard;
+    }
+ }
