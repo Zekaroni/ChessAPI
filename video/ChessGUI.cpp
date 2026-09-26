@@ -1,18 +1,19 @@
 #include "ChessGUI.h"
 
-ChessGUI::ChessGUI(ChessLogic chessInstance, int screenWidth,int screenHeight)
+ChessGUI::ChessGUI(ChessLogic* chessInstance, int screenWidth,int screenHeight)
 {
     ChessGUI::internalChessLogic = chessInstance;
 
     ChessGUI::screenWidth  = screenWidth;
     ChessGUI::screenHeight = screenHeight;
 
-    cellsPerRow = 8;
-    boardSize   = 800;
-    boardX      = 0;
-    boardY      = 0;
-    cellSize    = boardSize / cellsPerRow;
+    cellsPerRow               = 8;
+    boardSize                 = 800;
+    boardX                    = 0;
+    boardY                    = 0;
+    cellSize                  = boardSize / cellsPerRow;
     currentHightlightBitboard = 0;
+    cursorPosition            = 0;
     
     SetTraceLogLevel(LOG_NONE);
     InitWindow(screenWidth, screenHeight, "Chess");
@@ -79,9 +80,13 @@ void ChessGUI::setCurrentHighlightBitboard(bitboard_t bitboard)
 
 void ChessGUI::handleInputs()
 {
-    if (IsKeyPressed(CHESS_CONTROLS::CYCLE_BITBOARD))
+    if (IsKeyPressed(CHESS_CONTROLS::CYCLE_BITBOARD_UP))
     {
-        hightlightCells();
+        if(cursorPosition + 8)
+        {
+            currentHightlightBitboard = internalChessLogic->getKnightBitboard(0);
+            hightlightCells();
+        }
     }
 }
 

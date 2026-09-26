@@ -6,7 +6,7 @@ int main()
     int screenHeight = 900;
     
     ChessLogic chess;
-    ChessGUI chessGUI(chess, screenWidth, screenHeight);
+    ChessGUI chessGUI(&chess, screenWidth, screenHeight);
 
     int boardSize = chessGUI.getBoardSize();
     int boardX    = (screenWidth - boardSize) / 2;

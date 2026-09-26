@@ -19,27 +19,32 @@ namespace CHESS_GLOBALS
         Color BACKGROUND = {100,120,100,255};
     }
 
-    namespace PIECE_VALUE
+    uint8_t PIECE_VALUE[7] =
     {
-        
+        0,1,3,3,5,9,100
+    };
+
+    enum PIECES
+    {
+        EMPTY,
+        PAWN,
+        KNIGHT,
+        BISHOP,
+        ROOK,
+        QUEEN,
+        KING
+    };
+    
+    namespace CONTROLS
+    {
+        int CYCLE_BITBOARD_UP    = KEY_UP;
+        int CYCLE_BITBOARD_DOWN  = KEY_DOWN;
+        int CYCLE_BITBOARD_RIGHT = KEY_RIGHT;
+        int CYCLE_BITBOARD_LEFT  = KEY_LEFT;
     }
 }
 
-enum PIECES 
-{
-    EMPTY,
-    PAWN,
-    KNIGHT,
-    BISHOP,
-    ROOK,
-    QUEEN,
-    KING
-};
 
-namespace CHESS_CONTROLS
-{
-    int CYCLE_BITBOARD = KEY_SPACE;
-}
 
 struct playerPiecesBitboard
 {

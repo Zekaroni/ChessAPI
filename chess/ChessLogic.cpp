@@ -17,11 +17,7 @@ ChessLogic::ChessLogic()
     pieceBitboards[BLACKSIDE].queenBitboard  = (bitboard_t)0b00010000 << 56;
     pieceBitboards[BLACKSIDE].kingBitboard   = (bitboard_t)0b00001000 << 56;
     calculateMoves();
-    for (bitboard_t position: kingPositions)
-    {
-        print_bitboard(position);
-        std::cout << "\n\n";
-    }
+    print_bitboard(kingPositions[63]);
 }
 
 void ChessLogic::printBoard()
@@ -66,7 +62,7 @@ bitboard_t ChessLogic::getKnightBitboard(int position)
         bitboard_t currentBoard = {0};
         int y = int(i/8); // Gets the column
         int x = int(i%8); // Gets the row
-        std::array<Point,4> point = {{{0,1},{0,-1},{1,0},{-1,0}}}; // the knights offsets
+        std::array<Point,8> point = {{{0,1},{0,-1},{1,0},{-1,0},{1,1},{-1,1},{-1,-1},{1,-1}}}; // the knights offsets
         for (int j=0;j<point.size();j++) // loops though each offset
         {
             if (!(x+point[j].x < 0 || x+point[j].x > 7 || y+point[j].y < 0 || y+point[j].y > 7)) // checks if the offset plus the current square is a valid square
