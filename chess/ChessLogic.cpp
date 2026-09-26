@@ -1,21 +1,11 @@
 #include "ChessLogic.h"
 
 ChessLogic::ChessLogic()
-{
-    //White Starting Positions
-    pieceBitboards[WHITESIDE].pawnBitboard   = 0b11111111 << 8;
-    pieceBitboards[WHITESIDE].bishopBitboard = 0b00100100;
-    pieceBitboards[WHITESIDE].knightBitboard = 0b01000010;
-    pieceBitboards[WHITESIDE].rookBitboard   = 0b10000001;
-    pieceBitboards[WHITESIDE].queenBitboard  = 0b00010000;
-    pieceBitboards[WHITESIDE].kingBitboard   = 0b00001000;
-    //Black Starting Positions
-    pieceBitboards[BLACKSIDE].pawnBitboard   = (bitboard_t)0b11111111 << 48;
-    pieceBitboards[BLACKSIDE].bishopBitboard = (bitboard_t)0b00100100 << 56;
-    pieceBitboards[BLACKSIDE].knightBitboard = (bitboard_t)0b01000010 << 56;
-    pieceBitboards[BLACKSIDE].rookBitboard   = (bitboard_t)0b10000001 << 56;
-    pieceBitboards[BLACKSIDE].queenBitboard  = (bitboard_t)0b00010000 << 56;
-    pieceBitboards[BLACKSIDE].kingBitboard   = (bitboard_t)0b00001000 << 56;
+{   
+    pieceBitmapLookup[CHESS_GLOBALS::PIECES::KNIGHT] = knightPositions;
+    pieceBitmapLookup[CHESS_GLOBALS::PIECES::KING] = kingPositions;
+    pieceBitmapLookup[CHESS_GLOBALS::PIECES::ROOK] = rookPositions;
+    boardState[0] = CHESS_GLOBALS::PLAYER_PIECES::WHITE_ROOK;
     calculateMoves();
     for (bitboard_t position: kingPositions)
     {
