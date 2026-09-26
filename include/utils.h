@@ -15,8 +15,10 @@ namespace CHESS_GLOBALS
 {
     namespace COLORS
     {
-        Color HIGHLIGHT  = {255,0,0,128};
-        Color BACKGROUND = {100,120,100,255};
+        Color WHITE_SIDE  = {255, 255, 255, 255};
+        Color BLACK_SIDE  = {  0,   0,   0, 255};
+        Color HIGHLIGHT   = {255,   0,   0, 128};
+        Color BACKGROUND  = {100, 120, 100, 255};
     }
 
     uint8_t PIECE_VALUE[7] =
