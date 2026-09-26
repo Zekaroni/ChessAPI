@@ -14,10 +14,10 @@ private:
     int boardX;
     int boardY;
     int cellSize;
+    int boardFontSize;
     int cursorPosition;
 
     bitboard_t currentHightlightBitboard;
-    Color sideColors[PLAYER_COUNT] = {CHESS_GLOBALS::COLORS::WHITE_SIDE, CHESS_GLOBALS::COLORS::BLACK_SIDE};
     void hightlightCells();
 
 public:
@@ -29,6 +29,7 @@ public:
     Point getColumnAndRow(int index);
     void setCurrentHighlightBitboard(bitboard_t bitboard);
     void renderBoard();
+    void renderFileRankText();
     void handleInputs();
     void runGUI();
 };
