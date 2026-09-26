@@ -33,6 +33,7 @@ private:
         1128098930098176, 2257297371824128, 4796069720358912, 9592139440717824, 19184278881435648,
         38368557762871296, 4679521487814656, 9077567998918656
     };
+    bitboard_t kingPositions[64] = {0};
     
 
 public:
@@ -40,4 +41,5 @@ public:
     void printBoard(); // Prints a BitBoard
     void print_bitboard(bitboard_t value);
     bitboard_t getKnightBitboard(int position);
+    void calculateMoves();
 };
