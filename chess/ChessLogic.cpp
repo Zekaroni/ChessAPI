@@ -56,10 +56,7 @@ void ChessLogic::print_bitboard(bitboard_t value)
 
 bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
 {
-    if (position >= 0 && position < 64)
-    {
-        
-    }
+    return pieceBitmapLookup[playerPieceToPieceHash[piece]][position];
 }
 
 // Beautiful function to derive moves

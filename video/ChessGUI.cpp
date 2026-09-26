@@ -80,11 +80,49 @@ void ChessGUI::setCurrentHighlightBitboard(bitboard_t bitboard)
 
 void ChessGUI::handleInputs()
 {
+    piece_t tempPiece = 0b0000'1010;
     if (IsKeyPressed(CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_UP))
     {
         cursorPosition += 8;
         if(cursorPosition < 64)
         {
+            internalChessLogic->getPiecePositionBitboard(tempPiece, cursorPosition);
+            hightlightCells();
+        } else {cursorPosition-=8;}
+    }
+    if (IsKeyPressed(CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_DOWN))
+    {
+        cursorPosition -= 8;
+        if(cursorPosition > 0)
+        {
+            currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(tempPiece,cursorPosition);
+            hightlightCells();
+        } else {cursorPosition+=8;}
+    }
+    if (IsKeyPressed(CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_RIGHT))
+    {
+        cursorPosition--;
+        if(cursorPosition % 8 == 7)
+        {
+            currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(tempPiece,cursorPosition);
+            hightlightCells();
+        } else {cursorPosition++;}
+    }
+        if (IsKeyPressed(CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_LEFT))
+    {
+        cursorPosition++;
+        if(cursorPosition % 8 == 0)
+        {
+            currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(tempPiece,cursorPosition);
+            hightlightCells();
+        } else {cursorPosition--;}
+    }
+    if (IsKeyPressed(CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_RIGHT))
+    {
+        cursorPosition -= 8;
+        if(cursorPosition < 64)
+        {
+            currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(tempPiece,cursorPosition);
             hightlightCells();
         }
     }
