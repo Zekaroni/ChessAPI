@@ -59,10 +59,10 @@ namespace CHESS_GLOBALS
     
     namespace CONTROLS
     {
-        int CYCLE_BITBOARD_UP    = KEY_UP;
-        int CYCLE_BITBOARD_DOWN  = KEY_DOWN;
-        int CYCLE_BITBOARD_RIGHT = KEY_RIGHT;
-        int CYCLE_BITBOARD_LEFT  = KEY_LEFT;
+        constexpr int CYCLE_BITBOARD_UP    = KEY_UP;
+        constexpr int CYCLE_BITBOARD_DOWN  = KEY_DOWN;
+        constexpr int CYCLE_BITBOARD_RIGHT = KEY_RIGHT;
+        constexpr int CYCLE_BITBOARD_LEFT  = KEY_LEFT;
     }
 }
 
