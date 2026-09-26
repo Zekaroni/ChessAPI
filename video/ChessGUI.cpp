@@ -79,7 +79,10 @@ void ChessGUI::setCurrentHighlightBitboard(bitboard_t bitboard)
 
 void ChessGUI::handleInputs()
 {
-    IsKeyPressed(CHESS_CONTROLS::CYCLE_BITBOARD);
+    if (IsKeyPressed(CHESS_CONTROLS::CYCLE_BITBOARD))
+    {
+        hightlightCells();
+    }
 }
 
 void ChessGUI::runGUI()
@@ -89,11 +92,9 @@ void ChessGUI::runGUI()
         BeginDrawing();
         ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
         
+        handleInputs();
+
         renderBoard();
-        if (currentHightlightBitboard)
-        {
-            hightlightCells();
-        }
         EndDrawing();
     }
     CloseWindow();
