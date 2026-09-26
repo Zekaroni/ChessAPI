@@ -87,7 +87,7 @@ void ChessGUI::runGUI()
     while (!WindowShouldClose())
     {
         BeginDrawing();
-        ClearBackground(Color{125,125,0,255});
+        ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
         
         renderBoard();
         if (currentHightlightBitboard)
