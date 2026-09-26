@@ -47,8 +47,8 @@ bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
        // std::array<Point,8> point = {{{0,1},{0,-1},{1,0},{-1,0},{1,1},{-1,1},{-1,-1},{1,-1}}}; // the knights offsets
         for (int j=0;j<64;j++) // loops though each offset
         {
-            int currentX = int(j/8);
-            int currentY = int(j%8);
+            int currentX = int(j%8);
+            int currentY = int(j/8);
             if (((currentX == x) && (currentY != currentY)) || ((currentY == y) && (currentX != x))) // checks if the offset plus the current square is a valid square
             {
                 currentBoard |= (uint64_t)1<<j; // appends the legal kngiht offsets to the bitboard
