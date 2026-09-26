@@ -16,16 +16,18 @@ ChessLogic::ChessLogic()
     // pieceBitboards[BLACKSIDE].rookBitboard   = (bitboard_t)0b10000001 << 56;
     // pieceBitboards[BLACKSIDE].queenBitboard  = (bitboard_t)0b00010000 << 56;
     // pieceBitboards[BLACKSIDE].kingBitboard   = (bitboard_t)0b00001000 << 56;
-    pieceBitmapLookup[CHESS_GLOBALS::PIECES::KNIGHT] = knightPositions;
     // pieceBitmapLookup[CHESS_GLOBALS::PIECES::KING] = kingPositions;
-    // boardState[0] = CHESS_GLOBALS::PLAYER_PIECES::WHITE_KNIGHT;
     // calculateMoves();
-    // for()
-    // {
-
-    // }
+    
+    
+    pieceBitmapLookup[CHESS_GLOBALS::PIECES::KNIGHT] = knightPositions;
+    boardState[0] = CHESS_GLOBALS::PLAYER_PIECES::WHITE_KNIGHT;
     calculateMoves();
-    std::cout <<kingPositions << std::endl;
+    for (bitboard_t position: kingPositions)
+    {
+        std::cout << position;
+        std::cout << "\n\n";
+    }
 }
 
 void ChessLogic::printBoard()
@@ -58,7 +60,7 @@ void ChessLogic::print_bitboard(bitboard_t value)
 
 bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
 {
-    return pieceBitmapLookup[2][position];
+    return pieceBitmapLookup[piece & 0b111][position];
 }
 
 // Beautiful function to derive moves
