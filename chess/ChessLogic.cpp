@@ -25,7 +25,7 @@ ChessLogic::ChessLogic()
 
     // }
     calculateMoves();
-    std::cout <<kingPositions<<;
+    std::cout <<kingPositions << std::endl;
 }
 
 void ChessLogic::printBoard()
