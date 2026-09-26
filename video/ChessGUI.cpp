@@ -85,7 +85,6 @@ void ChessGUI::handleInputs()
         cursorPosition += 8;
         if(cursorPosition < 64)
         {
-            currentHightlightBitboard = internalChessLogic->getKnightBitboard(0);
             hightlightCells();
         }
     }

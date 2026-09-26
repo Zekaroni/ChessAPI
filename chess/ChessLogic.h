@@ -34,12 +34,27 @@ private:
         38368557762871296, 4679521487814656, 9077567998918656
     };
     bitboard_t kingPositions[64] = {0};
-    
+
+    uint8_t boardState[64] = {0};
+    const uint64_t* pieceBitmapLookup[8];
+
+    static constexpr piece_t playerPieceToPieceHash[16] = {
+        CHESS_GLOBALS::PIECES::EMPTY,CHESS_GLOBALS::PIECES::PAWN,CHESS_GLOBALS::PIECES::KNIGHT,CHESS_GLOBALS::PIECES::BISHOP,
+        CHESS_GLOBALS::PIECES::ROOK,CHESS_GLOBALS::PIECES::QUEEN,CHESS_GLOBALS::PIECES::KING,CHESS_GLOBALS::PIECES::EMPTY,
+        CHESS_GLOBALS::PIECES::PAWN,CHESS_GLOBALS::PIECES::KNIGHT,CHESS_GLOBALS::PIECES::BISHOP,CHESS_GLOBALS::PIECES::ROOK,
+        CHESS_GLOBALS::PIECES::QUEEN,CHESS_GLOBALS::PIECES::KING,CHESS_GLOBALS::PIECES::EMPTY, CHESS_GLOBALS::PIECES::EMPTY
+    };
+
+    static constexpr piece_t playerPieceToPlayerHash[16] = {
+        NULLSIDE, WHITESIDE, WHITESIDE, WHITESIDE, WHITESIDE, WHITESIDE, WHITESIDE, 
+        NULLSIDE, BLACKSIDE, BLACKSIDE, BLACKSIDE, BLACKSIDE, BLACKSIDE, BLACKSIDE,
+        NULLSIDE, NULLSIDE
+    };
 
 public:
     ChessLogic(); // Constructor
     void printBoard(); // Prints a BitBoard
-    bitboard_t getKnightBitboard(int position);
+    bitboard_t getPiecePositionBitboard(piece_t piece, int position);
     void calculateMoves();
 
 

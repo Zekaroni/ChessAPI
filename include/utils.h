@@ -6,10 +6,12 @@
 #include <cmath>
 
 
-using bitboard_t = std::uint64_t;
+using bitboard_t  = std::uint64_t;
+using piece_t     = uint8_t;
 
 #define WHITESIDE 0
 #define BLACKSIDE 1
+#define NULLSIDE  2
 
 namespace CHESS_GLOBALS
 {
@@ -35,6 +37,24 @@ namespace CHESS_GLOBALS
         ROOK,
         QUEEN,
         KING
+    };
+
+    enum PLAYER_PIECES
+    {
+        //White Pieces
+        WHITE_PAWN   = 0b0000'0001,
+        WHITE_KNIGHT = 0b0000'0010,
+        WHITE_BISHOP = 0b0000'0011,
+        WHITE_ROOK   = 0b0000'0100,
+        WHITE_QUEEN  = 0b0000'0101,
+        WHITE_KING   = 0b0000'0110,
+        //Black Pieces
+        BLACK_PAWN   = 0b0000'1001,
+        BLACK_KNIGHT = 0b0000'1010,
+        BLACK_BISHOP = 0b0000'1011,
+        BLACK_ROOK   = 0b0000'1100,
+        BLACK_QUEEN  = 0b0000'1101,
+        BLACK_KING   = 0b0000'1110
     };
     
     namespace CONTROLS

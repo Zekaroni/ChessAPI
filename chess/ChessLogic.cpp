@@ -2,22 +2,28 @@
 
 ChessLogic::ChessLogic()
 {
-    //White Starting Positions
-    pieceBitboards[WHITESIDE].pawnBitboard   = 0b11111111 << 8;
-    pieceBitboards[WHITESIDE].bishopBitboard = 0b00100100;
-    pieceBitboards[WHITESIDE].knightBitboard = 0b01000010;
-    pieceBitboards[WHITESIDE].rookBitboard   = 0b10000001;
-    pieceBitboards[WHITESIDE].queenBitboard  = 0b00010000;
-    pieceBitboards[WHITESIDE].kingBitboard   = 0b00001000;
-    //Black Starting Positions
-    pieceBitboards[BLACKSIDE].pawnBitboard   = (bitboard_t)0b11111111 << 48;
-    pieceBitboards[BLACKSIDE].bishopBitboard = (bitboard_t)0b00100100 << 56;
-    pieceBitboards[BLACKSIDE].knightBitboard = (bitboard_t)0b01000010 << 56;
-    pieceBitboards[BLACKSIDE].rookBitboard   = (bitboard_t)0b10000001 << 56;
-    pieceBitboards[BLACKSIDE].queenBitboard  = (bitboard_t)0b00010000 << 56;
-    pieceBitboards[BLACKSIDE].kingBitboard   = (bitboard_t)0b00001000 << 56;
+    // //White Starting Positions
+    // pieceBitboards[WHITESIDE].pawnBitboard   = 0b11111111 << 8;
+    // pieceBitboards[WHITESIDE].bishopBitboard = 0b00100100;
+    // pieceBitboards[WHITESIDE].knightBitboard = 0b01000010;
+    // pieceBitboards[WHITESIDE].rookBitboard   = 0b10000001;
+    // pieceBitboards[WHITESIDE].queenBitboard  = 0b00010000;
+    // pieceBitboards[WHITESIDE].kingBitboard   = 0b00001000;
+    // //Black Starting Positions
+    // pieceBitboards[BLACKSIDE].pawnBitboard   = (bitboard_t)0b11111111 << 48;
+    // pieceBitboards[BLACKSIDE].bishopBitboard = (bitboard_t)0b00100100 << 56;
+    // pieceBitboards[BLACKSIDE].knightBitboard = (bitboard_t)0b01000010 << 56;
+    // pieceBitboards[BLACKSIDE].rookBitboard   = (bitboard_t)0b10000001 << 56;
+    // pieceBitboards[BLACKSIDE].queenBitboard  = (bitboard_t)0b00010000 << 56;
+    // pieceBitboards[BLACKSIDE].kingBitboard   = (bitboard_t)0b00001000 << 56;
+    pieceBitmapLookup[CHESS_GLOBALS::PIECES::KNIGHT] = knightPositions;
+    pieceBitmapLookup[CHESS_GLOBALS::PIECES::KING] = kingPositions;
+    boardState[0] = CHESS_GLOBALS::PLAYER_PIECES::WHITE_KNIGHT;
     calculateMoves();
-    std:: cout << kingPositions[0]<<std::endl;
+    // for()
+    // {
+
+    // }
 }
 
 void ChessLogic::printBoard()
@@ -48,10 +54,12 @@ void ChessLogic::print_bitboard(bitboard_t value)
     }
 }
 
-bitboard_t ChessLogic::getKnightBitboard(int position)
+bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
 {
-    if (position >= 0 && position < 64) return knightPositions[position];
-    else return 0;
+    if (position >= 0 && position < 64)
+    {
+        
+    }
 }
 
 // Beautiful function to derive moves
