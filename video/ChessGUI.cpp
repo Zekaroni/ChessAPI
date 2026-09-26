@@ -82,7 +82,8 @@ void ChessGUI::handleInputs()
 {
     if (IsKeyPressed(CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_UP))
     {
-        if(cursorPosition + 8)
+        cursorPosition += 8;
+        if(cursorPosition < 64)
         {
             currentHightlightBitboard = internalChessLogic->getKnightBitboard(0);
             hightlightCells();
@@ -96,10 +97,10 @@ void ChessGUI::runGUI()
     {
         BeginDrawing();
         ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
+        renderBoard();
         
         handleInputs();
 
-        renderBoard();
         EndDrawing();
     }
     CloseWindow();

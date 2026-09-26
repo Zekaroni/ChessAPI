@@ -17,7 +17,7 @@ ChessLogic::ChessLogic()
     pieceBitboards[BLACKSIDE].queenBitboard  = (bitboard_t)0b00010000 << 56;
     pieceBitboards[BLACKSIDE].kingBitboard   = (bitboard_t)0b00001000 << 56;
     calculateMoves();
-    print_bitboard(kingPositions[63]);
+    std:: cout << kingPositions[0]<<std::endl;
 }
 
 void ChessLogic::printBoard()
