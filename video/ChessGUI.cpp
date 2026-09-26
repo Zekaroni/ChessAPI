@@ -13,6 +13,7 @@ ChessGUI::ChessGUI(ChessLogic* chessInstance, int screenWidth,int screenHeight)
     cellSize                  = boardSize / cellsPerRow;
     currentHightlightBitboard = 0;
     cursorPosition            = 0;
+    boardFontSize             = boardSize/(cellsPerRow*2);
     
     SetTraceLogLevel(LOG_NONE);
     InitWindow(screenWidth, screenHeight, "Chess");
@@ -37,7 +38,7 @@ int ChessGUI::getBoardSize()
 
 void ChessGUI::renderBoard()
 {
-    DrawRectangle(boardX, boardY, boardSize, boardSize, sideColors[0]);
+    DrawRectangle(boardX, boardY, boardSize, boardSize, *CHESS_GLOBALS::COLORS::PLAYERS[0]);
     for(int j = 0; j < cellsPerRow; j++)
     {
         for (int i = 0; i < cellsPerRow / 2; i++)
@@ -47,11 +48,38 @@ void ChessGUI::renderBoard()
                 boardY + (j * cellSize),
                 cellSize,
                 cellSize,
-                sideColors[1]
+                *CHESS_GLOBALS::COLORS::PLAYERS[1]
             );
         }
     }
 };
+
+void ChessGUI::renderFileRankText()
+{
+    for(int j = 0; j < cellsPerRow; j++)
+    {
+        DrawText(
+            TextFormat("%d", cellsPerRow-j),
+            boardX,
+            boardY + (j * cellSize),
+            boardFontSize,
+            *CHESS_GLOBALS::COLORS::PLAYERS[!(j % 2)]
+        );
+        if (j == (cellsPerRow - 1))
+        {
+            for (int i = 0; i < cellsPerRow; i++)
+            {
+                DrawText(
+                    TextFormat("%c", CHESS_GLOBALS::FILES::STRING[i]),
+                    boardX + (i * cellSize) + (boardFontSize),
+                    boardY + (j * cellSize) + (boardFontSize),
+                    boardFontSize,
+                    *CHESS_GLOBALS::COLORS::PLAYERS[(i % 2)]
+                );
+            }
+        }
+    }
+}
 
 void ChessGUI::highlightCursor()
 {
@@ -129,6 +157,7 @@ void ChessGUI::runGUI()
         BeginDrawing();
         ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
         renderBoard();
+        renderFileRankText();
         
         highlightCursor();
         hightlightCells();
