@@ -12,7 +12,7 @@ ChessGUI::ChessGUI(ChessLogic* chessInstance, int screenWidth,int screenHeight)
     boardY                    = 0;
     cellSize                  = boardSize / cellsPerRow;
     currentHightlightBitboard = 0;
-    cursorPosition            = 15;
+    cursorPosition            = 0;
     
     SetTraceLogLevel(LOG_NONE);
     InitWindow(screenWidth, screenHeight, "Chess");

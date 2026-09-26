@@ -55,6 +55,7 @@ bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
             }
         }
         print_bitboard(currentBoard);
+        std:: cout << "\n" << std::endl;
         //rookPositions[i] =  currentBoard;
     }
  }
