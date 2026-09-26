@@ -5,7 +5,7 @@
 class ChessGUI
 {
 private:
-    ChessLogic internalChessLogic;
+    ChessLogic* internalChessLogic;
     int screenWidth;
     int screenHeight;
     int cellsPerRow;
@@ -14,13 +14,15 @@ private:
     int boardX;
     int boardY;
     int cellSize;
+    int cursorPosition;
 
     bitboard_t currentHightlightBitboard;
-    Color sideColors[2] = {{255,255,255,255},{0,0,0,255}};
+    Color sideColors[PLAYER_COUNT] = {CHESS_GLOBALS::COLORS::WHITE_SIDE, CHESS_GLOBALS::COLORS::BLACK_SIDE};
     void hightlightCells();
 
 public:
-    ChessGUI(ChessLogic chessInstance, int screenWidth, int screenHeight);
+    ChessGUI(ChessLogic* chessInstance, int screenWidth, int screenHeight);
+    void highlightCursor();
     void setBoardSize(int size);
     void setBoardPostion(int x, int y); // NOTE: Top-left
     int  getBoardSize();

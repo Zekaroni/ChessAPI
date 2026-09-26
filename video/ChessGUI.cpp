@@ -1,18 +1,18 @@
 #include "ChessGUI.h"
 
-ChessGUI::ChessGUI(ChessLogic chessInstance, int screenWidth,int screenHeight)
+ChessGUI::ChessGUI(ChessLogic* chessInstance, int screenWidth,int screenHeight)
 {
     ChessGUI::internalChessLogic = chessInstance;
+    ChessGUI::screenWidth        = screenWidth;
+    ChessGUI::screenHeight       = screenHeight;
 
-    ChessGUI::screenWidth  = screenWidth;
-    ChessGUI::screenHeight = screenHeight;
-
-    cellsPerRow = 8;
-    boardSize   = 800;
-    boardX      = 0;
-    boardY      = 0;
-    cellSize    = boardSize / cellsPerRow;
+    cellsPerRow               = 8;
+    boardSize                 = 800;
+    boardX                    = 0;
+    boardY                    = 0;
+    cellSize                  = boardSize / cellsPerRow;
     currentHightlightBitboard = 0;
+    cursorPosition            = 0;
     
     SetTraceLogLevel(LOG_NONE);
     InitWindow(screenWidth, screenHeight, "Chess");
@@ -53,6 +53,18 @@ void ChessGUI::renderBoard()
     }
 };
 
+void ChessGUI::highlightCursor()
+{
+    Point cursor = getColumnAndRow(cursorPosition);
+    DrawRectangle(
+        boardX + ((cellsPerRow - cursor.x - 1) * cellSize),
+        boardY + ((cellsPerRow - cursor.y - 1) * cellSize),
+        cellSize,
+        cellSize,
+        CHESS_GLOBALS::COLORS::CURSOR
+    );
+}
+
 void ChessGUI::hightlightCells()
 {
     Point currentPosition;
@@ -79,7 +91,35 @@ void ChessGUI::setCurrentHighlightBitboard(bitboard_t bitboard)
 
 void ChessGUI::handleInputs()
 {
-    IsKeyPressed(CHESS_CONTROLS::CYCLE_BITBOARD);
+    piece_t piece = internalChessLogic->boardState[0];
+    int currentKey = GetKeyPressed();    
+    int cursorTranslation = 0;
+    bool updateBitboard = false;
+
+    switch(currentKey)
+    {
+        case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_UP:
+            cursorTranslation += 8;
+            updateBitboard = ((cursorPosition + cursorTranslation) < 64); 
+        break;
+        case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_DOWN:
+            cursorTranslation -= 8;
+            updateBitboard = ((cursorPosition + cursorTranslation) >= 0);
+        break;
+        case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_RIGHT:
+            if (cursorPosition) cursorTranslation--;
+            updateBitboard = (!((cursorPosition + cursorTranslation) % 8 == 7));
+        break;
+        case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_LEFT:
+            cursorTranslation++;
+            updateBitboard = (!((cursorPosition +cursorTranslation) % 8 == 0));
+        break;
+    }
+    if (updateBitboard)
+    {
+        cursorPosition+=cursorTranslation;
+        currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(piece,cursorPosition);
+    }
 }
 
 void ChessGUI::runGUI()
@@ -87,13 +127,13 @@ void ChessGUI::runGUI()
     while (!WindowShouldClose())
     {
         BeginDrawing();
-        ClearBackground(Color{125,125,0,255});
-        
+        ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
         renderBoard();
-        if (currentHightlightBitboard)
-        {
-            hightlightCells();
-        }
+        
+        highlightCursor();
+        hightlightCells();
+        handleInputs();
+
         EndDrawing();
     }
     CloseWindow();
