@@ -5,6 +5,7 @@ ChessLogic::ChessLogic()
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::KNIGHT] = knightPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::KING] = kingPositions;
     boardState[0] = CHESS_GLOBALS::PLAYER_PIECES::WHITE_KING;
+    calculateMoves();
 
 }
 
