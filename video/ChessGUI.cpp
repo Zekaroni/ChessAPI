@@ -66,7 +66,7 @@ void ChessGUI::hightlightCells()
                 boardY + ((cellsPerRow - currentPosition.y - 1) * cellSize),
                 cellSize,
                 cellSize,
-                CHESS_COLORS::HIGHLIGHT
+                CHESS_GLOBALS::COLORS::HIGHLIGHT
             );
         }
     }
