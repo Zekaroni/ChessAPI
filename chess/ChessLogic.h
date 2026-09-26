@@ -39,7 +39,9 @@ private:
 public:
     ChessLogic(); // Constructor
     void printBoard(); // Prints a BitBoard
-    void print_bitboard(bitboard_t value);
     bitboard_t getKnightBitboard(int position);
     void calculateMoves();
+
+
+    void print_bitboard(bitboard_t value);
 };
