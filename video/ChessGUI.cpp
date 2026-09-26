@@ -86,39 +86,34 @@ void ChessGUI::handleInputs()
         cursorPosition += 8;
         if(cursorPosition < 64)
         {
-            std::cout << "UP\n";
             currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(tempPiece, cursorPosition);
-           // hightlightCells();
         } else {cursorPosition-=8;}
     }
-    
+
     if (IsKeyPressed(CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_DOWN))
     {
         cursorPosition -= 8;
         if(cursorPosition > 0)
         {
             currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(tempPiece,cursorPosition);
-            // hightlightCells();
         } else {cursorPosition+=8;}
     }
 
     if (IsKeyPressed(CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_RIGHT))
     {
-        cursorPosition--;
-        if(!(cursorPosition % 8 == 0))
+        if (cursorPosition) cursorPosition--;
+        if(!(cursorPosition % 8 == 7))
         {
             currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(tempPiece,cursorPosition);
-            // hightlightCells();
         } else {cursorPosition++;}
     }
 
     if (IsKeyPressed(CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_LEFT))
     {
         cursorPosition++;
-        if(!(cursorPosition % 8 == 7))
+        if(!(cursorPosition % 8 == 0))
         {
             currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(tempPiece,cursorPosition);
-            // hightlightCells();
         } else {cursorPosition--;}
     }
 }
