@@ -93,7 +93,7 @@ void ChessGUI::handleInputs()
     if (IsKeyPressed(CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_DOWN))
     {
         cursorPosition -= 8;
-        if(cursorPosition > 0)
+        if(cursorPosition >= 0)
         {
             currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(tempPiece,cursorPosition);
         } else {cursorPosition+=8;}
