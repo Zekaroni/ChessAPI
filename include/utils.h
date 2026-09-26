@@ -13,6 +13,8 @@ using piece_t     = uint8_t;
 #define BLACKSIDE 1
 #define NULLSIDE  2
 
+#define PLAYER_COUNT 2
+
 namespace CHESS_GLOBALS
 {
     namespace COLORS

@@ -90,28 +90,28 @@ void ChessGUI::handleInputs()
             {
                 currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(tempPiece, cursorPosition);
             } else {cursorPosition-=8;}
-            break;
+        break;
         case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_DOWN:
             cursorPosition -= 8;
             if(cursorPosition >= 0)
             {
                 currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(tempPiece,cursorPosition);
             } else {cursorPosition+=8;}
-            break;
+        break;
         case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_RIGHT:
             if (cursorPosition) cursorPosition--;
             if(!(cursorPosition % 8 == 7))
             {
                 currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(tempPiece,cursorPosition);
             } else {cursorPosition++;}
-            break;
+        break;
         case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_LEFT:
             cursorPosition++;
             if(!(cursorPosition % 8 == 0))
             {
                 currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(tempPiece,cursorPosition);
             } else {cursorPosition--;}
-            break;
+        break;
     }
 }
 
