@@ -23,6 +23,7 @@ namespace CHESS_GLOBALS
         Color BLACK_SIDE  = {  0,   0,   0, 255};
         Color HIGHLIGHT   = {255,   0,   0, 128};
         Color BACKGROUND  = {100, 120, 100, 255};
+        Color CURSOR      = {000, 200,  50, 128};
     }
 
     uint8_t PIECE_VALUE[7] =

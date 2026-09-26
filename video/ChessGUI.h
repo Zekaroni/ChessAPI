@@ -22,6 +22,7 @@ private:
 
 public:
     ChessGUI(ChessLogic* chessInstance, int screenWidth, int screenHeight);
+    void highlightCursor();
     void setBoardSize(int size);
     void setBoardPostion(int x, int y); // NOTE: Top-left
     int  getBoardSize();
