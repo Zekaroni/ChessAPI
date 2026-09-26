@@ -1,0 +1,88 @@
+void ChessLogic::calculateKnightMoves()
+{
+    for (int i = 64; i >= 0; i--) // Loops through all squares
+    {
+        int y = int(i/8); // Gets the column
+        int x = int(i%8); // Gets the row
+        uint64_t currentBitBoard = 0; // Temporrary bit board
+        std::array<Point,8> point = {{{-2,1},{-2,-1},{2,1},{2,-1},{1,-2},{-1,-2},{1,2},{-1,2}}}; // the knights offsets
+       
+        for (int j=0;j<8;j++) // loops though each offset
+        {
+            if (!(x+point[j].x < 0 || x+point[j].x > 7 || y+point[j].y < 0 || y+point[j].y > 7)) // checks if the offset plus the current square is a valid square
+            {
+                currentBitBoard |= ((uint64_t)1<<(8*(y+point[j].y))+x+point[j].x); // appends the legal kngiht offsets to the bitboard
+            }
+        }
+
+        knightMoveTable[i] = currentBitBoard; // sets the knight at index i equal to the current bitBoard
+    }
+}
+void ChessLogic::calculateRookMoves()
+ {
+    for (int i = 63; i >= 0; i--) // Loops through all squares
+    {
+        bitboard_t currentBoard = {0};
+        int y = int(i/8); // Gets the column
+        int x = int(i%8); // Gets the row
+        for (int j=0;j<64;j++) // loops though each square to compare against current square
+        {
+            int currentY = int(j/8);// Gets the column of seconds board
+            int currentX = int(j%8);// Gets the row of second board
+            if (currentY == y && currentX != x || currentX == x && currentY != y) // checks if square should be appended by checking if its in the same column or row
+            {
+                currentBoard |= (uint64_t)1<<j; // appends the legal square
+            }
+        }
+        std::cout << currentBoard << "ULL,\n" << std::endl; // prints the number that each board represents
+    }
+}
+void ChessLogic::calculateKingMoves()
+ {
+    for (int i = 64; i >= 0; i--) // Loops through all squares
+    {
+        bitboard_t currentBoard = {0};
+        int y = int(i/8); // Gets the column
+        int x = int(i%8); // Gets the row
+        std::array<Point,8> point = {{{0,1},{0,-1},{1,0},{-1,0}}}; // the kings offsets
+        for (int j=0;j<8;j++) // loops though each offset
+        {
+            if (!(x+point[j].x < 0 || x+point[j].x > 7 || y+point[j].y < 0 || y+point[j].y > 7)) // checks if the offset plus the current square is a valid square
+            {
+                currentBoard |= ((uint64_t)1<<(8*(y+point[j].y))+x+point[j].x); // appends the legal square
+            }
+        }
+        kingPositions[i] =  currentBoard;
+    }
+ }
+
+  void ChessLogic::calculateBishopMoves()
+ {
+    for (int i = 63; i >= 0; i--) // Loops through all squares
+    {
+        bitboard_t currentBoard = {0};
+        int y = int(i/8); // Gets the column
+        int x = int(i%8); // Gets the row
+        for (int j=0;j<64;j++) // loops though each offset
+        {
+            int currentY = int(j/8);// Gets the column of seconds board
+            int currentX = int(j%8);// Gets the row of seconds board
+            double slope = double(currentX - x != 0) ? double(currentY - y)/(currentX - x) : 0; // Gets the slop of the current square and the square being checked
+            if ((currentY != y && currentX != x) && slope == 1 || slope == -1) // checks if the slope is 1 or -1
+            {
+                currentBoard |= (uint64_t)1<<j; // appends the legal square
+            }
+        }
+        //std::cout << currentBoard << ","<<std::endl;// Prints the numbers the board represents
+    }
+ }
+  void ChessLogic::calculatQueenMoves()
+ {
+    for (int i = 0; i <64; i++) // Loops through all squares
+    {
+        bitboard_t currentBoard = {0};
+        currentBoard = bishopPositions[i] | rookPositions[i];
+        //queenPositions[i] =  currentBoard;
+        std::cout << currentBoard << "ull,\n";
+    }
+ }

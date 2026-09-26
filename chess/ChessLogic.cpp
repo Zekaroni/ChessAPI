@@ -1,6 +1,7 @@
 #include "ChessLogic.h"
 
 ChessLogic::ChessLogic()
+<<<<<<< Updated upstream
 {
     //White Starting Positions
     pieceBitboards[WHITESIDE].pawnBitboard   = 0b11111111 << 8;
@@ -22,6 +23,17 @@ ChessLogic::ChessLogic()
         print_bitboard(position);
         std::cout << "\n\n";
     }
+=======
+{   
+    pieceBitmapLookup[CHESS_GLOBALS::PIECES::KNIGHT] = knightPositions;
+    pieceBitmapLookup[CHESS_GLOBALS::PIECES::BISHOP] = bishopPositions;
+    pieceBitmapLookup[CHESS_GLOBALS::PIECES::ROOK] = rookPositions;
+    pieceBitmapLookup[CHESS_GLOBALS::PIECES::QUEEN] = queenPositions;
+    pieceBitmapLookup[CHESS_GLOBALS::PIECES::KING] = kingPositions;
+
+    boardState[1] = CHESS_GLOBALS::PIECES::QUEEN;
+    calculateMoves();
+>>>>>>> Stashed changes
 }
 
 void ChessLogic::printBoard()
@@ -33,10 +45,15 @@ void ChessLogic::printBoard()
     //               | pieceBitboards[BLACKSIDE].pawnBitboard   | pieceBitboards[BLACKSIDE].rookBitboard
     //               | pieceBitboards[BLACKSIDE].queenBitboard  | pieceBitboards[BLACKSIDE].kingBitboard;
     int i = 0;
-    for (bitboard_t position: knightPositions)
+    for (bitboard_t position: bishopPositions)
     {
+<<<<<<< Updated upstream
         print_bitboard(position);
         std::cout << "\n\n";
+=======
+        std::cout << position << "ull,";
+        std::cout << "\n";
+>>>>>>> Stashed changes
     }
 }
 
@@ -62,6 +79,7 @@ bitboard_t ChessLogic::getKnightBitboard(int position)
  // Beautiful function to derive moves
  void ChessLogic::calculateMoves()
  {
+<<<<<<< Updated upstream
     for (int i = 64; i >= 0; i--) // Loops through all squares
     {
         bitboard_t currentBoard = {0};
@@ -76,5 +94,13 @@ bitboard_t ChessLogic::getKnightBitboard(int position)
             }
         }
         kingPositions[i] =  currentBoard;
+=======
+    for (int i = 0; i <64; i++) // Loops through all squares
+    {
+        bitboard_t currentBoard = {0};
+        currentBoard = bishopPositions[i] | rookPositions[i];
+        //queenPositions[i] =  currentBoard;
+        std::cout << currentBoard << "ull,\n";
+>>>>>>> Stashed changes
     }
  }
