@@ -1,7 +1,6 @@
 #include "ChessLogic.h"
 
 ChessLogic::ChessLogic()
-<<<<<<< Updated upstream
 {
     //White Starting Positions
     pieceBitboards[WHITESIDE].pawnBitboard   = 0b11111111 << 8;
@@ -23,7 +22,6 @@ ChessLogic::ChessLogic()
         print_bitboard(position);
         std::cout << "\n\n";
     }
-=======
 {   
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::KNIGHT] = knightPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::BISHOP] = bishopPositions;
@@ -33,27 +31,15 @@ ChessLogic::ChessLogic()
 
     boardState[1] = CHESS_GLOBALS::PIECES::QUEEN;
     calculateMoves();
->>>>>>> Stashed changes
 }
 
 void ChessLogic::printBoard()
 {
-    // occupiedBoard = pieceBitboards[WHITESIDE].bishopBitboard | pieceBitboards[WHITESIDE].knightBitboard
-    //               | pieceBitboards[WHITESIDE].pawnBitboard   | pieceBitboards[WHITESIDE].rookBitboard
-    //               | pieceBitboards[WHITESIDE].queenBitboard  | pieceBitboards[WHITESIDE].kingBitboard
-    //               | pieceBitboards[BLACKSIDE].bishopBitboard | pieceBitboards[BLACKSIDE].knightBitboard
-    //               | pieceBitboards[BLACKSIDE].pawnBitboard   | pieceBitboards[BLACKSIDE].rookBitboard
-    //               | pieceBitboards[BLACKSIDE].queenBitboard  | pieceBitboards[BLACKSIDE].kingBitboard;
     int i = 0;
     for (bitboard_t position: bishopPositions)
     {
-<<<<<<< Updated upstream
-        print_bitboard(position);
-        std::cout << "\n\n";
-=======
         std::cout << position << "ull,";
         std::cout << "\n";
->>>>>>> Stashed changes
     }
 }
 
@@ -79,28 +65,11 @@ bitboard_t ChessLogic::getKnightBitboard(int position)
  // Beautiful function to derive moves
  void ChessLogic::calculateMoves()
  {
-<<<<<<< Updated upstream
-    for (int i = 64; i >= 0; i--) // Loops through all squares
-    {
-        bitboard_t currentBoard = {0};
-        int y = int(i/8); // Gets the column
-        int x = int(i%8); // Gets the row
-        std::array<Point,8> point = {{{0,1},{0,-1},{1,0},{-1,0}}}; // the knights offsets
-        for (int j=0;j<8;j++) // loops though each offset
-        {
-            if (!(x+point[j].x < 0 || x+point[j].x > 7 || y+point[j].y < 0 || y+point[j].y > 7)) // checks if the offset plus the current square is a valid square
-            {
-                currentBoard |= ((uint64_t)1<<(8*(y+point[j].y))+x+point[j].x); // appends the legal kngiht offsets to the bitboard
-            }
-        }
-        kingPositions[i] =  currentBoard;
-=======
     for (int i = 0; i <64; i++) // Loops through all squares
     {
         bitboard_t currentBoard = {0};
         currentBoard = bishopPositions[i] | rookPositions[i];
         //queenPositions[i] =  currentBoard;
         std::cout << currentBoard << "ull,\n";
->>>>>>> Stashed changes
     }
  }
