@@ -86,3 +86,56 @@ void ChessLogic::calculateKingMoves()
         std::cout << currentBoard << "ull,\n";
     }
  }
+
+ void ChessLogic::calculateWhitePawnMoves()
+ {
+    for (int i = 63; i >= 0; i--) // Loops through all squares
+    {
+        bitboard_t currentBoard = {0};
+        int y = int(i/8); 
+        int x = int(i%8);
+        for (int j=0;j<64;j++) 
+        {
+            int currentY = int(j/8);
+            int currentX = int(j%8);
+            if (currentY > y && y >= 1) // checks if the slope is 1 or -1
+            {
+                if (y == 1 && currentY == y+2 && currentX == x)  
+                {   
+                    currentBoard |= (uint64_t)1<<j; // appends the legal square
+                }
+                if (y+1 <= 7 && currentY == y+1 &&  (currentX == x || currentX == x+1 || currentX == x-1))
+                {
+                    currentBoard |= (uint64_t)1<<j; // appends the legal square
+                }
+            }
+        }
+        // pawnPositions[i] = currentBoard;
+    }
+ }
+  void ChessLogic::calculateBlackPawnMoves()
+ {
+    for (int i = 63; i >= 0; i--) // Loops through all squares
+    {
+        bitboard_t currentBoard = {0};
+        int y = int(i/8); 
+        int x = int(i%8);
+        for (int j=0;j<64;j++) 
+        {
+            int currentY = int(j/8);
+            int currentX = int(j%8);
+            if (currentY < y && y <= 6) // checks if the slope is 1 or -1
+            {
+                if (y == 6 && currentY == 6-2 && currentX == x)  
+                {   
+                    currentBoard |= (uint64_t)1<<j; // appends the legal square
+                }
+                if (y-1 <= 7 && currentY == y-1 &&  (currentX == x || currentX == x+1 || currentX == x-1))
+                {
+                    currentBoard |= (uint64_t)1<<j; // appends the legal square
+                }
+            }
+        }
+        blackPawnPositions[i] = currentBoard;
+    }
+ }

@@ -11,12 +11,17 @@ ChessGUI::ChessGUI(ChessLogic* chessInstance, int screenWidth,int screenHeight)
     boardX                    = 0;
     boardY                    = 0;
     cellSize                  = boardSize / cellsPerRow;
+    boardSize                 = cellSize * 8; // Due to integer division for cell size
     currentHightlightBitboard = 0;
     cursorPosition            = 0;
-    boardFontSize             = boardSize/(cellsPerRow*2);
+    boardFontSize             = boardSize/(cellsPerRow*6);
     
     SetTraceLogLevel(LOG_NONE);
     InitWindow(screenWidth, screenHeight, "Chess");
+    Image windowIcon = LoadImage("./assets/images/icon.png");
+    SetWindowIcon(windowIcon);
+    UnloadImage(windowIcon);
+    initPieceTextures();
 };
 
 void ChessGUI::setBoardSize(int size)
@@ -38,7 +43,7 @@ int ChessGUI::getBoardSize()
 
 void ChessGUI::renderBoard()
 {
-    DrawRectangle(boardX, boardY, boardSize, boardSize, *CHESS_GLOBALS::COLORS::PLAYERS[0]);
+    DrawRectangle(boardX, boardY, boardSize, boardSize, *CHESS_GLOBALS::COLORS::PLAYERS[WHITESIDE]);
     for(int j = 0; j < cellsPerRow; j++)
     {
         for (int i = 0; i < cellsPerRow / 2; i++)
@@ -48,7 +53,7 @@ void ChessGUI::renderBoard()
                 boardY + (j * cellSize),
                 cellSize,
                 cellSize,
-                *CHESS_GLOBALS::COLORS::PLAYERS[1]
+                *CHESS_GLOBALS::COLORS::PLAYERS[BLACKSIDE]
             );
         }
     }
@@ -71,8 +76,8 @@ void ChessGUI::renderFileRankText()
             {
                 DrawText(
                     TextFormat("%c", CHESS_GLOBALS::FILES::STRING[i]),
-                    boardX + (i * cellSize) + (boardFontSize),
-                    boardY + (j * cellSize) + (boardFontSize),
+                    boardX + (i * cellSize) + (cellSize) - (boardFontSize),
+                    boardY + (j * cellSize) + (cellSize) - (boardFontSize),
                     boardFontSize,
                     *CHESS_GLOBALS::COLORS::PLAYERS[(i % 2)]
                 );
@@ -81,6 +86,44 @@ void ChessGUI::renderFileRankText()
     }
 }
 
+void ChessGUI::renderPieces()
+{
+    int pieceIndex;
+    Point position;
+    piece_t currentPiece;
+    for (int i = 63; i >= 0; i--)
+    {
+        currentPiece = internalChessLogic->boardState[63-i];
+        if (currentPiece != 0)
+        {
+            position = getColumnAndRow(i);
+
+            DrawTexture(
+                pieceTextures[internalChessLogic->playerPieceToTextureIndexHash[currentPiece]],
+                boardX + (cellSize * position.x),
+                boardY + (cellSize * position.y),
+                WHITE
+            );
+        }
+    }
+}
+
+void ChessGUI::initPieceTextures()
+{
+    Image img;
+    std::string pathString;
+    for (int i = 0; i < PIECE_TEXTURE_COUNT/2;i++)
+    {
+        pathString = std::string("./assets/images/") + CHESS_GLOBALS::INDEX_TO_FEN_LETTER[i+1] + ".png";
+        img = LoadImage(pathString.c_str());
+        ImageResize(&img,cellSize,cellSize);
+        pieceTextures[i+6] = LoadTextureFromImage(img);
+        ImageColorInvert(&img);
+        pieceTextures[i] = LoadTextureFromImage(img);
+    }
+    
+    
+}
 void ChessGUI::highlightCursor()
 {
     Point cursor = getColumnAndRow(cursorPosition);
@@ -117,36 +160,68 @@ void ChessGUI::setCurrentHighlightBitboard(bitboard_t bitboard)
     currentHightlightBitboard = bitboard;
 }
 
+Point ChessGUI::getColumnAndRow(int index)
+{
+    int row    = int(index/ROW_COUNT);
+    int column = int(index%ROW_COUNT);
+    Point columnAndRow = {column,row};
+    return columnAndRow;
+}
+
 void ChessGUI::handleInputs()
 {
-    piece_t piece = internalChessLogic->boardState[0];
     int currentKey = GetKeyPressed();    
-    int cursorTranslation = 0;
-    bool updateBitboard = false;
-
+    int tempCursorPosition = cursorPosition;
+    
     switch(currentKey)
     {
         case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_UP:
-            cursorTranslation += 8;
-            updateBitboard = ((cursorPosition + cursorTranslation) < 64); 
+            tempCursorPosition += 8;
         break;
         case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_DOWN:
-            cursorTranslation -= 8;
-            updateBitboard = ((cursorPosition + cursorTranslation) >= 0);
+            tempCursorPosition -= 8;
         break;
         case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_RIGHT:
-            if (cursorPosition) cursorTranslation--;
-            updateBitboard = (!((cursorPosition + cursorTranslation) % 8 == 7));
+            if (cursorPosition % 8 != 0) tempCursorPosition--;
         break;
         case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_LEFT:
-            cursorTranslation++;
-            updateBitboard = (!((cursorPosition +cursorTranslation) % 8 == 0));
+            if (cursorPosition % 8 != 7) tempCursorPosition++;
         break;
     }
-    if (updateBitboard)
+    if (
+        tempCursorPosition >= 0 &&
+        tempCursorPosition < 64 &&
+        tempCursorPosition != cursorPosition
+    )
     {
-        cursorPosition+=cursorTranslation;
-        currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(piece,cursorPosition);
+        cursorPosition = tempCursorPosition;
+        piece_t piece = internalChessLogic->boardState[cursorPosition];
+        // std::cout << (int)piece << std::endl;
+        setCurrentHighlightBitboard(
+            internalChessLogic->getPiecePositionBitboard(piece,cursorPosition)
+        );
+    }
+}
+
+void ChessGUI::handleMouse()
+{
+    int screenX = GetMouseX();
+    int screenY = GetMouseY();
+
+    int mouse_boardX = 0;
+    int mouse_boardY = 0;
+
+    if (screenX < boardX+boardSize && screenX >= 0+boardX && screenY < boardY+boardSize && screenY >= 0+boardY)
+    {
+        mouse_boardX = ((screenX-boardX)/cellSize)+1;
+        mouse_boardY = (screenY-boardY)/cellSize;
+
+        cursorPosition = internalChessLogic->getIndex({mouse_boardX,mouse_boardY});
+
+        piece_t piece = internalChessLogic->boardState[cursorPosition];
+        setCurrentHighlightBitboard(
+            internalChessLogic->getPiecePositionBitboard(piece,cursorPosition)
+        );
     }
 }
 
@@ -154,6 +229,9 @@ void ChessGUI::runGUI()
 {
     while (!WindowShouldClose())
     {
+        handleInputs();
+        handleMouse();
+
         BeginDrawing();
         ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
         renderBoard();
@@ -161,17 +239,10 @@ void ChessGUI::runGUI()
         
         highlightCursor();
         hightlightCells();
-        handleInputs();
-
+        
+        renderPieces();
+        
         EndDrawing();
     }
     CloseWindow();
 };
-
-Point ChessGUI::getColumnAndRow(int index)
-{
-    int row = int(index/cellsPerRow);
-    int column = int(index%cellsPerRow);
-    Point columnAndRow = {column,row};
-    return columnAndRow;
-}

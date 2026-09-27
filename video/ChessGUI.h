@@ -17,6 +17,8 @@ private:
     int boardFontSize;
     int cursorPosition;
 
+    Texture2D pieceTextures[PIECE_TEXTURE_COUNT];
+
     bitboard_t currentHightlightBitboard;
     void hightlightCells();
 
@@ -28,8 +30,11 @@ public:
     int  getBoardSize();
     Point getColumnAndRow(int index);
     void setCurrentHighlightBitboard(bitboard_t bitboard);
+    void initPieceTextures();
     void renderBoard();
+    void renderPieces();
     void renderFileRankText();
     void handleInputs();
+    void handleMouse();
     void runGUI();
 };
