@@ -80,7 +80,8 @@ piece_t ChessLogic::fenToPiece(char fenPiece)
 
 bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
 {
-    return pieceBitmapLookup[playerPieceToPieceHash[piece]][position];
+    // return pieceBitmapLookup[playerPieceToPieceHash[piece]][position];
+    return pieceBitmapLookup[piece & 0b111][position];
 }
 
 Point ChessLogic::getColumnAndRow(int index)

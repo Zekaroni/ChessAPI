@@ -35,7 +35,7 @@ public:
     void calculatePawnMoves();
     void loadFEN(std::string fenString);
     piece_t fenToPiece(char fenPiece);
-    uint8_t boardState[64] = {0};
+    piece_t boardState[64] = {0};
     Point getColumnAndRow(int index);
     int getIndex(Point pos);
     bitboard_t getPiecePositionBitboard(piece_t piece, int position);
