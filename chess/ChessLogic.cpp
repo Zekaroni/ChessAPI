@@ -20,6 +20,7 @@ ChessLogic::ChessLogic()
 
 void ChessLogic::loadFEN(std::string fenString)
 {
+    std::fill(std::begin(boardState), std::end(boardState), piece_t{});
     int currentBoardPosition = 63;
     int rank = 7;
     int file = 0;

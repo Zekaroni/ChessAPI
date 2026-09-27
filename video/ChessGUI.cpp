@@ -14,7 +14,7 @@ ChessGUI::ChessGUI(ChessLogic* chessInstance, int screenWidth,int screenHeight)
     boardSize                 = cellSize * 8; // Due to integer division for cell size
     currentHightlightBitboard = 0;
     cursorPosition            = 0;
-    boardFontSize             = boardSize/(cellsPerRow*2);
+    boardFontSize             = boardSize/(cellsPerRow*6);
     
     SetTraceLogLevel(LOG_NONE);
     InitWindow(screenWidth, screenHeight, "Chess");
@@ -62,7 +62,7 @@ void ChessGUI::renderFileRankText()
     {
         DrawText(
             TextFormat("%d", cellsPerRow-j),
-            boardX - (boardFontSize/2) - 5,
+            boardX,
             boardY + (j * cellSize),
             boardFontSize,
             *CHESS_GLOBALS::COLORS::PLAYERS[!(j % 2)]
@@ -74,7 +74,7 @@ void ChessGUI::renderFileRankText()
                 DrawText(
                     TextFormat("%c", CHESS_GLOBALS::FILES::STRING[i]),
                     boardX + (i * cellSize) + (cellSize) - (boardFontSize),
-                    boardY + (j * cellSize) + (cellSize),
+                    boardY + (j * cellSize) + (cellSize) - (boardFontSize),
                     boardFontSize,
                     *CHESS_GLOBALS::COLORS::PLAYERS[(i % 2)]
                 );
@@ -90,14 +90,14 @@ void ChessGUI::renderPieces()
     piece_t currentPiece;
     for (int i = 63; i >= 0; i--)
     {
-        currentPiece = internalChessLogic->boardState[i];
+        currentPiece = internalChessLogic->boardState[63-i];
         if (currentPiece != 0)
         {
             position = getColumnAndRow(i);
 
             DrawTexture(
                 pieceTextures[internalChessLogic->playerPieceToTextureIndexHash[currentPiece]],
-                boardX + (cellSize * (7 - position.x)),
+                boardX + (cellSize * position.x),
                 boardY + (cellSize * position.y),
                 WHITE
             );
@@ -114,9 +114,9 @@ void ChessGUI::initPieceTextures()
         pathString = std::string("./assets/images/") + CHESS_GLOBALS::INDEX_TO_FEN_LETTER[i+1] + ".png";
         img = LoadImage(pathString.c_str());
         ImageResize(&img,cellSize,cellSize);
-        pieceTextures[i] = LoadTextureFromImage(img);
-        ImageColorInvert(&img);
         pieceTextures[i+6] = LoadTextureFromImage(img);
+        ImageColorInvert(&img);
+        pieceTextures[i] = LoadTextureFromImage(img);
     }
     
     
@@ -159,7 +159,7 @@ void ChessGUI::setCurrentHighlightBitboard(bitboard_t bitboard)
 
 Point ChessGUI::getColumnAndRow(int index)
 {
-    int row = (int(index/ROW_COUNT));
+    int row    = int(index/ROW_COUNT);
     int column = int(index%ROW_COUNT);
     Point columnAndRow = {column,row};
     return columnAndRow;

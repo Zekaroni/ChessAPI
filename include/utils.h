@@ -4,6 +4,7 @@
 #include <iostream>
 #include <array>
 #include <cmath>
+#include <algorithm>
 
 
 using bitboard_t  = std::uint64_t;
