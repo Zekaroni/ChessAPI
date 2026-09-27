@@ -95,8 +95,8 @@ Point ChessLogic::getFileAndRank(int index)
 {
     int rank = int(index/ROW_COUNT);
     int file = int(index%ROW_COUNT);
-    Point columnAndRow = {file,rank};
-    return columnAndRow;
+    Point fileAndRank = {file,rank};
+    return fileAndRank;
 }
 
 int ChessLogic::getIndex(Point pos)

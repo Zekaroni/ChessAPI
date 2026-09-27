@@ -37,6 +37,7 @@ public:
     piece_t fenToPiece(char fenPiece);
     piece_t boardState[64] = {0};
     Point getColumnAndRow(int index);
+    Point getFileAndRank(int index);
     int getIndex(Point pos);
     bitboard_t getPiecePositionBitboard(piece_t piece, int position);
     
