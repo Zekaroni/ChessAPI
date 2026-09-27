@@ -91,11 +91,11 @@ Point ChessLogic::getColumnAndRow(int index)
     Point columnAndRow = {column,row};
     return columnAndRow;
 }
-Point ChessLogic::getColumnAndRow(int index)
+Point ChessLogic::getFileAndRank(int index)
 {
     int rank = int(index/ROW_COUNT);
     int file = int(index%ROW_COUNT);
-    Point columnAndRow = {column,row};
+    Point columnAndRow = {file,rank};
     return columnAndRow;
 }
 
