@@ -30,12 +30,12 @@ namespace CHESS_GLOBALS
         Color* PLAYERS[2] = {&WHITE_SIDE, &BLACK_SIDE};
     }
 
-    // constexpr uint8_t PIECE_VALUE[7] =
-    // {
-    //     0,1,3,3,5,9,100
-    // };
+    constexpr uint8_t PIECE_VALUE[7] =
+    {
+        0,1,3,3,5,9,100
+    };
 
-    // const std::string STARTING_FEN_STRING = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    const std::string STARTING_FEN_STRING = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     enum PIECES
     {

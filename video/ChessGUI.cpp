@@ -119,7 +119,7 @@ void ChessGUI::setCurrentHighlightBitboard(bitboard_t bitboard)
 
 void ChessGUI::handleInputs()
 {
-    piece_t piece = internalChessLogic->boardState[0];
+    piece_t piece = internalChessLogic->boardState[cursorPosition];
     int currentKey = GetKeyPressed();    
     int cursorTranslation = 0;
     bool updateBitboard = false;

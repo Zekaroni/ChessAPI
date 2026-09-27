@@ -2,15 +2,20 @@
 
 ChessLogic::ChessLogic()
 {
-    pieceBitmapLookup[CHESS_GLOBALS::PIECES::PAWN]   = pawnPositions;
+    loadFEN(CHESS_GLOBALS::STARTING_FEN_STRING);
+    currentPlayer = WHITESIDE;
+
+    pieceBitmapLookup[CHESS_GLOBALS::PIECES::PAWN]   = blackPawnPosition;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::KNIGHT] = knightPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::BISHOP] = bishopPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::ROOK]   = rookPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::QUEEN]  = queenPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::KING]   = kingPositions;
-
-    boardState[0] = CHESS_GLOBALS::PIECES::PAWN;
+    
+    boardState[8] = CHESS_GLOBALS::PLAYER_PIECES::WHITE_PAWN;
     // print_board(pawnPositions, 64);
+
+    print_pieces_at_position();
 }
 
 void ChessLogic::loadFEN(std::string fenString)
@@ -18,10 +23,22 @@ void ChessLogic::loadFEN(std::string fenString)
     int currentPosition = 63;
     int rank = 7;
     int file = 0;
-    for(char c: fenString)
+    for(int i = 0; i < fenString.length(); i++)
     {
-        if (c == '/') rank--;
-        getIndex(Point(file, rank));
+        if (fenString[i] == '/')
+        {
+            rank--;
+            file = 0;
+        } else if ((fenString[i] < 122) && (fenString[i] > 64))
+        {
+            boardState[getIndex(Point(file, rank))] = fenToPiece(fenString[i]);
+        } else if ((fenString[i] < 58) && (fenString[i] > 48))
+        {
+            file += (fenString[i] - 48);
+        } else if (fenString[i] == ' ')
+        {
+            currentPlayer = fenString[i+1] == 'b';
+        }
     }   
 }
 
@@ -56,6 +73,14 @@ piece_t ChessLogic::fenToPiece(char fenPiece)
         default:
             return CHESS_GLOBALS::PIECES::EMPTY;
 
+    }
+}
+
+void ChessLogic::print_pieces_at_position()
+{
+    for (int i = 0; i < 64; i++)
+    {
+        printf("%d", boardState[i]);
     }
 }
 
@@ -101,27 +126,12 @@ int ChessLogic::getIndex(Point pos)
  // Beautiful function to derive moves
 void ChessLogic::calculatePawnMoves()
  {
+    int j = 63;
     for (int i = 63; i >= 0; i--) // Loops through all squares
     {
         bitboard_t currentBoard = {0};
         int y = int(i/8); 
         int x = int(i%8);
-        for (int j=0;j<64;j++) 
-        {
-            int currentY = int(j/8);
-            int currentX = int(j%8);
-            if (currentY > y && y >= 1) // checks if the slope is 1 or -1
-            {
-                if (y == 1 && currentY == y+2 && currentX == x)  
-                {   
-                    currentBoard |= (uint64_t)1<<j; // appends the legal square
-                }
-                if (y+1 <= 7 && currentY == y+1 &&  (currentX == x || currentX == x+1 || currentX == x-1))
-                {
-                    currentBoard |= (uint64_t)1<<j; // appends the legal square
-                }
-            }
-        }
-        // pawnPositions[i] = currentBoard;
+        blackPawnPosition[i] = pawnPositions[j];
     }
  }
