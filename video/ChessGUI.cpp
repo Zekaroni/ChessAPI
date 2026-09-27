@@ -120,7 +120,7 @@ void ChessGUI::setCurrentHighlightBitboard(bitboard_t bitboard)
 void ChessGUI::handleInputs()
 {
     int currentKey = GetKeyPressed();    
-    int tempCursorPosition = 0;
+    int tempCursorPosition = cursorPosition;
     
     switch(currentKey)
     {
@@ -131,15 +131,21 @@ void ChessGUI::handleInputs()
             tempCursorPosition -= 8;
         break;
         case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_RIGHT:
-            if (cursorPosition % 8 != 7) tempCursorPosition--;
+            if (cursorPosition % 8 != 0) tempCursorPosition--;
         break;
         case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_LEFT:
-            if (cursorPosition % 8 != 0) tempCursorPosition++;
+            if (cursorPosition % 8 != 7) tempCursorPosition++;
         break;
     }
-    if (tempCursorPosition >= 0 && tempCursorPosition < 64 && tempCursorPosition != cursorPosition)
+    if (
+        tempCursorPosition >= 0 &&
+        tempCursorPosition < 64 &&
+        tempCursorPosition != cursorPosition
+    )
     {
+        cursorPosition = tempCursorPosition;
         piece_t piece = internalChessLogic->boardState[cursorPosition];
+        std::cout << (int)piece << std::endl;
         setCurrentHighlightBitboard(
             internalChessLogic->getPiecePositionBitboard(piece,cursorPosition)
         );
