@@ -86,8 +86,15 @@ bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
 
 Point ChessLogic::getColumnAndRow(int index)
 {
-    int row = int(index/ROW_COUNT);
+    int row = 8 -(int(index/ROW_COUNT));
     int column = int(index%ROW_COUNT);
+    Point columnAndRow = {column,row};
+    return columnAndRow;
+}
+Point ChessLogic::getColumnAndRow(int index)
+{
+    int rank = int(index/ROW_COUNT);
+    int file = int(index%ROW_COUNT);
     Point columnAndRow = {column,row};
     return columnAndRow;
 }
