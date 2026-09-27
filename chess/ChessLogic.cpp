@@ -1,8 +1,7 @@
 #include "ChessLogic.h"
 
 ChessLogic::ChessLogic()
-{   
-    calculatePawnMoves();
+{
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::PAWN]   = pawnPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::KNIGHT] = knightPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::BISHOP] = bishopPositions;
@@ -11,6 +10,7 @@ ChessLogic::ChessLogic()
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::KING]   = kingPositions;
 
     boardState[0] = CHESS_GLOBALS::PIECES::PAWN;
+    // print_board(pawnPositions, 64);
 }
 
 void ChessLogic::loadFEN(std::string fenString)
@@ -59,12 +59,12 @@ piece_t ChessLogic::fenToPiece(char fenPiece)
     }
 }
 
-void ChessLogic::print_board(bitboard_t* bitboardArray)
+void ChessLogic::print_board(bitboard_t* bitboardArray,int size)
 {
-    for (int i = 0; i < sizeof(bitboardArray); i++)
+    for (int i = 0; i < size; i++)
     {
         std::cout << bitboardArray[i];
-        std::cout << "\n\n";
+        std::cout << "\n";
     }
 }
 
@@ -116,12 +116,12 @@ void ChessLogic::calculatePawnMoves()
                 {   
                     currentBoard |= (uint64_t)1<<j; // appends the legal square
                 }
-                if (y+1 <= 7 && currentY = y+1 (currentX == x || currentX == x+1 || currentX == x-1))
+                if (y+1 <= 7 && currentY == y+1 &&  (currentX == x || currentX == x+1 || currentX == x-1))
                 {
                     currentBoard |= (uint64_t)1<<j; // appends the legal square
                 }
             }
         }
-        pawnPositions[i] = currentBoard;
+        // pawnPositions[i] = currentBoard;
     }
  }
