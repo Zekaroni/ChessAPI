@@ -9,11 +9,13 @@
 using bitboard_t  = std::uint64_t;
 using piece_t     = uint8_t;
 
-#define WHITESIDE 0
-#define BLACKSIDE 1
-#define NULLSIDE  2
 
+#define WHITESIDE    0
+#define BLACKSIDE    1
+#define NULLSIDE     2
 #define PLAYER_COUNT 2
+#define ROW_COUNT    8
+#define COLUMN_COUNT 8
 
 namespace CHESS_GLOBALS
 {
@@ -28,10 +30,12 @@ namespace CHESS_GLOBALS
         Color* PLAYERS[2] = {&WHITE_SIDE, &BLACK_SIDE};
     }
 
-    uint8_t PIECE_VALUE[7] =
-    {
-        0,1,3,3,5,9,100
-    };
+    // constexpr uint8_t PIECE_VALUE[7] =
+    // {
+    //     0,1,3,3,5,9,100
+    // };
+
+    // const std::string STARTING_FEN_STRING = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     enum PIECES
     {
