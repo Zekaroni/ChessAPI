@@ -205,7 +205,24 @@ void ChessGUI::handleInputs()
 
 void ChessGUI::handleMouse()
 {
+    int screenX = GetMouseX();
+    int screenY = GetMouseY();
 
+    int mouse_boardX = 0;
+    int mouse_boardY = 0;
+
+    if (screenX < boardX+boardSize && screenX >= 0+boardX && screenY < boardY+boardSize && screenY >= 0+boardY)
+    {
+        mouse_boardX = ((screenX-boardX)/cellSize)+1;
+        mouse_boardY = (screenY-boardY)/cellSize;
+
+        cursorPosition = internalChessLogic->getIndex({mouse_boardX,mouse_boardY});
+
+        piece_t piece = internalChessLogic->boardState[cursorPosition];
+        setCurrentHighlightBitboard(
+            internalChessLogic->getPiecePositionBitboard(piece,cursorPosition)
+        );
+    }
 }
 
 void ChessGUI::runGUI()

@@ -4,7 +4,7 @@ int main()
 {
     int screenWidth  = 900;
     int screenHeight = 900;
-    
+    int boardsize = 496;
     ChessLogic chess;
     ChessGUI chessGUI(&chess, screenWidth, screenHeight);
 
