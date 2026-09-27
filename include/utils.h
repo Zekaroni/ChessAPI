@@ -16,16 +16,17 @@ using piece_t     = uint8_t;
 #define PLAYER_COUNT 2
 #define ROW_COUNT    8
 #define COLUMN_COUNT 8
+#define PIECE_TEXTURE_COUNT 12
 
 namespace CHESS_GLOBALS
 {
     namespace COLORS
     {
-        Color WHITE_SIDE  = {255, 255, 255, 255};
-        Color BLACK_SIDE  = {  0,   0,   0, 255};
-        Color HIGHLIGHT   = {255,   0,   0, 128};
+        Color WHITE_SIDE  = {238, 220, 151, 255};
+        Color BLACK_SIDE  = {150,  77,  34, 255};
+        Color HIGHLIGHT   = {200,   0,   0, 100};
         Color BACKGROUND  = {100, 120, 100, 255};
-        Color CURSOR      = {000, 200,  50, 128};
+        Color CURSOR      = {000, 200, 100, 100};
 
         Color* PLAYERS[2] = {&WHITE_SIDE, &BLACK_SIDE};
     }
@@ -36,6 +37,8 @@ namespace CHESS_GLOBALS
     };
 
     const std::string STARTING_FEN_STRING = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    const char INDEX_TO_FEN_LETTER[8]     = {' ', 'p', 'n', 'b', 'r', 'q', 'k'};
+
 
     enum PIECES
     {
