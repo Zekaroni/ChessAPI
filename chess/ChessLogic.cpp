@@ -112,11 +112,11 @@ void ChessLogic::calculatePawnMoves()
             int currentX = int(j%8);
             if (currentY > y && y >= 1) // checks if the slope is 1 or -1
             {
-                if (y == 1 && currentY == y+2 && currentX == x &)  
+                if (y == 1 && currentY == y+2 && currentX == x)  
                 {   
                     currentBoard |= (uint64_t)1<<j; // appends the legal square
                 }
-                if (y+1 <= 7 && (currentX == x || currentX == x+1 || currentX == x-1))
+                if (y+1 <= 7 && currentY = y+1 (currentX == x || currentX == x+1 || currentX == x-1))
                 {
                     currentBoard |= (uint64_t)1<<j; // appends the legal square
                 }
