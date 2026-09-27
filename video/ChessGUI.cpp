@@ -18,6 +18,9 @@ ChessGUI::ChessGUI(ChessLogic* chessInstance, int screenWidth,int screenHeight)
     
     SetTraceLogLevel(LOG_NONE);
     InitWindow(screenWidth, screenHeight, "Chess");
+    Image windowIcon = LoadImage("./assets/images/icon.png");
+    SetWindowIcon(windowIcon);
+    UnloadImage(windowIcon);
     initPieceTextures();
 };
 

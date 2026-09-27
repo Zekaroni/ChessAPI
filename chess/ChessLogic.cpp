@@ -2,19 +2,12 @@
 
 ChessLogic::ChessLogic()
 {
+    calculateBlackPawnMoves();
     loadFEN(CHESS_GLOBALS::STARTING_FEN_STRING);
     currentPlayer = WHITESIDE;
-
-    pieceBitmapLookup[CHESS_GLOBALS::PIECES::EMPTY]  = nullPositions;
-    pieceBitmapLookup[CHESS_GLOBALS::PIECES::PAWN]   = pawnPositions;
-    pieceBitmapLookup[CHESS_GLOBALS::PIECES::KNIGHT] = knightPositions;
-    pieceBitmapLookup[CHESS_GLOBALS::PIECES::BISHOP] = bishopPositions;
-    pieceBitmapLookup[CHESS_GLOBALS::PIECES::ROOK]   = rookPositions;
-    pieceBitmapLookup[CHESS_GLOBALS::PIECES::QUEEN]  = queenPositions;
-    pieceBitmapLookup[CHESS_GLOBALS::PIECES::KING]   = kingPositions;
     
     // boardState[0] = CHESS_GLOBALS::PLAYER_PIECES::WHITE_PAWN;
-    // print_board(pawnPositions, 64);
+    // print_board(blackPawnPositions, 64);
     // print_pieces_at_position();
 }
 
@@ -85,8 +78,53 @@ piece_t ChessLogic::fenToPiece(char fenPiece)
 
 bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
 {
-    return pieceBitmapLookup[playerPieceToPieceHash[piece]][position];
-    // return pieceBitmapLookup[piece & 0b111][position];
+    // if (piece == 0b1001 || piece == 0b0001)
+    // {
+    //     return (&(pieceBitmapLookup[playerPieceToPieceHash[piece]])[piece & 0b100])[position];
+    // } else {
+    //     return pieceBitmapLookup[playerPieceToPieceHash[piece]][position];
+    // }
+    switch(piece)
+    {
+        case CHESS_GLOBALS::PLAYER_PIECES::WHITE_PAWN:
+            return whitePawnPositions[position];
+        break;
+        case CHESS_GLOBALS::PLAYER_PIECES::WHITE_KNIGHT:
+            return knightPositions[position];
+        break;
+        case CHESS_GLOBALS::PLAYER_PIECES::WHITE_BISHOP:
+            return bishopPositions[position];
+        break;
+        case CHESS_GLOBALS::PLAYER_PIECES::WHITE_ROOK:
+            return rookPositions[position];
+        break;
+        case CHESS_GLOBALS::PLAYER_PIECES::WHITE_QUEEN:
+            return queenPositions[position];
+        break;
+        case CHESS_GLOBALS::PLAYER_PIECES::WHITE_KING:
+            return kingPositions[position];
+        break;
+        case CHESS_GLOBALS::PLAYER_PIECES::BLACK_PAWN:
+            return blackPawnPositions[position];
+        break;
+        case CHESS_GLOBALS::PLAYER_PIECES::BLACK_KNIGHT:
+            return knightPositions[position];
+        break;
+        case CHESS_GLOBALS::PLAYER_PIECES::BLACK_BISHOP:
+            return bishopPositions[position];
+        break;
+        case CHESS_GLOBALS::PLAYER_PIECES::BLACK_ROOK:
+            return rookPositions[position];
+        break;
+        case CHESS_GLOBALS::PLAYER_PIECES::BLACK_QUEEN:
+            return queenPositions[position];
+        break;
+        case CHESS_GLOBALS::PLAYER_PIECES::BLACK_KING:
+            return kingPositions[position];
+        break;
+        default:
+            return CHESS_GLOBALS::PIECES::EMPTY;
+    }
 }
 
 
@@ -104,17 +142,33 @@ int ChessLogic::getIndex(Point pos)
 }
 
 // Beautiful function to derive moves
-void ChessLogic::calculatePawnMoves()
-{
-    // int j = 63;
-    // for (int i = 63; i >= 0; i--) // Loops through all squares
-    // {
-    //     bitboard_t currentBoard = {0};
-    //     int y = int(i/8); 
-    //     int x = int(i%8);
-    //     blackPawnPosition[i] = pawnPositions[j];
-    // }
-}
+ void ChessLogic::calculateBlackPawnMoves()
+ {
+    for (int i = 63; i >= 0; i--) // Loops through all squares
+    {
+        bitboard_t currentBoard = {0};
+        int y = int(i/8); 
+        int x = int(i%8);
+        for (int j=0;j<64;j++) 
+        {
+            int currentY = int(j/8);
+            int currentX = int(j%8);
+            if (currentY < y && y <= 6) // checks if the slope is 1 or -1
+            {
+                if (y == 6 && currentY == 6-2 && currentX == x)  
+                {   
+                    currentBoard |= (uint64_t)1<<j; // appends the legal square
+                }
+                if (y-1 <= 7 && currentY == y-1 &&  (currentX == x || currentX == x+1 || currentX == x-1))
+                {
+                    currentBoard |= (uint64_t)1<<j; // appends the legal square
+                }
+            }
+        }
+        // std::cout << currentBoard << "ULL," <<std::endl;
+        // blackPawnPositions[i] = currentBoard;
+    }
+ }
 
 void ChessLogic::print_pieces_at_position()
 {
