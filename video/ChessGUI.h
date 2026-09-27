@@ -26,6 +26,7 @@ public:
     void setBoardSize(int size);
     void setBoardPostion(int x, int y); // NOTE: Top-left
     int  getBoardSize();
+    Point getColumnAndRow(int index);
     void setCurrentHighlightBitboard(bitboard_t bitboard);
     void renderBoard();
     void renderFileRankText();

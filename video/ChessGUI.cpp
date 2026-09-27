@@ -83,7 +83,7 @@ void ChessGUI::renderFileRankText()
 
 void ChessGUI::highlightCursor()
 {
-    Point cursor = internalChessLogic->getColumnAndRow(cursorPosition);
+    Point cursor = getColumnAndRow(cursorPosition);
     DrawRectangle(
         boardX + ((cellsPerRow - cursor.x - 1) * cellSize),
         boardY + ((cellsPerRow - cursor.y - 1) * cellSize),
@@ -93,6 +93,14 @@ void ChessGUI::highlightCursor()
     );
 }
 
+Point ChessGUI::getColumnAndRow(int index)
+{
+    int row = (int(index/ROW_COUNT));
+    int column = int(index%ROW_COUNT);
+    Point columnAndRow = {column,row};
+    return columnAndRow;
+}
+
 void ChessGUI::hightlightCells()
 {
     Point currentPosition;
@@ -100,7 +108,7 @@ void ChessGUI::hightlightCells()
     {
         if ((currentHightlightBitboard >> i) & 1)
         {
-            currentPosition = internalChessLogic->getColumnAndRow(i);
+            currentPosition = getColumnAndRow(i);
             DrawRectangle(
                 boardX + ((cellsPerRow - currentPosition.x - 1) * cellSize),
                 boardY + ((cellsPerRow - currentPosition.y - 1) * cellSize),
