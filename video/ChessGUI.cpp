@@ -119,34 +119,30 @@ void ChessGUI::setCurrentHighlightBitboard(bitboard_t bitboard)
 
 void ChessGUI::handleInputs()
 {
-    piece_t piece = internalChessLogic->boardState[cursorPosition];
     int currentKey = GetKeyPressed();    
-    int cursorTranslation = 0;
-    bool updateBitboard = false;
-
+    int tempCursorPosition = 0;
+    
     switch(currentKey)
     {
         case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_UP:
-            cursorTranslation += 8;
-            updateBitboard = ((cursorPosition + cursorTranslation) < 64); 
+            tempCursorPosition += 8;
         break;
         case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_DOWN:
-            cursorTranslation -= 8;
-            updateBitboard = ((cursorPosition + cursorTranslation) >= 0);
+            tempCursorPosition -= 8;
         break;
         case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_RIGHT:
-            if (cursorPosition) cursorTranslation--;
-            updateBitboard = (!((cursorPosition + cursorTranslation) % 8 == 7));
+            if (cursorPosition % 8 != 7) tempCursorPosition--;
         break;
         case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_LEFT:
-            cursorTranslation++;
-            updateBitboard = (!((cursorPosition +cursorTranslation) % 8 == 0));
+            if (cursorPosition % 8 != 0) tempCursorPosition++;
         break;
     }
-    if (updateBitboard)
+    if (tempCursorPosition >= 0 && tempCursorPosition < 64 && tempCursorPosition != cursorPosition)
     {
-        cursorPosition+=cursorTranslation;
-        currentHightlightBitboard = internalChessLogic->getPiecePositionBitboard(piece,cursorPosition);
+        piece_t piece = internalChessLogic->boardState[cursorPosition];
+        setCurrentHighlightBitboard(
+            internalChessLogic->getPiecePositionBitboard(piece,cursorPosition)
+        );
     }
 }
 

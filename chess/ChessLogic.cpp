@@ -5,14 +5,14 @@ ChessLogic::ChessLogic()
     loadFEN(CHESS_GLOBALS::STARTING_FEN_STRING);
     currentPlayer = WHITESIDE;
 
-    pieceBitmapLookup[CHESS_GLOBALS::PIECES::PAWN]   = blackPawnPosition;
+    pieceBitmapLookup[CHESS_GLOBALS::PIECES::PAWN]   = pawnPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::KNIGHT] = knightPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::BISHOP] = bishopPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::ROOK]   = rookPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::QUEEN]  = queenPositions;
     pieceBitmapLookup[CHESS_GLOBALS::PIECES::KING]   = kingPositions;
     
-    boardState[8] = CHESS_GLOBALS::PLAYER_PIECES::WHITE_PAWN;
+    // boardState[0] = CHESS_GLOBALS::PLAYER_PIECES::WHITE_PAWN;
     // print_board(pawnPositions, 64);
 
     print_pieces_at_position();
@@ -20,7 +20,6 @@ ChessLogic::ChessLogic()
 
 void ChessLogic::loadFEN(std::string fenString)
 {
-    int currentPosition = 63;
     int rank = 7;
     int file = 0;
     for(int i = 0; i < fenString.length(); i++)
@@ -31,13 +30,16 @@ void ChessLogic::loadFEN(std::string fenString)
             file = 0;
         } else if ((fenString[i] < 122) && (fenString[i] > 64))
         {
-            boardState[getIndex(Point(file, rank))] = fenToPiece(fenString[i]);
+            printf("%d", file);
+            boardState[getIndex({file, rank})] = fenToPiece(fenString[i]);
+            file++;
         } else if ((fenString[i] < 58) && (fenString[i] > 48))
         {
             file += (fenString[i] - 48);
         } else if (fenString[i] == ' ')
         {
             currentPlayer = fenString[i+1] == 'b';
+            break;
         }
     }   
 }
@@ -76,11 +78,43 @@ piece_t ChessLogic::fenToPiece(char fenPiece)
     }
 }
 
+bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
+{
+    return pieceBitmapLookup[playerPieceToPieceHash[piece]][position];
+}
+
+Point ChessLogic::getColumnAndRow(int index)
+{
+    int row = int(index/ROW_COUNT);
+    int column = int(index%ROW_COUNT);
+    Point columnAndRow = {column,row};
+    return columnAndRow;
+}
+
+int ChessLogic::getIndex(Point pos)
+{
+    return (64 - ((pos.y * 8) + pos.x));
+}
+
+// Beautiful function to derive moves
+void ChessLogic::calculatePawnMoves()
+{
+    int j = 63;
+    for (int i = 63; i >= 0; i--) // Loops through all squares
+    {
+        bitboard_t currentBoard = {0};
+        int y = int(i/8); 
+        int x = int(i%8);
+        blackPawnPosition[i] = pawnPositions[j];
+    }
+}
+
 void ChessLogic::print_pieces_at_position()
 {
-    for (int i = 0; i < 64; i++)
+    for (int i = 0; i <= 64; i++)
     {
-        printf("%d", boardState[i]);
+        printf("%d  ", boardState[i]);
+        if (i % 8 == 0) printf("\n");
     }
 }
 
@@ -104,34 +138,3 @@ void ChessLogic::print_bitboard(bitboard_t value)
         }
     }
 }
-
-bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
-{
-    return pieceBitmapLookup[playerPieceToPieceHash[piece]][position];
-}
-
-Point ChessLogic::getColumnAndRow(int index)
-{
-    int row = int(index/ROW_COUNT);
-    int column = int(index%ROW_COUNT);
-    Point columnAndRow = {column,row};
-    return columnAndRow;
-}
-
-int ChessLogic::getIndex(Point pos)
-{
-    return (pos.y*8)+pos.x;
-}
-
- // Beautiful function to derive moves
-void ChessLogic::calculatePawnMoves()
- {
-    int j = 63;
-    for (int i = 63; i >= 0; i--) // Loops through all squares
-    {
-        bitboard_t currentBoard = {0};
-        int y = int(i/8); 
-        int x = int(i%8);
-        blackPawnPosition[i] = pawnPositions[j];
-    }
- }
