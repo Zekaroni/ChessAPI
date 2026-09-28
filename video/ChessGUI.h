@@ -4,28 +4,46 @@
 // NOTE: Everthing is top-left oriented
 class ChessBoard
 {
-public: // public FOR NOW
-    ChessLogic* internalChessLogic = nullptr;
-    int boardSize = 0;
-    int boardX;
-    int boardY;
-    int cellsPerRow;
-    int cellSize;
-    int boardFontSize;
-    int cursorPosition;
-    Texture2D pieceTextures[PIECE_TEXTURE_COUNT] = {};
-    bitboard_t currentHightlightBitboard;
-    
+private: // public FOR NOW
+    ChessLogic* _internalChessLogic = nullptr;
+    int         _boardSize = 0;
+    int         _boardX;
+    int         _boardY;
+    int         _cellsPerRow;
+    int         _cellSize;
+    int         _boardFontSize;
+    int         _cursorPosition;
+    Texture2D   _pieceTextures[PIECE_TEXTURE_COUNT] = {};
+    bitboard_t  _currentHighlightBitboard;
+
 public:
     ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int boardSize);
+
     
     // Setters
     void setBoardSize(int size);
     void setBoardPostion(int x, int y); // NOTE: Top-left
-    void setCurrentHighlightBitboard(bitboard_t bitboard);
+    void setCurrentHighlightBitboard(bitboard_t bitboard){_currentHighlightBitboard = bitboard;};
+    void boardSize(int size);
+    void boardX(int x)               { _boardX         = x; };
+    void boardY(int y)               { _boardY         = y; };
+    void cellsPerRow(int cellsPerRow){ _cellsPerRow    = cellsPerRow; };
+    void cellSize(int size)          { _cellSize       = size; };
+    void boardFontSize(int fontSize) { _boardFontSize  = fontSize; };
+    void cursorPosition(int position){ _cursorPosition = position; };
+    Texture2D* pieceTextures() { return _pieceTextures; } // this allows to assign to the array
     
     // Getters
-    int  getBoardSize();
+    int boardSize()      const { return _boardSize; };
+    int boardX()         const { return _boardX; };
+    int boardY()         const { return _boardY; };
+    int cellsPerRow()    const { return _cellsPerRow; };
+    int cellSize()       const { return _cellSize; };
+    int boardFontSize()  const { return _boardFontSize; };
+    int cursorPosition() const { return _cursorPosition; };
+    ChessLogic* internalChessLogic() const { return _internalChessLogic; };
+    const Texture2D* pieceTextures() const { return _pieceTextures; }
+    bitboard_t currentHighlightBitboard() const { return _currentHighlightBitboard; }
 
     void initPieceTextures(); // Stays in this class because each one has separte textures
 };
@@ -34,9 +52,9 @@ public:
 class ChessGUI
 {
 private:
-    int screenWidth;
-    int screenHeight;
-    std::vector<ChessBoard*> boards;
+    int _screenWidth;
+    int _screenHeight;
+    std::vector<ChessBoard*> _boards;
     
 public:
     ChessGUI(int screenWidth, int screenHeight);

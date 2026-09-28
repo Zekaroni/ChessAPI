@@ -4,26 +4,26 @@
 
 ChessBoard::ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int boardSize)
 {
-    internalChessLogic        = chessInstance;
-    ChessBoard::boardSize     = boardSize;
-    ChessBoard::boardX        = boardX;
-    ChessBoard::boardY        = boardY;
-    cellsPerRow               = 8;
-    cellSize                  = boardSize / 8;
-    ChessBoard::boardSize     = cellSize * 8;
-    boardFontSize             = boardSize/(cellSize * 3);
-    cursorPosition            = 0;
-    currentHightlightBitboard = (bitboard_t)0;
+    _internalChessLogic         = chessInstance;
+    _currentHighlightBitboard = (bitboard_t)0;
+    _boardSize      = boardSize;
+    _boardX         = boardX;
+    _boardY         = boardY;
+    _cellsPerRow    = 8;
+    _cellSize       = boardSize / 8;
+    _boardSize      = _cellSize * 8;
+    _boardFontSize  = boardSize/(_cellSize * 3);
+    _cursorPosition = 0;
 
     initPieceTextures();
 };
 
 void ChessBoard::setBoardSize(int size)
 {
-    ChessBoard::boardSize = size;
-    cellSize = boardSize / cellsPerRow;
-    boardSize = cellSize * cellsPerRow;
-    boardFontSize = boardSize/(cellsPerRow*6);
+    _boardSize = size;
+    _cellSize = _boardSize / _cellsPerRow;
+    _boardSize = _cellSize * _cellsPerRow;
+    _boardFontSize = _boardSize/(_cellsPerRow*6);
     initPieceTextures();
 }
 
@@ -32,47 +32,35 @@ void ChessBoard::setBoardSize(int size)
 
 void ChessBoard::setBoardPostion(int x, int y)
 {
-    ChessBoard::boardX = x;
-    ChessBoard::boardY = y;
+    _boardX = x;
+    _boardY = y;
 }
-
-// Getters
-
-int ChessBoard::getBoardSize()
-{
-    return ChessBoard::boardSize;
-};
 
 void ChessBoard::initPieceTextures()
 {
     Image img;
     std::string pathString;
-    bool unloadTextures = pieceTextures[0].id > 0;
+    bool unloadTextures = _pieceTextures[0].id > 0;
     
     for (int i = 0; i < PIECE_TEXTURE_COUNT/2;i++)
     {
         if (unloadTextures)
         {
-            UnloadTexture(pieceTextures[i]);
-            UnloadTexture(pieceTextures[i+6]);
-            pieceTextures[i] = {};
-            pieceTextures[i+6] = {};
+            UnloadTexture(_pieceTextures[i]);
+            UnloadTexture(_pieceTextures[i+6]);
+            _pieceTextures[i] = {};
+            _pieceTextures[i+6] = {};
         }
         pathString = std::string("./assets/images/") + CHESS_GLOBALS::INDEX_TO_FEN_LETTER[i+1] + ".png";
         img = LoadImage(pathString.c_str());
-        ImageResize  (&img,cellSize,cellSize);          // scale to board
-        pieceTextures[i+6] = LoadTextureFromImage(img); // black pieces
+        ImageResize  (&img,_cellSize,_cellSize);          // scale to board
+        _pieceTextures[i+6] = LoadTextureFromImage(img); // black pieces
         
         ImageColorInvert(&img);  // for white pieces
-        pieceTextures[i] = LoadTextureFromImage(img);
+        _pieceTextures[i] = LoadTextureFromImage(img);
         
         UnloadImage(img);
     }
-}
-
-void ChessBoard::setCurrentHighlightBitboard(bitboard_t bitboard)
-{
-    currentHightlightBitboard = bitboard;
 }
 
 
@@ -80,15 +68,15 @@ void ChessBoard::setCurrentHighlightBitboard(bitboard_t bitboard)
 
 ChessGUI::ChessGUI(int screenWidth,int screenHeight)
 {
-    ChessGUI::screenWidth        = screenWidth;
-    ChessGUI::screenHeight       = screenHeight;
+    _screenWidth        = screenWidth;
+    _screenHeight       = screenHeight;
     
     initalize();
 };
 
 void ChessGUI::addBoard(ChessBoard& board)
 {
-    boards.push_back(&board);
+    _boards.push_back(&board);
 }
 
 Point ChessGUI::getColumnAndRow(int index)
@@ -106,16 +94,16 @@ Point ChessGUI::getColumnAndRow(int index)
 
 void ChessGUI::renderBoard(ChessBoard& board)
 {
-    DrawRectangle(board.boardX, board.boardY, board.boardSize, board.boardSize, *CHESS_GLOBALS::COLORS::PLAYERS[WHITESIDE]);
-    for(int j = 0; j < board.cellsPerRow; j++)
+    DrawRectangle(board.boardX(), board.boardY(), board.boardSize(), board.boardSize(), *CHESS_GLOBALS::COLORS::PLAYERS[WHITESIDE]);
+    for(int j = 0; j < board.cellsPerRow(); j++)
     {
-        for (int i = 0; i < board.cellsPerRow / 2; i++)
+        for (int i = 0; i < board.cellsPerRow() / 2; i++)
         {
             DrawRectangle(
-                board.boardX + (i * board.cellSize * 2) + ((j % 2 == 0) ? board.cellSize : 0),
-                board.boardY + (j * board.cellSize),
-                board.cellSize,
-                board.cellSize,
+                board.boardX() + (i * board.cellSize() * 2) + ((j % 2 == 0) ? board.cellSize() : 0),
+                board.boardY() + (j * board.cellSize()),
+                board.cellSize(),
+                board.cellSize(),
                 *CHESS_GLOBALS::COLORS::PLAYERS[BLACKSIDE]
             );
         }
@@ -124,24 +112,24 @@ void ChessGUI::renderBoard(ChessBoard& board)
 
 void ChessGUI::renderFileRankText(ChessBoard& board)
 {
-    for(int j = 0; j < board.cellsPerRow; j++)
+    for(int j = 0; j < board.cellsPerRow(); j++)
     {
         DrawText(
-            TextFormat("%d", board.cellsPerRow-j),
-            board.boardX,
-            board.boardY + (j * board.cellSize),
-            board.boardFontSize,
+            TextFormat("%d", board.cellsPerRow()-j),
+            board.boardX(),
+            board.boardY() + (j * board.cellSize()),
+            board.boardFontSize(),
             *CHESS_GLOBALS::COLORS::PLAYERS[!(j % 2)]
         );
-        if (j == (board.cellsPerRow - 1))
+        if (j == (board.cellsPerRow() - 1))
         {
-            for (int i = 0; i < board.cellsPerRow; i++)
+            for (int i = 0; i < board.cellsPerRow(); i++)
             {
                 DrawText(
                     TextFormat("%c", CHESS_GLOBALS::FILES::STRING[i]),
-                    board.boardX + (i * board.cellSize) + (board.cellSize) - (board.boardFontSize),
-                    board.boardY + (j * board.cellSize) + (board.cellSize) - (board.boardFontSize),
-                    board.boardFontSize,
+                    board.boardX() + (i * board.cellSize()) + (board.cellSize()) - (board.boardFontSize()),
+                    board.boardY() + (j * board.cellSize()) + (board.cellSize()) - (board.boardFontSize()),
+                    board.boardFontSize(),
                     *CHESS_GLOBALS::COLORS::PLAYERS[(i % 2)]
                 );
             }
@@ -156,15 +144,15 @@ void ChessGUI::renderPieces(ChessBoard& board)
     piece_t currentPiece;
     for (int i = 63; i >= 0; i--)
     {
-        currentPiece = board.internalChessLogic->boardState[63-i];
+        currentPiece = board.internalChessLogic()->boardState[63-i];
         if (currentPiece != 0)
         {
             position = getColumnAndRow(i);
             
             DrawTexture(
-                board.pieceTextures[board.internalChessLogic->playerPieceToTextureIndexHash[currentPiece]],
-                board.boardX + (board.cellSize * position.x),
-                board.boardY + (board.cellSize * position.y),
+                board.pieceTextures()[board.internalChessLogic()->playerPieceToTextureIndexHash[currentPiece]],
+                board.boardX() + (board.cellSize() * position.x),
+                board.boardY() + (board.cellSize() * position.y),
                 WHITE
             );
         }
@@ -173,35 +161,35 @@ void ChessGUI::renderPieces(ChessBoard& board)
 
 void ChessGUI::highlightCursor(ChessBoard& board)
 {
-    if (board.cursorPosition < 64)
+    if (board.cursorPosition() < 64)
     {
-        Point cursor = getColumnAndRow(board.cursorPosition);
+        Point cursor = getColumnAndRow(board.cursorPosition());
         DrawRectangle(
-            board.boardX + ((board.cellsPerRow - cursor.x - 1) * board.cellSize),
-            board.boardY + ((board.cellsPerRow - cursor.y - 1) * board.cellSize),
-            board.cellSize,
-            board.cellSize,
+            board.boardX() + ((board.cellsPerRow() - cursor.x - 1) * board.cellSize()),
+            board.boardY() + ((board.cellsPerRow() - cursor.y - 1) * board.cellSize()),
+            board.cellSize(),
+            board.cellSize(),
             CHESS_GLOBALS::COLORS::CURSOR
         );
-        board.internalChessLogic->loggingHelper.streamToTerminal(std::to_string(board.cursorPosition) + " ");
+        board.internalChessLogic()->loggingHelper.streamToTerminal(std::to_string(board.cursorPosition()) + " ");
     }
 }
 
 void ChessGUI::hightlightCurrentBitboardCells(ChessBoard& board)
 {
-    if (board.cursorPosition < 64)
+    if (board.cursorPosition() < 64)
     {
         Point currentPosition;
         for (int i = 63; i >= 0; i--)
         {
-            if ((board.currentHightlightBitboard >> i) & 1)
+            if ((board.currentHighlightBitboard() >> i) & 1)
             {
                 currentPosition = getColumnAndRow(i);
                 DrawRectangle(
-                    board.boardX + ((board.cellsPerRow - currentPosition.x - 1) * board.cellSize),
-                    board.boardY + ((board.cellsPerRow - currentPosition.y - 1) * board.cellSize),
-                    board.cellSize,
-                    board.cellSize,
+                    board.boardX() + ((board.cellsPerRow() - currentPosition.x - 1) * board.cellSize()),
+                    board.boardY() + ((board.cellsPerRow() - currentPosition.y - 1) * board.cellSize()),
+                    board.cellSize(),
+                    board.cellSize(),
                     CHESS_GLOBALS::COLORS::HIGHLIGHT
                 );
             }
@@ -212,7 +200,7 @@ void ChessGUI::hightlightCurrentBitboardCells(ChessBoard& board)
 void ChessGUI::initalize()
 {
     SetTraceLogLevel(LOG_NONE);
-    InitWindow(screenWidth, screenHeight, "Chess");
+    InitWindow(_screenWidth, _screenHeight, "Chess");
     Image windowIcon = LoadImage("./assets/images/icon.png");
     SetWindowIcon(windowIcon);
     UnloadImage(windowIcon);
@@ -221,7 +209,7 @@ void ChessGUI::initalize()
 void ChessGUI::handleInputs(ChessBoard& board)
 {
     int currentKey = GetKeyPressed();    
-    int tempCursorPosition = board.cursorPosition;
+    int tempCursorPosition = board.cursorPosition();
     
     switch(currentKey)
     {
@@ -232,23 +220,23 @@ void ChessGUI::handleInputs(ChessBoard& board)
             tempCursorPosition -= 8;
         break;
         case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_RIGHT:
-        if (board.cursorPosition % 8 != 0) tempCursorPosition--;
+        if (board.cursorPosition() % 8 != 0) tempCursorPosition--;
         break;
         case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_LEFT:
-        if (board.cursorPosition % 8 != 7) tempCursorPosition++;
+        if (board.cursorPosition() % 8 != 7) tempCursorPosition++;
         break;
     }
     if (
         tempCursorPosition >= 0 &&
         tempCursorPosition < 64 &&
-        tempCursorPosition != board.cursorPosition
+        tempCursorPosition != board.cursorPosition()
     )
     {
-        board.cursorPosition = tempCursorPosition;
-        piece_t piece = board.internalChessLogic->boardState[board.cursorPosition];
+        board.cursorPosition(tempCursorPosition);
+        piece_t piece = board.internalChessLogic()->boardState[board.cursorPosition()];
         // std::cout << (int)piece << std::endl;
         board.setCurrentHighlightBitboard(
-            board.internalChessLogic->getPiecePositionBitboard(piece,board.cursorPosition)
+            board.internalChessLogic()->getPiecePositionBitboard(piece,board.cursorPosition())
         );
     }
 }
@@ -261,21 +249,21 @@ void ChessGUI::handleMouse(ChessBoard& board)
     int mouse_boardX = 0;
     int mouse_boardY = 0;
     
-    if (screenX < board.boardX + board.boardSize && screenX >= 0 + board.boardX &&
-        screenY < board.boardY + board.boardSize && screenY >= 0 + board.boardY)
+    if (screenX < board.boardX() + board.boardSize() && screenX >= 0 + board.boardX() &&
+        screenY < board.boardY() + board.boardSize() && screenY >= 0 + board.boardY())
     {
-        mouse_boardX = ((screenX-board.boardX) / board.cellSize) + 1;
-        mouse_boardY = (screenY-board.boardY) / board.cellSize;
+        mouse_boardX = ((screenX-board.boardX()) / board.cellSize()) + 1;
+        mouse_boardY = (screenY-board.boardY()) / board.cellSize();
         
-        board.cursorPosition = board.internalChessLogic->getIndex({mouse_boardX,mouse_boardY});
+        board.cursorPosition(board.internalChessLogic()->getIndex({mouse_boardX,mouse_boardY}));
         
-        piece_t piece = board.internalChessLogic->boardState[board.cursorPosition];
+        piece_t piece = board.internalChessLogic()->boardState[board.cursorPosition()];
         board.setCurrentHighlightBitboard(
-            board.internalChessLogic->getLegalMovesBitboard(piece,board.cursorPosition)
+            board.internalChessLogic()->getLegalMovesBitboard(piece,board.cursorPosition())
         );
     } else
     {
-        board.cursorPosition = 64;
+        board.cursorPosition(64);
     }
 }
 
@@ -286,9 +274,9 @@ void ChessGUI::runGUI()
         BeginDrawing();
         ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
 
-        if (!boards.empty())
+        if (!_boards.empty())
         {
-            for (ChessBoard* board: boards)
+            for (ChessBoard* board: _boards)
             {
                 handleInputs(*board);
                 handleMouse(*board);
