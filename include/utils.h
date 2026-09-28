@@ -8,10 +8,10 @@
 #include <fstream>
 #include <vector>
 
-
 using bitboard_t  = std::uint64_t;
 using piece_t     = uint8_t;
 
+#include "logging.h"
 
 #define WHITESIDE    0
 #define BLACKSIDE    1
@@ -20,6 +20,8 @@ using piece_t     = uint8_t;
 #define ROW_COUNT    8
 #define COLUMN_COUNT 8
 #define PIECE_TEXTURE_COUNT 12
+
+Logging loggingHelper = Logging(); // GLOBAL used for logging
 
 namespace CHESS_GLOBALS
 {

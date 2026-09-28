@@ -4,8 +4,6 @@
 
 ChessBoard::ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int boardSize)
 {
-    _internalChessLogic         = chessInstance;
-    _currentHighlightBitboard = (bitboard_t)0;
     _boardSize      = boardSize;
     _boardX         = boardX;
     _boardY         = boardY;
@@ -14,6 +12,8 @@ ChessBoard::ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int bo
     _boardSize      = _cellSize * 8;
     _boardFontSize  = boardSize/(_cellSize * 3);
     _cursorPosition = 0;
+    _internalChessLogic       = chessInstance;
+    _currentHighlightBitboard = (bitboard_t)0;
 
     initPieceTextures();
 };
@@ -68,8 +68,9 @@ void ChessBoard::initPieceTextures()
 
 ChessGUI::ChessGUI(int screenWidth,int screenHeight)
 {
-    _screenWidth        = screenWidth;
-    _screenHeight       = screenHeight;
+    _screenWidth  = screenWidth;
+    _screenHeight = screenHeight;
+    _hasChange    = true; // to render first frame
     
     initalize();
 };
@@ -77,6 +78,23 @@ ChessGUI::ChessGUI(int screenWidth,int screenHeight)
 void ChessGUI::addBoard(ChessBoard& board)
 {
     _boards.push_back(&board);
+}
+
+void ChessGUI::initalize()
+{
+    SetTargetFPS(60);
+    SetTraceLogLevel(LOG_NONE);
+
+    InitWindow(_screenWidth, _screenHeight, "Chess");
+
+    // NOTE:
+    //     this creates a cache for us to draw to so we dont have to render
+    //     the image every frame, but rather only when there is a cahnge
+    _boardFrameCache = LoadRenderTexture(_screenWidth, _screenHeight);
+
+    Image windowIcon = LoadImage("./assets/images/icon.png");
+    SetWindowIcon(windowIcon);
+    UnloadImage(windowIcon);
 }
 
 Point ChessGUI::getColumnAndRow(int index)
@@ -109,6 +127,26 @@ void ChessGUI::renderBoard(ChessBoard& board)
         }
     }
 };
+
+void ChessGUI::renderBoardCache()
+{
+    _totalFrames++;
+    BeginTextureMode(_boardFrameCache);
+    ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
+    for (ChessBoard* board: _boards)
+    {
+        loggingHelper.streamToTerminal( // spaces at the end for padding
+            "Updating render cache. Total frames rendered: " + std::to_string(_totalFrames) + "         "
+        );
+        renderBoard(*board);
+        renderFileRankText(*board);
+        highlightCursor(*board);
+        hightlightCurrentBitboardCells(*board);
+        renderPieces(*board);
+    }
+    EndTextureMode();
+    _hasChange = false;
+}
 
 void ChessGUI::renderFileRankText(ChessBoard& board)
 {
@@ -171,7 +209,7 @@ void ChessGUI::highlightCursor(ChessBoard& board)
             board.cellSize(),
             CHESS_GLOBALS::COLORS::CURSOR
         );
-        board.internalChessLogic()->loggingHelper.streamToTerminal(std::to_string(board.cursorPosition()) + " ");
+        // loggingHelper.streamToTerminal(std::to_string(board.cursorPosition()) + " ");
     }
 }
 
@@ -195,15 +233,6 @@ void ChessGUI::hightlightCurrentBitboardCells(ChessBoard& board)
             }
         }
     }
-}
-
-void ChessGUI::initalize()
-{
-    SetTraceLogLevel(LOG_NONE);
-    InitWindow(_screenWidth, _screenHeight, "Chess");
-    Image windowIcon = LoadImage("./assets/images/icon.png");
-    SetWindowIcon(windowIcon);
-    UnloadImage(windowIcon);
 }
 
 void ChessGUI::handleInputs(ChessBoard& board)
@@ -248,50 +277,74 @@ void ChessGUI::handleMouse(ChessBoard& board)
     
     int mouse_boardX = 0;
     int mouse_boardY = 0;
+
+    int mouseCursorPosition = 0;
     
-    if (screenX < board.boardX() + board.boardSize() && screenX >= 0 + board.boardX() &&
-        screenY < board.boardY() + board.boardSize() && screenY >= 0 + board.boardY())
+    // moved this outside for better readability
+    bool insideBoard = screenX < board.boardX() + board.boardSize() && screenX >= 0 + board.boardX() &&
+                       screenY < board.boardY() + board.boardSize() && screenY >= 0 + board.boardY();
+    
+    if (!insideBoard)
     {
-        mouse_boardX = ((screenX-board.boardX()) / board.cellSize()) + 1;
-        mouse_boardY = (screenY-board.boardY()) / board.cellSize();
-        
-        board.cursorPosition(board.internalChessLogic()->getIndex({mouse_boardX,mouse_boardY}));
-        
-        piece_t piece = board.internalChessLogic()->boardState[board.cursorPosition()];
-        board.setCurrentHighlightBitboard(
-            board.internalChessLogic()->getLegalMovesBitboard(piece,board.cursorPosition())
-        );
-    } else
-    {
-        board.cursorPosition(64);
+        if (board.cursorPosition() != 64)
+        {
+            board.cursorPosition(64);
+            _hasChange = true;
+        }
+        return;
     }
+    mouse_boardX = ((screenX-board.boardX()) / board.cellSize()) + 1;
+    mouse_boardY = (screenY-board.boardY()) / board.cellSize();
+    mouseCursorPosition = board.internalChessLogic()->getIndex({mouse_boardX, mouse_boardY});
+
+    if (board.cursorPosition() == mouseCursorPosition) { return; }
+
+    board.cursorPosition(mouseCursorPosition);
+    piece_t piece = board.internalChessLogic()->boardState[board.cursorPosition()];
+    board.setCurrentHighlightBitboard(
+        board.internalChessLogic()->getLegalMovesBitboard(piece,board.cursorPosition())
+    );
+    _hasChange = true;
 }
 
 void ChessGUI::runGUI()
 {
     while (!WindowShouldClose())
     {
-        BeginDrawing();
-        ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
-
+        
         if (!_boards.empty())
         {
             for (ChessBoard* board: _boards)
             {
-                handleInputs(*board);
                 handleMouse(*board);
-                
-                renderBoard(*board);
-                renderFileRankText(*board);
-                
-                highlightCursor(*board);
-                hightlightCurrentBitboardCells(*board);
-                
-                renderPieces(*board);
             }
+
+            if (_hasChange) renderBoardCache();
+
+            BeginDrawing();
+
+            Rectangle source = {
+                0.0f, 0.0f,
+                (float)_boardFrameCache.texture.width,
+                -(float)_boardFrameCache.texture.height
+            };
+            Rectangle destination = {
+                0.0f, 0.0f,
+                (float)_screenWidth,
+                (float)_screenHeight
+            };
+
+            DrawTexturePro(
+                _boardFrameCache.texture,
+                source,
+                destination,
+                {0.0f,0.0f},
+                0.0f,
+                WHITE
+            );
+    
+            EndDrawing();
         }
-        
-        EndDrawing();
     }
     CloseWindow();
 };
