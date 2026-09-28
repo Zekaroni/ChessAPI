@@ -13,7 +13,7 @@
 #     -Wl,--strip-all \
 #     $(pkg-config --cflags --libs raylib)
 
-g++ main.cpp -o ./main.exe \
+g++ main.cpp -o ./bin/main.exe \
     -O2 \
     $(pkg-config --cflags --libs raylib)
 

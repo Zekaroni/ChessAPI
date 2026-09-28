@@ -104,9 +104,9 @@ void ChessGUI::cachePieceTextures()
         }
         pathString = std::string("./assets/images/") + CHESS_GLOBALS::INDEX_TO_FEN_LETTER[i+1] + ".png";
         img = LoadImage(pathString.c_str());
-        _pieceTextures[i+6] = LoadTextureFromImage(img); // black pieces
+        _pieceTextures[i] = LoadTextureFromImage(img); // black pieces
         ImageColorInvert(&img);  // for white pieces
-        _pieceTextures[i] = LoadTextureFromImage(img);
+        _pieceTextures[i+6] = LoadTextureFromImage(img);
         UnloadImage(img);
     }
 }

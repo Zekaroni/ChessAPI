@@ -2,3 +2,5 @@
 *.exe
 debug/*
 bin/*
+!/debug/debug
+!/bin/bin
