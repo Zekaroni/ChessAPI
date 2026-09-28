@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <fstream>
 #include <vector>
+#include <chrono>
 
 using bitboard_t  = std::uint64_t;
 using piece_t     = uint8_t;

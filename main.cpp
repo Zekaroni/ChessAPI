@@ -2,6 +2,9 @@
 
 int main()
 {
+    // BUG: It's not a bug in the traditional sense but the window takes
+    //      a while compared to what it used to when first opening.
+
     int screenWidth  = 1200;
     int screenHeight = 900;
     int boardSize    = 400;
