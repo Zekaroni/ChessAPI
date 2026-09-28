@@ -10,6 +10,8 @@ This is a passion project sparked by [@Pineapple0Alex ](https://www.github.com/P
   - [Framework](#framework)
     - [GUI](#gui)
       - [ChessBoard](#chessboard)
+        - [ChessBoard](#chessboard-1)
+        - [setBoardSize](#setboardsize)
       - [ChessGUI](#chessgui)
     - [Chess Logic](#chess-logic)
       - [ChessLogic](#chesslogic)
@@ -65,10 +67,16 @@ public:
 };
 ```
 Individual methods:
+##### ChessBoard
 ```cpp
 ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int boardSize);
 ```
 This is the constructor. It takes in a `ChessLogic*` which points to an instance of a chess game, the absolute `boardX` and `boardY` positions used for drawing the board, and the `boardSize` which determines how big the board is.
+##### setBoardSize
+```cpp
+void setBoardSize(int size);
+```
+This method sets the board size with the passed parameter `size` and can be dynamically set throughout runtime.
 #### ChessGUI
 Literal structure:
 ```cpp
@@ -105,7 +113,6 @@ class ChessLogic
 public:
     bitboard_t occupiedBitboards[2] = {0};
     bitboard_t attackingSquares [2] = {0};
-
     static constexpr bitboard_t whitePawnPositions[64] = {...};
     static constexpr bitboard_t blackPawnPositions[64] = {...};
     static constexpr bitboard_t knightPositions[64]    = {...};
@@ -113,25 +120,10 @@ public:
     static constexpr bitboard_t rookPositions  [64]    = {...};
     static constexpr bitboard_t queenPositions [64]    = {...};
     static constexpr bitboard_t kingPositions  [64]    = {...};
-   
-    static constexpr piece_t playerPieceToPieceHash[16] = {
-        CHESS_GLOBALS::PIECES::EMPTY,CHESS_GLOBALS::PIECES::PAWN,CHESS_GLOBALS::PIECES::KNIGHT,CHESS_GLOBALS::PIECES::BISHOP,
-        CHESS_GLOBALS::PIECES::ROOK,CHESS_GLOBALS::PIECES::QUEEN,CHESS_GLOBALS::PIECES::KING, CHESS_GLOBALS::PIECES::EMPTY, CHESS_GLOBALS::PIECES::EMPTY,
-        CHESS_GLOBALS::PIECES::PAWN,CHESS_GLOBALS::PIECES::KNIGHT,CHESS_GLOBALS::PIECES::BISHOP,CHESS_GLOBALS::PIECES::ROOK,
-        CHESS_GLOBALS::PIECES::QUEEN,CHESS_GLOBALS::PIECES::KING,CHESS_GLOBALS::PIECES::EMPTY
-    };
-    
-    static constexpr piece_t playerPieceToPlayerHash[16] = {
-        NULLSIDE,  WHITESIDE, WHITESIDE, WHITESIDE, WHITESIDE, WHITESIDE, WHITESIDE, 
-        NULLSIDE,  NULLSIDE,  BLACKSIDE, BLACKSIDE, BLACKSIDE, BLACKSIDE, BLACKSIDE,
-        BLACKSIDE, NULLSIDE
-    };
-    
-    static constexpr uint8_t playerPieceToTextureIndexHash [16] = {
-        255, 0, 1, 2, 3, 4, 5, 255, 255, 6, 7, 8, 9, 10, 11, 255
-    };
-    
-    ChessLogic(); // Constructor
+    static constexpr piece_t playerPieceToPieceHash[16] = {...};
+    static constexpr piece_t playerPieceToPlayerHash[16] = {...};
+    static constexpr uint8_t playerPieceToTextureIndexHash [16] = {...};
+    ChessLogic();
     bool currentPlayer;
     void calculateBlackPawnMoves();
     void loadFEN(std::string fenString);
