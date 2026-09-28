@@ -4,13 +4,13 @@ int main()
 {
     int screenWidth  = 900;
     int screenHeight = 900;
+
+
     int boardSize = 500;
     ChessLogic chess;
     ChessGUI chessGUI(&chess, screenWidth, screenHeight);
 
-    // BUG: Changing size and scaling piece images is broken
-    // chessGUI.setBoardSize(boardSize);
-    boardSize = chessGUI.getBoardSize();
+    chessGUI.setBoardSize(boardSize);
     int boardX    = (screenWidth - boardSize) / 2;
     int boardY    = (screenWidth - boardSize) / 2;
     chessGUI.setBoardPostion(boardX,boardY);

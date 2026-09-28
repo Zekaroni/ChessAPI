@@ -17,13 +17,14 @@ private:
     int boardFontSize;
     int cursorPosition;
 
-    Texture2D pieceTextures[PIECE_TEXTURE_COUNT];
+    Texture2D pieceTextures[PIECE_TEXTURE_COUNT] = {};
 
     bitboard_t currentHightlightBitboard;
     void hightlightCurrentBitboardCells();
 
 public:
     ChessGUI(ChessLogic* chessInstance, int screenWidth, int screenHeight);
+    void initalize();
     void highlightCursor();
     void setBoardSize(int size);
     void setBoardPostion(int x, int y); // NOTE: Top-left
