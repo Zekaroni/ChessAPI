@@ -2,7 +2,7 @@
 
 ChessLogic::ChessLogic()
 {
-    calculateBlackPawnMoves();
+    // calculateBlackPawnMoves();
     loadFEN(CHESS_GLOBALS::STARTING_FEN_STRING);
     currentPlayer = WHITESIDE;
     
@@ -39,7 +39,26 @@ void ChessLogic::loadFEN(std::string fenString)
             currentPlayer = fenString[i+1] == 'b';
             break;
         }
-    }   
+    }  
+    occupiedBitboards[0] = 0;
+    occupiedBitboards[1] = 0;
+    generateBlackAndWhiteOccupiedBitboards();
+}
+
+void ChessLogic::generateBlackAndWhiteOccupiedBitboards()
+{
+    piece_t currentPiece = 0;
+    for (int i = 63; i >= 0 ; i--)
+    {
+        currentPiece = boardState[i];
+        if(boardState[i])
+        {
+            occupiedBitboards[playerPieceToPlayerHash[currentPiece]] |= (bitboard_t)1 << i;
+        }
+    }
+    print_bitboard(occupiedBitboards[0]);
+    std::cout << "\n";
+    print_bitboard(occupiedBitboards[1]);
 }
 
 piece_t ChessLogic::fenToPiece(char fenPiece)
@@ -140,6 +159,47 @@ int ChessLogic::getIndex(Point pos)
 {
     return (64 - ((pos.y * 8) + pos.x));
 }
+
+bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
+{
+    bitboard_t legalMoves = {0};
+    bitboard_t occupiedBitboard = occupiedBitboards[0] | occupiedBitboards [1];
+    switch (playerPieceToPieceHash[piece])
+    {
+        case CHESS_GLOBALS::PIECES::PAWN:
+            if (piece == CHESS_GLOBALS::PLAYER_PIECES::WHITE_PAWN)
+            {
+                // for white
+                legalMoves = whitePawnPositions[position];
+            } else {
+                legalMoves = blackPawnPositions[position];
+                // for black
+                //legalMoves = blackPawnPositions[position]&occupiedBitboards[1]; 
+            }
+        break;
+        case CHESS_GLOBALS::PIECES::KNIGHT:
+            legalMoves = knightPositions[position] & ~occupiedBitboards[playerPieceToPlayerHash[piece]];
+        break;
+        case CHESS_GLOBALS::PIECES::BISHOP:
+            legalMoves = bishopPositions[position];
+        break;
+        case CHESS_GLOBALS::PIECES::ROOK:
+            legalMoves = rookPositions[position];
+        break;
+        case CHESS_GLOBALS::PIECES::QUEEN:
+            legalMoves = queenPositions[position];
+        break;
+        case CHESS_GLOBALS::PIECES::KING:
+            legalMoves = kingPositions[position]&
+                         ~occupiedBitboards[playerPieceToPlayerHash[piece]];
+        break;
+        default:
+            break;
+    }
+    attackingSquares[playerPieceToPlayerHash[piece]] |= legalMoves;
+    return legalMoves;
+} 
+
 
 // Beautiful function to derive moves
  void ChessLogic::calculateBlackPawnMoves()
