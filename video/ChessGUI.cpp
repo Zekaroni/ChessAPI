@@ -52,23 +52,41 @@ void ChessGUI::addBoard(ChessBoard& board)
 
 void ChessGUI::initalize()
 {
-    SetTargetFPS(60);
     SetTraceLogLevel(LOG_NONE);
+    SetTargetFPS(60);
 
     InitWindow(_screenWidth, _screenHeight, "Chess");
 
     // NOTE:
     //     this creates a cache for us to draw to so we dont have to render
     //     the image every frame, but rather only when there is a cahnge
-    _boardFrameCache = LoadRenderTexture(_screenWidth, _screenHeight);
+    _boardFrameCache   = LoadRenderTexture(_screenWidth, _screenHeight);
+
+    _biggestDimesion = std::max({_screenWidth, _screenHeight});
+    _maxCellSize  = _biggestDimesion / ROW_COUNT;
+    _maxBoardSize = _maxCellSize * ROW_COUNT;
+    _boardTextureCache = LoadRenderTexture(_maxBoardSize, _maxBoardSize);
 
     Image windowIcon = LoadImage("./assets/images/icon.png");
     SetWindowIcon(windowIcon);
     UnloadImage(windowIcon);
 
     cachePieceTextures();
+    cacheBoardTexture();
 }
 
+Point ChessGUI::getColumnAndRow(int index)
+{
+    int row    = int(index / ROW_COUNT);
+    int column = int(index % ROW_COUNT);
+    Point columnAndRow = {column,row};
+    return columnAndRow;
+}
+
+// Render Methods
+// NOTE: I tried to order them in order of least to greatest "layer"
+//       meaning the first one is the first to render and the next
+//       will render over it.
 void ChessGUI::cachePieceTextures()
 {
     Image img;
@@ -93,36 +111,25 @@ void ChessGUI::cachePieceTextures()
     }
 }
 
-Point ChessGUI::getColumnAndRow(int index)
+void ChessGUI::cacheBoardTexture()
 {
-    int row    = int(index / ROW_COUNT);
-    int column = int(index % ROW_COUNT);
-    Point columnAndRow = {column,row};
-    return columnAndRow;
-}
-
-// Render Methods
-// NOTE: I tried to order them in order of least to greatest "layer"
-//       meaning the first one is the first to render and the next
-//       will render over it.
-
-void ChessGUI::renderBoard(ChessBoard& board)
-{
-    DrawRectangle(board.boardX(), board.boardY(), board.boardSize(), board.boardSize(), *CHESS_GLOBALS::COLORS::PLAYERS[WHITESIDE]);
-    for(int j = 0; j < board.cellsPerRow(); j++)
+    BeginTextureMode(_boardTextureCache);
+    ClearBackground(CHESS_GLOBALS::COLORS::WHITE_SIDE);
+    for(int j = 0; j < ROW_COUNT; j++)
     {
-        for (int i = 0; i < board.cellsPerRow() / 2; i++)
+        for (int i = 0; i < COLUMN_COUNT / 2; i++)
         {
             DrawRectangle(
-                board.boardX() + (i * board.cellSize() * 2) + ((j % 2 == 0) ? board.cellSize() : 0),
-                board.boardY() + (j * board.cellSize()),
-                board.cellSize(),
-                board.cellSize(),
+                (i * _maxCellSize * 2) + ((j % 2 == 0) ? _maxCellSize : 0),
+                (j * _maxCellSize),
+                _maxCellSize,
+                _maxCellSize,
                 *CHESS_GLOBALS::COLORS::PLAYERS[BLACKSIDE]
             );
         }
     }
-};
+    EndTextureMode();
+}
 
 void ChessGUI::renderBoardCache()
 {
@@ -143,6 +150,30 @@ void ChessGUI::renderBoardCache()
     EndTextureMode();
     _hasChange = false;
 }
+
+
+void ChessGUI::renderBoard(ChessBoard& board)
+{
+    Rectangle source = {
+        0.0f, 0.0f,
+        (float)_boardTextureCache.texture.width,
+        -(float)_boardTextureCache.texture.height
+    };
+    Rectangle destination = {
+        (float)board.boardX(), (float)board.boardY(),
+        (float)board.boardSize(),
+        (float)board.boardSize()
+    };
+
+    DrawTexturePro(
+        _boardTextureCache.texture,
+        source,
+        destination,
+        {0.0f,0.0f},
+        0.0f,
+        WHITE
+    );
+};
 
 void ChessGUI::renderFileRankText(ChessBoard& board)
 {

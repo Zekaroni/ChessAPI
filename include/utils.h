@@ -45,7 +45,7 @@ namespace CHESS_GLOBALS
 
     const std::string STARTING_FEN_STRING = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     const char INDEX_TO_FEN_LETTER[8]     = {' ', 'p', 'n', 'b', 'r', 'q', 'k'};
-
+    const int TOTAL_CELLS = 64;
 
     enum PIECES
     {
