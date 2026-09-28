@@ -11,6 +11,7 @@
 
 using bitboard_t  = std::uint64_t;
 using piece_t     = uint8_t;
+using Clock = std::chrono::steady_clock;
 
 #include "logging.h"
 

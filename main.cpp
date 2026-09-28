@@ -4,6 +4,7 @@ int main()
 {
     // BUG: It's not a bug in the traditional sense but the window takes
     //      a while compared to what it used to when first opening.
+    if (loggingHelper.logStartupTime()) loggingHelper.startStartupTimer();
 
     int screenWidth  = 1200;
     int screenHeight = 900;
@@ -41,6 +42,13 @@ int main()
     chessGUI.addBoard(board2);
     chessGUI.addBoard(board3);
     chessGUI.addBoard(board4);
+
+
+    if (loggingHelper.logStartupTime())
+    {
+        loggingHelper.endStartupTimer();
+        loggingHelper.logStartupTimer(false);
+    }
 
     chessGUI.runGUI();
 

@@ -134,9 +134,6 @@ void ChessGUI::renderBoardCache()
     ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
     for (ChessBoard* board: _boards)
     {
-        loggingHelper.streamToTerminal( // spaces at the end for padding
-            "Updating render cache. Total frames rendered: " + std::to_string(_totalFrames) + "         "
-        );
         renderBoard(*board);
         renderFileRankText(*board);
         highlightCursor(*board);
