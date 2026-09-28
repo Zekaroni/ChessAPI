@@ -13,7 +13,6 @@ private:
     int _boardFontSize;
     int _cursorPosition;
     ChessLogic* _internalChessLogic = nullptr;
-    Texture2D   _pieceTextures[PIECE_TEXTURE_COUNT] = {};
     bitboard_t  _currentHighlightBitboard;
 
 public:
@@ -30,7 +29,6 @@ public:
     void cellSize(int size)          { _cellSize       = size; };
     void boardFontSize(int fontSize) { _boardFontSize  = fontSize; };
     void cursorPosition(int position){ _cursorPosition = position; };
-    Texture2D* pieceTextures() { return _pieceTextures; } // this allows to assign to the array
     
     // Getters
     int boardSize()      const { return _boardSize; };
@@ -41,10 +39,7 @@ public:
     int boardFontSize()  const { return _boardFontSize; };
     int cursorPosition() const { return _cursorPosition; };
     ChessLogic* internalChessLogic() const { return _internalChessLogic; };
-    const Texture2D* pieceTextures() const { return _pieceTextures; }
     bitboard_t currentHighlightBitboard() const { return _currentHighlightBitboard; }
-
-    void initPieceTextures(); // Stays in this class because each one has separte textures
 };
 
 
@@ -56,6 +51,7 @@ private:
     std::vector<ChessBoard*> _boards;
     bool _hasChange;
     RenderTexture2D _boardFrameCache;
+    Texture2D   _pieceTextures[PIECE_TEXTURE_COUNT] = {};
 
     uint64_t _totalFrames = 0; // for debug purposes
     
@@ -66,6 +62,7 @@ public:
 
     // Add a board to the GUI
     void addBoard(ChessBoard& board);
+    void cachePieceTextures();
 
     // Input
     void handleInputs(ChessBoard& board);

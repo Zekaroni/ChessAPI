@@ -10,12 +10,10 @@ ChessBoard::ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int bo
     _cellsPerRow    = 8;
     _cellSize       = boardSize / 8;
     _boardSize      = _cellSize * 8;
-    _boardFontSize  = boardSize/(_cellSize * 3);
+    _boardFontSize  = _cellSize / 4;
     _cursorPosition = 0;
     _internalChessLogic       = chessInstance;
     _currentHighlightBitboard = (bitboard_t)0;
-
-    initPieceTextures();
 };
 
 void ChessBoard::setBoardSize(int size)
@@ -24,7 +22,6 @@ void ChessBoard::setBoardSize(int size)
     _cellSize = _boardSize / _cellsPerRow;
     _boardSize = _cellSize * _cellsPerRow;
     _boardFontSize = _boardSize/(_cellsPerRow*6);
-    initPieceTextures();
 }
 
 
@@ -34,33 +31,6 @@ void ChessBoard::setBoardPostion(int x, int y)
 {
     _boardX = x;
     _boardY = y;
-}
-
-void ChessBoard::initPieceTextures()
-{
-    Image img;
-    std::string pathString;
-    bool unloadTextures = _pieceTextures[0].id > 0;
-    
-    for (int i = 0; i < PIECE_TEXTURE_COUNT/2;i++)
-    {
-        if (unloadTextures)
-        {
-            UnloadTexture(_pieceTextures[i]);
-            UnloadTexture(_pieceTextures[i+6]);
-            _pieceTextures[i] = {};
-            _pieceTextures[i+6] = {};
-        }
-        pathString = std::string("./assets/images/") + CHESS_GLOBALS::INDEX_TO_FEN_LETTER[i+1] + ".png";
-        img = LoadImage(pathString.c_str());
-        ImageResize  (&img,_cellSize,_cellSize);          // scale to board
-        _pieceTextures[i+6] = LoadTextureFromImage(img); // black pieces
-        
-        ImageColorInvert(&img);  // for white pieces
-        _pieceTextures[i] = LoadTextureFromImage(img);
-        
-        UnloadImage(img);
-    }
 }
 
 
@@ -95,6 +65,32 @@ void ChessGUI::initalize()
     Image windowIcon = LoadImage("./assets/images/icon.png");
     SetWindowIcon(windowIcon);
     UnloadImage(windowIcon);
+
+    cachePieceTextures();
+}
+
+void ChessGUI::cachePieceTextures()
+{
+    Image img;
+    std::string pathString;
+    bool unloadTextures = _pieceTextures[0].id > 0;
+    
+    for (int i = 0; i < PIECE_TEXTURE_COUNT/2;i++)
+    {
+        if (unloadTextures)
+        {
+            UnloadTexture(_pieceTextures[i]);
+            UnloadTexture(_pieceTextures[i+6]);
+            _pieceTextures[i] = {};
+            _pieceTextures[i+6] = {};
+        }
+        pathString = std::string("./assets/images/") + CHESS_GLOBALS::INDEX_TO_FEN_LETTER[i+1] + ".png";
+        img = LoadImage(pathString.c_str());
+        _pieceTextures[i+6] = LoadTextureFromImage(img); // black pieces
+        ImageColorInvert(&img);  // for white pieces
+        _pieceTextures[i] = LoadTextureFromImage(img);
+        UnloadImage(img);
+    }
 }
 
 Point ChessGUI::getColumnAndRow(int index)
@@ -130,14 +126,14 @@ void ChessGUI::renderBoard(ChessBoard& board)
 
 void ChessGUI::renderBoardCache()
 {
+    // TODO: Maybe make this stored in each board and have a setup where only the one board renders
+    //       that way if we are simulating hundreds of games and rendering them, they all can draw
+    //       independantly.
     _totalFrames++;
     BeginTextureMode(_boardFrameCache);
     ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
     for (ChessBoard* board: _boards)
     {
-        loggingHelper.streamToTerminal( // spaces at the end for padding
-            "Updating render cache. Total frames rendered: " + std::to_string(_totalFrames) + "         "
-        );
         renderBoard(*board);
         renderFileRankText(*board);
         highlightCursor(*board);
@@ -163,10 +159,17 @@ void ChessGUI::renderFileRankText(ChessBoard& board)
         {
             for (int i = 0; i < board.cellsPerRow(); i++)
             {
+                // NOTE: May be useful to calculate more acurately
+                // const char* file = TextFormat("%c", CHESS_GLOBALS::FILES::STRING[i]);
+                // int textWidth = MeasureText(file, board.boardFontSize());
+
+                float x = board.boardX() + ((float)i + 0.75) * board.cellSize();
+                float y = board.boardY() + ((float)j + 0.75) * board.cellSize();
+
                 DrawText(
                     TextFormat("%c", CHESS_GLOBALS::FILES::STRING[i]),
-                    board.boardX() + (i * board.cellSize()) + (board.cellSize()) - (board.boardFontSize()),
-                    board.boardY() + (j * board.cellSize()) + (board.cellSize()) - (board.boardFontSize()),
+                    x,
+                    y,
                     board.boardFontSize(),
                     *CHESS_GLOBALS::COLORS::PLAYERS[(i % 2)]
                 );
@@ -177,23 +180,38 @@ void ChessGUI::renderFileRankText(ChessBoard& board)
 
 void ChessGUI::renderPieces(ChessBoard& board)
 {
-    int pieceIndex;
     Point position;
     piece_t currentPiece;
     for (int i = 63; i >= 0; i--)
     {
         currentPiece = board.internalChessLogic()->boardState[63-i];
-        if (currentPiece != 0)
-        {
-            position = getColumnAndRow(i);
-            
-            DrawTexture(
-                board.pieceTextures()[board.internalChessLogic()->playerPieceToTextureIndexHash[currentPiece]],
-                board.boardX() + (board.cellSize() * position.x),
-                board.boardY() + (board.cellSize() * position.y),
-                WHITE
-            );
-        }
+        if (!currentPiece) continue;
+        position = getColumnAndRow(i);
+        
+        Texture2D pieceTexture = _pieceTextures[board.internalChessLogic()->playerPieceToTextureIndexHash[currentPiece]];
+        
+        Rectangle source = {
+            0.0f,
+            0.0f,
+            (float)pieceTexture.width,
+            (float)pieceTexture.height
+        };
+
+        Rectangle destination = {
+            (float)(board.boardX() + (position.x) * board.cellSize()),
+            (float)(board.boardY() + (position.y) * board.cellSize()),
+            (float)(board.cellSize()),
+            (float)(board.cellSize())
+        };
+
+        DrawTexturePro(
+            pieceTexture,
+            source,
+            destination,
+            {0.0f,0.0f},
+            0.0f,
+            WHITE
+        );
     }
 }
 

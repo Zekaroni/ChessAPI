@@ -8,13 +8,35 @@ class Logging
 {
 private:
     std::ofstream debugFile;
-
-public:
+    bool _logStartupTime = false;
+    std::chrono::_V2::steady_clock::time_point _startupStartTime;
+    std::chrono::_V2::steady_clock::time_point _startupEndTime;
+    
+    
+    public:
     Logging()
     {
         std::string debugFilePath = "./debug/output.txt";
         initDebugFile(debugFilePath);
     };
+
+    void startStartupTimer(){_startupStartTime = Clock::now();};
+    void endStartupTimer()  {_startupEndTime   = Clock::now();};
+    
+    bool logStartupTime(){return _logStartupTime;};
+    void logStartupTime(bool log){_logStartupTime = log;};
+    bool logStartupTimer(bool toFile = true)
+    {
+        if (toFile && !debugFile.is_open()) return false;
+        std::ostream& output = toFile ? static_cast<std::ostream&>(debugFile) : std::cout;
+        output << "Total startup time: " <<
+                std::chrono::duration_cast<std::chrono::milliseconds>(_startupEndTime - _startupStartTime).count() <<
+                "ms";
+        output.flush();
+        return output.good(); // true if good
+        
+    }
+
 
     bool debug_pieces(piece_t* boardState, bool toFile = true)
     {
