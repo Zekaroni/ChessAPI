@@ -126,31 +126,37 @@ void ChessGUI::initPieceTextures()
 }
 void ChessGUI::highlightCursor()
 {
-    Point cursor = getColumnAndRow(cursorPosition);
-    DrawRectangle(
-        boardX + ((cellsPerRow - cursor.x - 1) * cellSize),
-        boardY + ((cellsPerRow - cursor.y - 1) * cellSize),
-        cellSize,
-        cellSize,
-        CHESS_GLOBALS::COLORS::CURSOR
-    );
+    if (cursorPosition < 64)
+    {
+        Point cursor = getColumnAndRow(cursorPosition);
+        DrawRectangle(
+            boardX + ((cellsPerRow - cursor.x - 1) * cellSize),
+            boardY + ((cellsPerRow - cursor.y - 1) * cellSize),
+            cellSize,
+            cellSize,
+            CHESS_GLOBALS::COLORS::CURSOR
+        );
+    }
 }
 
-void ChessGUI::hightlightCells()
+void ChessGUI::hightlightCurrentBitboardCells()
 {
-    Point currentPosition;
-    for (int i = 63; i >= 0; i--)
+    if (cursorPosition < 64)
     {
-        if ((currentHightlightBitboard >> i) & 1)
+        Point currentPosition;
+        for (int i = 63; i >= 0; i--)
         {
-            currentPosition = getColumnAndRow(i);
-            DrawRectangle(
-                boardX + ((cellsPerRow - currentPosition.x - 1) * cellSize),
-                boardY + ((cellsPerRow - currentPosition.y - 1) * cellSize),
-                cellSize,
-                cellSize,
-                CHESS_GLOBALS::COLORS::HIGHLIGHT
-            );
+            if ((currentHightlightBitboard >> i) & 1)
+            {
+                currentPosition = getColumnAndRow(i);
+                DrawRectangle(
+                    boardX + ((cellsPerRow - currentPosition.x - 1) * cellSize),
+                    boardY + ((cellsPerRow - currentPosition.y - 1) * cellSize),
+                    cellSize,
+                    cellSize,
+                    CHESS_GLOBALS::COLORS::HIGHLIGHT
+                );
+            }
         }
     }
 }
@@ -222,6 +228,9 @@ void ChessGUI::handleMouse()
         setCurrentHighlightBitboard(
             internalChessLogic->getPiecePositionBitboard(piece,cursorPosition)
         );
+    } else
+    {
+        cursorPosition = 64;
     }
 }
 
@@ -238,7 +247,7 @@ void ChessGUI::runGUI()
         renderFileRankText();
         
         highlightCursor();
-        hightlightCells();
+        hightlightCurrentBitboardCells();
         
         renderPieces();
         
