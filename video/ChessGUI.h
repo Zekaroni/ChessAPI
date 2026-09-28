@@ -61,8 +61,8 @@ private:
     
 public:
     ChessGUI(int screenWidth, int screenHeight);
-    Point getColumnAndRow(int index); // May move to GUI
     void initalize();
+    Point getColumnAndRow(int index);
 
     // Add a board to the GUI
     void addBoard(ChessBoard& board);
