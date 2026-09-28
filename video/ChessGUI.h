@@ -66,7 +66,7 @@ public:
     Point getColumnAndRow(int index);
 
     // Add a board to the GUI
-    void addBoard(ChessBoard& board);
+    void addBoard(ChessBoard* board);
     
     // Texture caching
     void cacheBoardTexture();

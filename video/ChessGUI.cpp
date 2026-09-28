@@ -45,15 +45,15 @@ ChessGUI::ChessGUI(int screenWidth,int screenHeight)
     initalize();
 };
 
-void ChessGUI::addBoard(ChessBoard& board)
+void ChessGUI::addBoard(ChessBoard* board)
 {
-    _boards.push_back(&board);
+    _boards.push_back(board);
 }
 
 void ChessGUI::initalize()
 {
     SetTraceLogLevel(LOG_NONE);
-    SetTargetFPS(60);
+    // SetTargetFPS(60);
 
     InitWindow(_screenWidth, _screenHeight, "Chess");
 
@@ -142,7 +142,7 @@ void ChessGUI::renderBoardCache()
     for (ChessBoard* board: _boards)
     {
         renderBoard(*board);
-        renderFileRankText(*board);
+        // renderFileRankText(*board);
         highlightCursor(*board);
         hightlightCurrentBitboardCells(*board);
         renderPieces(*board);
@@ -360,7 +360,7 @@ void ChessGUI::runGUI()
 {
     while (!WindowShouldClose())
     {
-        
+        BeginDrawing();
         if (!_boards.empty())
         {
             for (ChessBoard* board: _boards)
@@ -370,7 +370,6 @@ void ChessGUI::runGUI()
 
             if (_hasChange) renderBoardCache();
 
-            BeginDrawing();
 
             Rectangle source = {
                 0.0f, 0.0f,
@@ -391,9 +390,9 @@ void ChessGUI::runGUI()
                 0.0f,
                 WHITE
             );
-    
-            EndDrawing();
         }
+        EndDrawing();
+        loggingHelper.streamToTerminal(TextFormat("FPS: %d", GetFPS()));
     }
     CloseWindow();
 };

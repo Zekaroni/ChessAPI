@@ -176,7 +176,9 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
             legalMoves = knightPositions[position] & ~occupiedBitboards[playerPieceToPlayerHash[piece]];
         break;
         case CHESS_GLOBALS::PIECES::BISHOP:
-            legalMoves = bishopPositions[position];
+            legalMoves = bishopPositions[position] ^
+                occupiedBitboards[playerPieceToPlayerHash[piece]]
+            ;
         break;
         case CHESS_GLOBALS::PIECES::ROOK:
             legalMoves = rookPositions[position];
