@@ -7,15 +7,12 @@ ChessGUI::ChessGUI(ChessLogic* chessInstance, int screenWidth,int screenHeight)
     ChessGUI::screenHeight       = screenHeight;
 
     cellsPerRow               = 8;
-    boardSize                 = 800;
     boardX                    = 0;
     boardY                    = 0;
-    cellSize                  = boardSize / cellsPerRow;
-    boardSize                 = cellSize * 8; // Due to integer division for cell size
     currentHightlightBitboard = 0;
     cursorPosition            = 0;
-    boardFontSize             = boardSize/(cellsPerRow*6);
     
+    setBoardSize(800);
     SetTraceLogLevel(LOG_NONE);
     InitWindow(screenWidth, screenHeight, "Chess");
     Image windowIcon = LoadImage("./assets/images/icon.png");
@@ -28,6 +25,9 @@ void ChessGUI::setBoardSize(int size)
 {
     ChessGUI::boardSize = size;
     cellSize = boardSize / cellsPerRow;
+    boardSize = cellSize * cellsPerRow;
+    boardFontSize = boardSize/(cellsPerRow*6);
+    initPieceTextures();
 }
 
 void ChessGUI::setBoardPostion(int x, int y)
@@ -226,7 +226,7 @@ void ChessGUI::handleMouse()
 
         piece_t piece = internalChessLogic->boardState[cursorPosition];
         setCurrentHighlightBitboard(
-            internalChessLogic->getPiecePositionBitboard(piece,cursorPosition)
+            internalChessLogic->getLegalMovesBitboard(piece,cursorPosition)
         );
     } else
     {

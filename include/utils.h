@@ -85,17 +85,6 @@ namespace CHESS_GLOBALS
 }
 
 
-
-struct playerPiecesBitboard
-{
-    bitboard_t pawnBitboard;
-    bitboard_t knightBitboard;
-    bitboard_t bishopBitboard;
-    bitboard_t rookBitboard;
-    bitboard_t queenBitboard;
-    bitboard_t kingBitboard;
-};
-
 struct Point
 {
     int x;
