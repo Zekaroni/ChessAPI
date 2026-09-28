@@ -1,9 +1,8 @@
 #include "utils.h"
 
 // NOTE FOR ALEX:
-//     To use the debug functions, ChessLogic has an instance and
-//     can be called internally by doing loggingHelper.<func_name>(<params>)
-//     In the GUI, instead call internalChessLogic->loggingHelper.<func_name>(<params>)
+//     To use the debug functions loggingHelper.<func_name>(<params>)
+//     can be called anywhere.
 
 class Logging
 {
@@ -107,12 +106,19 @@ public:
     }
 
 
-    void streamToTerminal(std::string output)
+    bool streamToTerminal(std::string output)
     {
         /*
             This functions streams the output to one line.
             NOTE: This breaks if there are new lines
         */
         std::cout << output << '\r';
+        return true;
+    }
+
+    bool printToTerminal(std::string output)
+    {
+        std::cout << output.c_str();
+        return true;
     }
 };

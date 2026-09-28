@@ -1,11 +1,9 @@
 #include "../include/utils.h"
-#include "../include/logging.h"
 // NOTE: Position on board is bottom-right to top-left, 0-63
 
 class ChessLogic
 {
 public:
-    Logging loggingHelper = Logging();
     bitboard_t occupiedBitboards[2] = {0};
     bitboard_t attackingSquares [2] = {0};
 

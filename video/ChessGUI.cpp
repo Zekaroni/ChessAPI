@@ -4,8 +4,6 @@
 
 ChessBoard::ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int boardSize)
 {
-    _internalChessLogic         = chessInstance;
-    _currentHighlightBitboard = (bitboard_t)0;
     _boardSize      = boardSize;
     _boardX         = boardX;
     _boardY         = boardY;
@@ -14,6 +12,8 @@ ChessBoard::ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int bo
     _boardSize      = _cellSize * 8;
     _boardFontSize  = boardSize/(_cellSize * 3);
     _cursorPosition = 0;
+    _internalChessLogic       = chessInstance;
+    _currentHighlightBitboard = (bitboard_t)0;
 
     initPieceTextures();
 };
@@ -68,8 +68,9 @@ void ChessBoard::initPieceTextures()
 
 ChessGUI::ChessGUI(int screenWidth,int screenHeight)
 {
-    _screenWidth        = screenWidth;
-    _screenHeight       = screenHeight;
+    _screenWidth  = screenWidth;
+    _screenHeight = screenHeight;
+    _hasChange    = true; // to render first frame
     
     initalize();
 };
@@ -171,7 +172,7 @@ void ChessGUI::highlightCursor(ChessBoard& board)
             board.cellSize(),
             CHESS_GLOBALS::COLORS::CURSOR
         );
-        board.internalChessLogic()->loggingHelper.streamToTerminal(std::to_string(board.cursorPosition()) + " ");
+        // loggingHelper.streamToTerminal(std::to_string(board.cursorPosition()) + " ");
     }
 }
 
@@ -199,6 +200,7 @@ void ChessGUI::hightlightCurrentBitboardCells(ChessBoard& board)
 
 void ChessGUI::initalize()
 {
+    SetTargetFPS(30);
     SetTraceLogLevel(LOG_NONE);
     InitWindow(_screenWidth, _screenHeight, "Chess");
     Image windowIcon = LoadImage("./assets/images/icon.png");
@@ -248,49 +250,64 @@ void ChessGUI::handleMouse(ChessBoard& board)
     
     int mouse_boardX = 0;
     int mouse_boardY = 0;
+
+    int mouseCursorPosition = 0;
     
-    if (screenX < board.boardX() + board.boardSize() && screenX >= 0 + board.boardX() &&
-        screenY < board.boardY() + board.boardSize() && screenY >= 0 + board.boardY())
+    // moved this outside for better readability
+    bool insideBoard = screenX < board.boardX() + board.boardSize() && screenX >= 0 + board.boardX() &&
+                       screenY < board.boardY() + board.boardSize() && screenY >= 0 + board.boardY();
+    
+    if (!insideBoard)
     {
-        mouse_boardX = ((screenX-board.boardX()) / board.cellSize()) + 1;
-        mouse_boardY = (screenY-board.boardY()) / board.cellSize();
-        
-        board.cursorPosition(board.internalChessLogic()->getIndex({mouse_boardX,mouse_boardY}));
-        
-        piece_t piece = board.internalChessLogic()->boardState[board.cursorPosition()];
-        board.setCurrentHighlightBitboard(
-            board.internalChessLogic()->getLegalMovesBitboard(piece,board.cursorPosition())
-        );
-    } else
-    {
-        board.cursorPosition(64);
+        if (board.cursorPosition() != 64)
+        {
+            board.cursorPosition(64);
+            _hasChange = true;
+        }
+        return;
     }
+    mouse_boardX = ((screenX-board.boardX()) / board.cellSize()) + 1;
+    mouse_boardY = (screenY-board.boardY()) / board.cellSize();
+    mouseCursorPosition = board.internalChessLogic()->getIndex({mouse_boardX, mouse_boardY});
+
+    if (board.cursorPosition() == mouseCursorPosition) { return; }
+
+    board.cursorPosition(mouseCursorPosition);
+    piece_t piece = board.internalChessLogic()->boardState[board.cursorPosition()];
+    board.setCurrentHighlightBitboard(
+        board.internalChessLogic()->getLegalMovesBitboard(piece,board.cursorPosition())
+    );
+    _hasChange = true;
 }
 
 void ChessGUI::runGUI()
 {
     while (!WindowShouldClose())
     {
-        BeginDrawing();
-        ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
-
+        
         if (!_boards.empty())
         {
             for (ChessBoard* board: _boards)
             {
-                handleInputs(*board);
                 handleMouse(*board);
-                
-                renderBoard(*board);
-                renderFileRankText(*board);
-                
-                highlightCursor(*board);
-                hightlightCurrentBitboardCells(*board);
-                
-                renderPieces(*board);
+            }
+            BeginDrawing();
+            if (_hasChange)
+            {
+                ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
+            
+                for (ChessBoard* board: _boards)
+                {
+                    loggingHelper.printToTerminal("Updating GUI\n");
+                    renderBoard(*board);
+                    renderFileRankText(*board);
+                    highlightCursor(*board);
+                    hightlightCurrentBitboardCells(*board);
+                    renderPieces(*board);
+                }
+                _hasChange = false;
             }
         }
-        
         EndDrawing();
     }
     CloseWindow();
