@@ -1,19 +1,18 @@
 #include "ChessGUI.h"
 
-ChessGUI::ChessGUI(ChessLogic* chessInstance, int screenWidth,int screenHeight)
+ChessGUI::ChessGUI(ChessLogic* chessInstance, int screenWidth,int screenHeight, int boardSize = 800)
 {
     ChessGUI::internalChessLogic = chessInstance;
     ChessGUI::screenWidth        = screenWidth;
     ChessGUI::screenHeight       = screenHeight;
-
-    cellsPerRow               = 8;
-    boardX                    = 0;
-    boardY                    = 0;
-    currentHightlightBitboard = 0;
-    cursorPosition            = 0;
+    cellsPerRow                  = 8;
+    boardX                       = 0;
+    boardY                       = 0;
+    currentHightlightBitboard    = 0;
+    cursorPosition               = 0;
     
     initalize();
-    setBoardSize(800); // NOTE: initalizes textures
+    setBoardSize(boardSize); // NOTE: initalizes textures 
 };
 
 void ChessGUI::initalize()
@@ -151,7 +150,7 @@ void ChessGUI::highlightCursor()
             cellSize,
             CHESS_GLOBALS::COLORS::CURSOR
         );
-        internalChessLogic->loggingHelper.streamToTerminal(std::to_string(cursorPosition));
+        internalChessLogic->loggingHelper.streamToTerminal(std::to_string(cursorPosition) + " ");
     }
 }
 

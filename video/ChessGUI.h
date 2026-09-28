@@ -23,7 +23,7 @@ private:
     void hightlightCurrentBitboardCells();
 
 public:
-    ChessGUI(ChessLogic* chessInstance, int screenWidth, int screenHeight);
+    ChessGUI(ChessLogic* chessInstance, int screenWidth, int screenHeight, int boardSize);
     void initalize();
     void highlightCursor();
     void setBoardSize(int size);
