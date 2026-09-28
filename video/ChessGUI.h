@@ -52,6 +52,7 @@ private:
     int _maxBoardSize;
     int _maxCellSize;
     std::vector<ChessBoard*> _boards;
+    std::vector<ChessLogic*> __chessLogicMemorySpace;
     bool _hasChange;
     RenderTexture2D _boardFrameCache;
     RenderTexture2D _boardTextureCache;
