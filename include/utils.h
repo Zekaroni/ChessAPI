@@ -6,6 +6,7 @@
 #include <cmath>
 #include <algorithm>
 #include <fstream>
+#include <vector>
 
 
 using bitboard_t  = std::uint64_t;
