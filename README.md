@@ -12,6 +12,7 @@ This is a passion project sparked by [@Pineapple0Alex ](https://www.github.com/P
       - [ChessBoard](#chessboard)
       - [ChessGUI](#chessgui)
     - [Chess Logic](#chess-logic)
+      - [ChessLogic](#chesslogic)
     - [Chess Engines](#chess-engines)
 
 ## Usage
@@ -96,6 +97,7 @@ public:
 };
 ```
 ### Chess Logic
+#### ChessLogic
 Literal structure:
 ```cpp
 class ChessLogic
