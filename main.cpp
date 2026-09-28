@@ -15,7 +15,7 @@ int main()
     int boardY    = (screenWidth - boardSize) / 2;
     chessGUI.setBoardPostion(boardX,boardY);
     
-    // chess.loadFEN("6k1/p1pqn2p/6p1/2Np1p2/3P1B2/4P3/3QKPPP/1r5R b - - 1 24");
+    chess.loadFEN("6k1/p1pqn2p/6p1/2Nppp2/3P1B2/4Pp2/3QKPPP/1r5R b");
 
     chessGUI.runGUI();
     return 0;

@@ -121,9 +121,8 @@ void ChessGUI::initPieceTextures()
         ImageColorInvert(&img);
         pieceTextures[i] = LoadTextureFromImage(img);
     }
-    
-    
 }
+
 void ChessGUI::highlightCursor()
 {
     if (cursorPosition < 64)
@@ -136,6 +135,7 @@ void ChessGUI::highlightCursor()
             cellSize,
             CHESS_GLOBALS::COLORS::CURSOR
         );
+        internalChessLogic->loggingHelper.streamToTerminal(std::to_string(cursorPosition));
     }
 }
 
