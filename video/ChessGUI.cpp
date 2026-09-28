@@ -80,6 +80,23 @@ void ChessGUI::addBoard(ChessBoard& board)
     _boards.push_back(&board);
 }
 
+void ChessGUI::initalize()
+{
+    SetTargetFPS(60);
+    SetTraceLogLevel(LOG_NONE);
+
+    InitWindow(_screenWidth, _screenHeight, "Chess");
+
+    // NOTE:
+    //     this creates a cache for us to draw to so we dont have to render
+    //     the image every frame, but rather only when there is a cahnge
+    _boardFrameCache = LoadRenderTexture(_screenWidth, _screenHeight);
+
+    Image windowIcon = LoadImage("./assets/images/icon.png");
+    SetWindowIcon(windowIcon);
+    UnloadImage(windowIcon);
+}
+
 Point ChessGUI::getColumnAndRow(int index)
 {
     int row    = int(index / ROW_COUNT);
@@ -110,6 +127,26 @@ void ChessGUI::renderBoard(ChessBoard& board)
         }
     }
 };
+
+void ChessGUI::renderBoardCache()
+{
+    _totalFrames++;
+    BeginTextureMode(_boardFrameCache);
+    ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
+    for (ChessBoard* board: _boards)
+    {
+        loggingHelper.streamToTerminal( // spaces at the end for padding
+            "Updating render cache. Total frames rendered: " + std::to_string(_totalFrames) + "         "
+        );
+        renderBoard(*board);
+        renderFileRankText(*board);
+        highlightCursor(*board);
+        hightlightCurrentBitboardCells(*board);
+        renderPieces(*board);
+    }
+    EndTextureMode();
+    _hasChange = false;
+}
 
 void ChessGUI::renderFileRankText(ChessBoard& board)
 {
@@ -198,16 +235,6 @@ void ChessGUI::hightlightCurrentBitboardCells(ChessBoard& board)
     }
 }
 
-void ChessGUI::initalize()
-{
-    SetTargetFPS(30);
-    SetTraceLogLevel(LOG_NONE);
-    InitWindow(_screenWidth, _screenHeight, "Chess");
-    Image windowIcon = LoadImage("./assets/images/icon.png");
-    SetWindowIcon(windowIcon);
-    UnloadImage(windowIcon);
-}
-
 void ChessGUI::handleInputs(ChessBoard& board)
 {
     int currentKey = GetKeyPressed();    
@@ -291,24 +318,33 @@ void ChessGUI::runGUI()
             {
                 handleMouse(*board);
             }
+
+            if (_hasChange) renderBoardCache();
+
             BeginDrawing();
-            if (_hasChange)
-            {
-                ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
-            
-                for (ChessBoard* board: _boards)
-                {
-                    loggingHelper.printToTerminal("Updating GUI\n");
-                    renderBoard(*board);
-                    renderFileRankText(*board);
-                    highlightCursor(*board);
-                    hightlightCurrentBitboardCells(*board);
-                    renderPieces(*board);
-                }
-                _hasChange = false;
-            }
+
+            Rectangle source = {
+                0.0f, 0.0f,
+                (float)_boardFrameCache.texture.width,
+                -(float)_boardFrameCache.texture.height
+            };
+            Rectangle destination = {
+                0.0f, 0.0f,
+                (float)_screenWidth,
+                (float)_screenHeight
+            };
+
+            DrawTexturePro(
+                _boardFrameCache.texture,
+                source,
+                destination,
+                {0.0f,0.0f},
+                0.0f,
+                WHITE
+            );
+    
+            EndDrawing();
         }
-        EndDrawing();
     }
     CloseWindow();
 };

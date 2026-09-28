@@ -55,6 +55,9 @@ private:
     int _screenHeight;
     std::vector<ChessBoard*> _boards;
     bool _hasChange;
+    RenderTexture2D _boardFrameCache;
+
+    uint64_t _totalFrames = 0; // for debug purposes
     
 public:
     ChessGUI(int screenWidth, int screenHeight);
@@ -74,6 +77,7 @@ public:
     // Render Methods
     void renderBoard(ChessBoard& board);
     void renderPieces(ChessBoard& board);
+    void renderBoardCache();
     // Highlight and Overlays
     void highlightCursor(ChessBoard& board);
     void hightlightCurrentBitboardCells(ChessBoard& board);
