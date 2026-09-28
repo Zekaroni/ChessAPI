@@ -1,25 +1,28 @@
 #include "ChessGUI.h"
 
-ChessGUI::ChessGUI(ChessLogic* chessInstance, int screenWidth,int screenHeight)
+ChessGUI::ChessGUI(ChessLogic* chessInstance, int screenWidth,int screenHeight, int boardSize = 800)
 {
     ChessGUI::internalChessLogic = chessInstance;
     ChessGUI::screenWidth        = screenWidth;
     ChessGUI::screenHeight       = screenHeight;
-
-    cellsPerRow               = 8;
-    boardX                    = 0;
-    boardY                    = 0;
-    currentHightlightBitboard = 0;
-    cursorPosition            = 0;
+    cellsPerRow                  = 8;
+    boardX                       = 0;
+    boardY                       = 0;
+    currentHightlightBitboard    = 0;
+    cursorPosition               = 0;
     
-    setBoardSize(800);
+    initalize();
+    setBoardSize(boardSize); // NOTE: initalizes textures 
+};
+
+void ChessGUI::initalize()
+{
     SetTraceLogLevel(LOG_NONE);
     InitWindow(screenWidth, screenHeight, "Chess");
     Image windowIcon = LoadImage("./assets/images/icon.png");
     SetWindowIcon(windowIcon);
     UnloadImage(windowIcon);
-    initPieceTextures();
-};
+}
 
 void ChessGUI::setBoardSize(int size)
 {
@@ -112,18 +115,29 @@ void ChessGUI::initPieceTextures()
 {
     Image img;
     std::string pathString;
+    bool unloadTextures = pieceTextures[0].id > 0;
+
     for (int i = 0; i < PIECE_TEXTURE_COUNT/2;i++)
     {
+        if (unloadTextures)
+        {
+            UnloadTexture(pieceTextures[i]);
+            UnloadTexture(pieceTextures[i+6]);
+            pieceTextures[i] = {};
+            pieceTextures[i+6] = {};
+        }
         pathString = std::string("./assets/images/") + CHESS_GLOBALS::INDEX_TO_FEN_LETTER[i+1] + ".png";
         img = LoadImage(pathString.c_str());
-        ImageResize(&img,cellSize,cellSize);
-        pieceTextures[i+6] = LoadTextureFromImage(img);
-        ImageColorInvert(&img);
+        ImageResize  (&img,cellSize,cellSize);          // scale to board
+        pieceTextures[i+6] = LoadTextureFromImage(img); // black pieces
+
+        ImageColorInvert(&img);  // for white pieces
         pieceTextures[i] = LoadTextureFromImage(img);
+
+        UnloadImage(img);
     }
-    
-    
 }
+
 void ChessGUI::highlightCursor()
 {
     if (cursorPosition < 64)
@@ -136,6 +150,7 @@ void ChessGUI::highlightCursor()
             cellSize,
             CHESS_GLOBALS::COLORS::CURSOR
         );
+        internalChessLogic->loggingHelper.streamToTerminal(std::to_string(cursorPosition) + " ");
     }
 }
 

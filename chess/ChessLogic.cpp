@@ -2,13 +2,9 @@
 
 ChessLogic::ChessLogic()
 {
-    // calculateBlackPawnMoves();
     loadFEN(CHESS_GLOBALS::STARTING_FEN_STRING);
     currentPlayer = WHITESIDE;
-    
-    // boardState[0] = CHESS_GLOBALS::PLAYER_PIECES::WHITE_PAWN;
-    // print_board(blackPawnPositions, 64);
-    // print_pieces_at_position();
+    loggingHelper.debug_pieces(boardState);
 }
 
 void ChessLogic::loadFEN(std::string fenString)
@@ -56,9 +52,6 @@ void ChessLogic::generateBlackAndWhiteOccupiedBitboards()
             occupiedBitboards[playerPieceToPlayerHash[currentPiece]] |= (bitboard_t)1 << i;
         }
     }
-    print_bitboard(occupiedBitboards[0]);
-    std::cout << "\n";
-    print_bitboard(occupiedBitboards[1]);
 }
 
 piece_t ChessLogic::fenToPiece(char fenPiece)
@@ -170,7 +163,9 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
             if (piece == CHESS_GLOBALS::PLAYER_PIECES::WHITE_PAWN)
             {
                 // for white
-                legalMoves = whitePawnPositions[position];
+                legalMoves = whitePawnPositions[position] &
+                            ~occupiedBitboards[0]
+                ;
             } else {
                 legalMoves = blackPawnPositions[position];
                 // for black
@@ -229,33 +224,3 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
         // blackPawnPositions[i] = currentBoard;
     }
  }
-
-void ChessLogic::print_pieces_at_position()
-{
-    for (int i = 63; i > 0; i--)
-    {
-        printf("%d  ", boardState[i]);
-        if (i % 8 == 0) printf("\n");
-    }
-}
-
-void ChessLogic::print_board(bitboard_t* bitboardArray,int size)
-{
-    for (int i = 0; i < size; i++)
-    {
-        std::cout << bitboardArray[i];
-        std::cout << "\n";
-    }
-}
-
-void ChessLogic::print_bitboard(bitboard_t value)
-{
-    for (int i = 63; i >= 0; i--)
-    {
-        std::cout << ((value >> i) & 1);
-        if ((i) % 8 == 0)
-        {
-            std::cout << '\n';
-        }
-    }
-}

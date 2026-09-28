@@ -5,6 +5,7 @@
 #include <array>
 #include <cmath>
 #include <algorithm>
+#include <fstream>
 
 
 using bitboard_t  = std::uint64_t;
