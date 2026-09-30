@@ -9,7 +9,7 @@
 int main()
 {
     if (loggingHelper.logStartupTime()) loggingHelper.startStartupTimer();
-
+    loggingHelper.globalLog(false);
     
     int screenSize  = 920;
     ChessGUI chessGUI(screenSize, screenSize);

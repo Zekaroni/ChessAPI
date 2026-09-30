@@ -4,21 +4,24 @@
 //     To use the debug functions loggingHelper.<func_name>(<params>)
 //     can be called anywhere.
 
+/// @brief Custom logging class for this project
 class Logging
 {
 private:
     std::ofstream debugFile;
     bool _logStartupTime = false;
+    bool _globalLog      = true;
     std::chrono::_V2::steady_clock::time_point _startupStartTime;
     std::chrono::_V2::steady_clock::time_point _startupEndTime;
     
     
-    public:
+public:
     Logging()
     {
         std::string debugFilePath = "./debug/output.txt";
         initDebugFile(debugFilePath);
     };
+    void globalLog(bool log){_globalLog = log;};
 
     void startStartupTimer(){_startupStartTime = Clock::now();};
     void endStartupTimer()  {_startupEndTime   = Clock::now();};
@@ -140,7 +143,11 @@ private:
 
     bool printToTerminal(std::string output)
     {
-        std::cout << output.c_str();
-        return true;
+        if (_globalLog)
+        {
+            std::cout << output.c_str();
+            return true;
+        }
+        return false;
     }
 };
