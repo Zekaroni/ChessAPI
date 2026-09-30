@@ -10,9 +10,9 @@ ChessBoard::ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int bo
     _cellSize       = boardSize / 8;
     _boardSize      = _cellSize * 8;
     _boardFontSize  = _cellSize / 4;
-    _cursorPosition = 65; // none selected state
+    _cursorPosition = 0; // none selected state
     _internalChessLogic       = chessInstance;
-    _currentHighlightBitboard = (bitboard_t)0;
+    _currentLegalMoves = (bitboard_t)0;
     _hasUpdate = true;
 };
 
@@ -38,10 +38,19 @@ void ChessBoard::setBoardSize(int size)
     _boardFontSize = _boardSize/(_cellsPerRow*6);
 }
 
+void ChessBoard::setCurrentLegalMoves(bitboard_t legalMoves)
+{
+    _currentLegalMoves = legalMoves;
+}
+
 /// @brief Reloads and rerenders entire board texture
 /// @param gui pointer to instance of ChessGUI
 void ChessBoard::refreshBoardTexture(ChessGUI* gui)
 {
+    _currentLegalMoves = internalChessLogic()->getLegalMovesBitboard(
+        internalChessLogic()->boardState[_cursorPosition],
+        _cursorPosition
+    );
     if (_currentBoardTexture.texture.id != 0) UnloadRenderTexture(_currentBoardTexture);
     _currentBoardTexture = LoadRenderTexture(_boardSize, _boardSize);
     
@@ -50,7 +59,7 @@ void ChessBoard::refreshBoardTexture(ChessGUI* gui)
     _renderBoardTexture(gui);
     _renderFileRankTextToTexture();
     _highlightCursor(gui);
-    _hightlightCurrentBitboardCells(gui);
+    _hightlightLegalMoves(gui);
     _renderPiecesToTexture(gui);
 
     EndTextureMode();
@@ -202,14 +211,14 @@ void ChessBoard::_highlightCursor(ChessGUI* gui)
 
 /// @brief Hightlights the currently selected pieces legal moves
 /// @param gui pointer to instance of ChessGUI
-void ChessBoard::_hightlightCurrentBitboardCells(ChessGUI* gui)
+void ChessBoard::_hightlightLegalMoves(ChessGUI* gui)
 {
     if (_cursorPosition < 64)
     {
         Point currentPosition;
         for (int i = 63; i >= 0; i--)
         {
-            if ((_currentHighlightBitboard >> i) & 1)
+            if ((_currentLegalMoves >> i) & 1)
             {
                 currentPosition = gui->getColumnAndRow(i);
                 DrawRectangle(
@@ -371,29 +380,32 @@ void ChessGUI::_bakeFullGUITexture()
         if (board->hasUpdate())
         {
             board->refreshBoardTexture(this);
-            BeginTextureMode(_fullGUITexture);
-            Texture* boardTexture =  board->getBoardTexture();
-            Rectangle source = {
-                0.0f, 0.0f,
-                (float)(*boardTexture).width,
-                -(float)(*boardTexture).height
-            };
-            Rectangle destination = {
-                (float)board->boardX(), (float)board->boardY(),
-                (float)board->boardSize(),
-                (float)board->boardSize()
-            };
+        }
+    }
+    for (ChessBoard* board: _boards)
+    {
+        BeginTextureMode(_fullGUITexture);
+        Texture* boardTexture =  board->getBoardTexture();
+        Rectangle source = {
+            0.0f, 0.0f,
+            (float)(*boardTexture).width,
+            -(float)(*boardTexture).height
+        };
+        Rectangle destination = {
+            (float)board->boardX(), (float)board->boardY(),
+            (float)board->boardSize(),
+            (float)board->boardSize()
+        };
 
-            DrawTexturePro(
-                *boardTexture,
-                source,
-                destination,
-                {0.0f,0.0f},
-                0.0f,
-                WHITE
-            );
-            EndTextureMode();
-        }   
+        DrawTexturePro(
+            *boardTexture,
+            source,
+            destination,
+            {0.0f,0.0f},
+            0.0f,
+            WHITE
+        );
+        EndTextureMode();
     }
     _hasChange = false;
 }
@@ -429,40 +441,39 @@ void ChessGUI::_renderFullGUITexture()
 /// @param board pointer to instance of ChessBoard
 void ChessGUI::handleKeyboardInputs()
 {
-    // int currentKey = GetKeyPressed();    
-    // int tempCursorPosition = board.cursorPosition();
+    int currentKey = GetKeyPressed();    
+    int tempCursorPosition = _currentBoardSelected->cursorPosition();
     
-    // switch(currentKey)
-    // {
-    //     case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_UP:
-    //     tempCursorPosition += 8;
-    //     break;
-    //     case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_DOWN:
-    //         tempCursorPosition -= 8;
-    //     break;
-    //     case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_RIGHT:
-    //     if (board.cursorPosition() % 8 != 0) tempCursorPosition--;
-    //     break;
-    //     case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_LEFT:
-    //     if (board.cursorPosition() % 8 != 7) tempCursorPosition++;
-    //     break;
-    // }
-    // if (
-    //     tempCursorPosition >= 0 &&
-    //     tempCursorPosition < 64 &&
-    //     tempCursorPosition != board.cursorPosition()
-    // )
-    // {
-    //     board.cursorPosition(tempCursorPosition);
-    //     piece_t piece = board.internalChessLogic()->boardState[board.cursorPosition()];
-    //     board.setCurrentHighlightBitboard(
-    //         board.internalChessLogic()->getPiecePositionBitboard(piece,board.cursorPosition())
-    //     );
-    // }
+    switch(currentKey)
+    {
+        case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_UP:
+        tempCursorPosition += 8;
+        break;
+        case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_DOWN:
+            tempCursorPosition -= 8;
+        break;
+        case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_RIGHT:
+        if (_currentBoardSelected->cursorPosition() % 8 != 0) tempCursorPosition--;
+        break;
+        case CHESS_GLOBALS::CONTROLS::CYCLE_BITBOARD_LEFT:
+        if (_currentBoardSelected->cursorPosition() % 8 != 7) tempCursorPosition++;
+        break;
+    }
+    if (
+        tempCursorPosition >= 0 &&
+        tempCursorPosition < 64 &&
+        tempCursorPosition != _currentBoardSelected->cursorPosition()
+    )
+    {
+        _currentBoardSelected->cursorPosition(tempCursorPosition);
+        piece_t piece = _currentBoardSelected->internalChessLogic()->boardState[_currentBoardSelected->cursorPosition()];
+        _currentBoardSelected->setCurrentLegalMoves(
+            _currentBoardSelected->internalChessLogic()->getPiecePositionBitboard(piece, _currentBoardSelected->cursorPosition())
+        );
+    }
 }
 
 /// @brief Handles the mouse inputs and performs related opperations
-/// @param board pointer to instance of ChessBoard
 void ChessGUI::handleMouseUpdates()
 {
     // NOTE | BUG:
@@ -478,38 +489,44 @@ void ChessGUI::handleMouseUpdates()
     //     reason and is still following the old structure which is only
     //     good for when there is one board.
 
-    // int screenX = GetMouseX();
-    // int screenY = GetMouseY();
-    
-    // int mouse_boardX = 0;
-    // int mouse_boardY = 0;
+    for (ChessBoard* board: _boards)
+    {
+        int screenX = GetMouseX();
+        int screenY = GetMouseY();
+        
+        int mouse_boardX = 0;
+        int mouse_boardY = 0;
 
-    // int mouseCursorPosition = 0;
-    
-    // // moved this outside for better readability
-    // bool insideBoard = screenX < board.boardX() + board.boardSize() && screenX >= 0 + board.boardX() &&
-    //                    screenY < board.boardY() + board.boardSize() && screenY >= 0 + board.boardY();
-    
-    // if (!insideBoard)
-    // {
-    //     if (board.cursorPosition() != 64)
-    //     {
-    //         board.cursorPosition(64);
-    //         _hasChange = true;
-    //     }
-    //     return;
-    // }
-    // mouse_boardX = ((screenX-board.boardX()) / board.cellSize()) + 1;
-    // mouse_boardY = (screenY-board.boardY()) / board.cellSize();
-    // mouseCursorPosition = board.internalChessLogic()->getIndex({mouse_boardX, mouse_boardY});
+        int mouseCursorPosition = 0;
+        
+        // moved this outside for better readability
+        bool insideBoard = screenX < board->boardX() + board->boardSize() && screenX >= 0 + board->boardX() &&
+                           screenY < board->boardY() + board->boardSize() && screenY >= 0 + board->boardY();
+        
+        if (!insideBoard)
+        {
+            if (board->cursorPosition() != 64)
+            {
+                board->cursorPosition(64);
+                board->hasUpdate(true);
+                _hasChange = true;
+            }
+            return;
+        }
+        mouse_boardX = ((screenX  - board->boardX()) / board->cellSize()) + 1;
+        mouse_boardY = (screenY - board->boardY()) / board->cellSize();
+        mouseCursorPosition = board->internalChessLogic()->getIndex({mouse_boardX, mouse_boardY});
 
-    // if (board.cursorPosition() == mouseCursorPosition) { return; }
+        if (board->cursorPosition() == mouseCursorPosition) { return; }
 
-    // board.cursorPosition(mouseCursorPosition);
-    // board.setCurrentHighlightBitboard(
-    //     board.internalChessLogic()->allLegalMoves[mouseCursorPosition]
-    // );
-    // _hasChange = true;
+        board->cursorPosition(mouseCursorPosition);
+        board->setCurrentLegalMoves(
+            board->internalChessLogic()->allLegalMoves[mouseCursorPosition]
+        );
+        board->hasUpdate(true);
+        _hasChange = true;
+        loggingHelper.streamToTerminal(std::to_string(board->cursorPosition()) + "   ");
+    }
 }
 
 /// @brief Runs the main GUI
@@ -517,16 +534,15 @@ void ChessGUI::handleMouseUpdates()
 void ChessGUI::runGUI()
 {
     _hasChange = true;
+    // _currentBoardSelected = _boards[0];
     while (!WindowShouldClose())
     {
-        if (!_boards.empty())
-        {
-            if (_hasChange) _bakeFullGUITexture();
-            BeginDrawing();
-            _renderFullGUITexture();
-            EndDrawing();
-        }
-        loggingHelper.streamToTerminal(TextFormat("FPS: %d  ", GetFPS()));
+        handleMouseUpdates();
+        if (_hasChange) _bakeFullGUITexture();
+        BeginDrawing();
+        _renderFullGUITexture();
+        EndDrawing();
+        // loggingHelper.streamToTerminal(TextFormat("FPS: %d  ", GetFPS()));
     }
     CloseWindow();
 };

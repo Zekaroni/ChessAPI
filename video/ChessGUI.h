@@ -16,7 +16,7 @@ private:
     int _cursorPosition;
     bool _hasUpdate;
     ChessLogic* _internalChessLogic = nullptr;
-    bitboard_t  _currentHighlightBitboard;
+    bitboard_t  _currentLegalMoves;
     RenderTexture2D _currentBoardTexture;
 
     //---// Render Methods
@@ -25,7 +25,7 @@ private:
 
     //---// Highlight and Overlays
     void _highlightCursor(ChessGUI* gui);
-    void _hightlightCurrentBitboardCells(ChessGUI* gui);
+    void _hightlightLegalMoves(ChessGUI* gui);
     void _renderFileRankTextToTexture();
 
 public:
@@ -33,10 +33,12 @@ public:
     void refreshBoardTexture(ChessGUI* gui);
     Texture2D* getBoardTexture();
     bool hasUpdate();
+    void hasUpdate(bool update){_hasUpdate = update;};
 
     //---// Setters
     void setBoardSize(int size);
     void setBoardPostion(int x, int y);
+    void setCurrentLegalMoves(bitboard_t legalMoves);
     void boardFontSize(int fontSize) { _boardFontSize  = fontSize; };
     void cursorPosition(int position){ _cursorPosition = position; };
     
@@ -49,7 +51,7 @@ public:
     int cellSize()       const { return _cellSize; };
     int cursorPosition() const { return _cursorPosition; };
     ChessLogic* internalChessLogic() const { return _internalChessLogic; };
-    bitboard_t currentHighlightBitboard() const { return _currentHighlightBitboard; }
+    bitboard_t currentHighlightBitboard() const { return _currentLegalMoves; }
 };
 
 
@@ -84,6 +86,7 @@ private:
     //---// Textures
     RenderTexture2D _fullGUITexture;
     RenderTexture2D _boardTextureCache;
+    ChessBoard* _currentBoardSelected = nullptr;
     Texture2D   _pieceTextures[PIECE_TEXTURE_COUNT] = {};
     
     //---// Debug variables
