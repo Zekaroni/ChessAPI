@@ -10,7 +10,7 @@ ChessBoard::ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int bo
     _cellSize       = boardSize / 8;
     _boardSize      = _cellSize * 8;
     _boardFontSize  = _cellSize / 4;
-    _cursorPosition = 0;
+    _cursorPosition = 65; // none selected state
     _internalChessLogic       = chessInstance;
     _currentHighlightBitboard = (bitboard_t)0;
     _hasUpdate = true;
@@ -28,6 +28,8 @@ void ChessBoard::setBoardPostion(int x, int y)
     _boardY = y;
 }
 
+/// @brief Sets the board size in pixels
+/// @param size pixel width and height (they are the same)
 void ChessBoard::setBoardSize(int size)
 {
     _boardSize = size;
@@ -40,13 +42,24 @@ void ChessBoard::setBoardSize(int size)
 /// @param gui pointer to instance of ChessGUI
 void ChessBoard::refreshBoardTexture(ChessGUI* gui)
 {
-    _initalizeBoardTexture(gui);
+    if (_currentBoardTexture.texture.id != 0) UnloadRenderTexture(_currentBoardTexture);
+    _currentBoardTexture = LoadRenderTexture(_boardSize, _boardSize);
+    
+    BeginTextureMode(_currentBoardTexture);
+
+    _renderBoardTexture(gui);
     _renderFileRankTextToTexture();
     _highlightCursor(gui);
     _hightlightCurrentBitboardCells(gui);
     _renderPiecesToTexture(gui);
+
+    EndTextureMode();
+    _hasUpdate = false;
 }
 
+
+/// @brief Returns a refernce to the cached board texture
+/// @return pointer to board texture
 Texture2D* ChessBoard::getBoardTexture()
 {
     return &_currentBoardTexture.texture;
@@ -62,14 +75,28 @@ bool ChessBoard::hasUpdate()
 
 /// @brief Creates a board texture that will dynamically render it's own game
 /// @param gui pointer to instance of ChessGUI
-void ChessBoard::_initalizeBoardTexture(ChessGUI* gui)
+void ChessBoard::_renderBoardTexture(ChessGUI* gui)
 {
-    // NOTE: It may be smart to save the texture as a lot smaller of an texture
-    // Copies the board texture as the biggest possible board size
-    _currentBoardTexture = LoadRenderTexture(gui->getBoardTexture().width, gui->getBoardTexture().height);
-    BeginTextureMode(_currentBoardTexture);
-    DrawTexture(gui->getBoardTexture(), 0, 0, WHITE);
-    EndTextureMode();
+    Rectangle source = {
+        0.0f, 0.0f,
+        (float)gui->getBoardTexture().width,
+        (float)gui->getBoardTexture().height
+    };
+
+    Rectangle destination = {
+        0.0f, 0.0f,
+        (float)_boardSize,
+        (float)_boardSize
+    };
+
+    DrawTexturePro(
+        gui->getBoardTexture(),
+        source,
+        destination,
+        {0,0},
+        0.0f,
+        WHITE
+    );
 }
 
 /// @brief Renders the `ChessBoard`'s pieces to the screen
@@ -77,27 +104,25 @@ void ChessBoard::_initalizeBoardTexture(ChessGUI* gui)
 void ChessBoard::_renderPiecesToTexture(ChessGUI* gui)
 {
     // NOTE:
-    //     Same as the "_initalizeBoardTexture" where we should render these
+    //     Same as the "_renderBoardTexture" where we should render these
     //     locally to the texture AND only rerender the piece(s) that
     //     was/were effected
     
     Point position;
     piece_t currentPiece;
-    BeginTextureMode(_currentBoardTexture);
-    DrawTexture(gui->getBoardTexture(), 0, 0, WHITE);
     for (int i = 63; i >= 0; i--)
     {
         currentPiece = _internalChessLogic->boardState[63-i];
         if (!currentPiece) continue;
         position = gui->getColumnAndRow(i);
         
-        Texture2D pieceTexture = gui->getPieceTexture(currentPiece);
+        Texture2D* pieceTexture = gui->getPieceTexture(currentPiece);
         
         Rectangle source = {
             0.0f,
             0.0f,
-            (float)pieceTexture.width,
-            (float)pieceTexture.height
+            (float)(*pieceTexture).width,
+            (float)(*pieceTexture).height
         };
 
         Rectangle destination = {
@@ -108,7 +133,7 @@ void ChessBoard::_renderPiecesToTexture(ChessGUI* gui)
         };
 
         DrawTexturePro(
-            pieceTexture,
+            (*pieceTexture),
             source,
             destination,
             {0.0f,0.0f},
@@ -116,14 +141,12 @@ void ChessBoard::_renderPiecesToTexture(ChessGUI* gui)
             WHITE
         );
     }
-    EndTextureMode();
 }
 
 /// @brief Draw the file and rank text to the internal texture
 /// @param gui pointer to instance of ChessGUI
 void ChessBoard::_renderFileRankTextToTexture()
 {
-    BeginTextureMode(_currentBoardTexture);
     for(int j = 0; j < _cellsPerRow; j++)
     {
         DrawText(
@@ -154,7 +177,6 @@ void ChessBoard::_renderFileRankTextToTexture()
             }
         }
     }
-    EndTextureMode();
 }
 
 
@@ -166,7 +188,6 @@ void ChessBoard::_highlightCursor(ChessGUI* gui)
 {
     if (_cursorPosition < 64)
     {
-        BeginTextureMode(_currentBoardTexture);
         Point cursor = gui->getColumnAndRow(_cursorPosition);
         DrawRectangle(
             (_cellsPerRow - cursor.x - 1) * _cellSize,
@@ -176,7 +197,6 @@ void ChessBoard::_highlightCursor(ChessGUI* gui)
             CHESS_GLOBALS::COLORS::CURSOR
         );
         // loggingHelper.streamToTerminal(std::to_string(board.cursorPosition()) + " ");
-        EndTextureMode();
     }
 }
 
@@ -186,7 +206,6 @@ void ChessBoard::_hightlightCurrentBitboardCells(ChessGUI* gui)
 {
     if (_cursorPosition < 64)
     {
-        BeginTextureMode(_currentBoardTexture);
         Point currentPosition;
         for (int i = 63; i >= 0; i--)
         {
@@ -202,7 +221,6 @@ void ChessBoard::_hightlightCurrentBitboardCells(ChessGUI* gui)
                 );
             }
         }
-        EndTextureMode();
     }
 }
 
@@ -227,7 +245,7 @@ ChessGUI::ChessGUI(int screenWidth,int screenHeight)
 void ChessGUI::__initalize()
 {
     SetTraceLogLevel(LOG_NONE);
-    SetTargetFPS(60);
+    // SetTargetFPS(60);
 
     InitWindow(_screenWidth, _screenHeight, "Chess");
 
@@ -247,11 +265,6 @@ void ChessGUI::__initalize()
 
     _cachePieceTextures();
     _cacheBoardTexture();
-
-    for (ChessBoard* board: _boards)
-    {
-        board->refreshBoardTexture(this);
-    }
 }
 
 /// @brief Adds a `ChessBoard` to the GUI to be rendered and handled
@@ -259,7 +272,6 @@ void ChessGUI::__initalize()
 void ChessGUI::addBoard(ChessBoard* board)
 {
     _boards.push_back(board);
-    board->refreshBoardTexture(this);
 }
 
 /// @brief Reloads all `ChessBoard`'s local textures
@@ -282,9 +294,9 @@ Point ChessGUI::getColumnAndRow(int index)
     return columnAndRow;
 }
 
-Texture2D ChessGUI::getPieceTexture(piece_t currentPiece)
+Texture2D* ChessGUI::getPieceTexture(piece_t currentPiece)
 {
-    return _pieceTextures[_playerPieceToTextureIndexHash[currentPiece]];
+    return &_pieceTextures[_playerPieceToTextureIndexHash[currentPiece]];
 }
 
 Texture2D ChessGUI::getBoardTexture()
@@ -353,13 +365,13 @@ void ChessGUI::_bakeFullGUITexture()
     //       independantly.
 
     // _totalFrames++; // was for debugging,commenting out for now
-    BeginTextureMode(_fullGUITexture);
-    ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
+    // ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
     for (ChessBoard* board: _boards)
     {
         if (board->hasUpdate())
         {
-            // board->refreshBoardTexture();
+            board->refreshBoardTexture(this);
+            BeginTextureMode(_fullGUITexture);
             Texture* boardTexture =  board->getBoardTexture();
             Rectangle source = {
                 0.0f, 0.0f,
@@ -380,10 +392,10 @@ void ChessGUI::_bakeFullGUITexture()
                 0.0f,
                 WHITE
             );
+            EndTextureMode();
         }   
     }
-    EndTextureMode();
-    // _hasChange = false;
+    _hasChange = false;
 }
 
 void ChessGUI::_renderFullGUITexture()
@@ -505,13 +517,11 @@ void ChessGUI::handleMouseUpdates()
 void ChessGUI::runGUI()
 {
     _hasChange = true;
-    _refreshAllBoardTextures();
     while (!WindowShouldClose())
     {
         if (!_boards.empty())
         {
-            // handleMouseUpdates();
-            _bakeFullGUITexture();
+            if (_hasChange) _bakeFullGUITexture();
             BeginDrawing();
             _renderFullGUITexture();
             EndDrawing();

@@ -20,7 +20,7 @@ private:
     RenderTexture2D _currentBoardTexture;
 
     //---// Render Methods
-    void _initalizeBoardTexture(ChessGUI* gui);
+    void _renderBoardTexture(ChessGUI* gui);
     void _renderPiecesToTexture(ChessGUI* gui);
 
     //---// Highlight and Overlays
@@ -109,7 +109,7 @@ public:
     //---// Helper Functions
     Point getColumnAndRow(int index);
     void addBoard(ChessBoard* board);
-    Texture2D getPieceTexture(piece_t currentPiece);
+    Texture2D* getPieceTexture(piece_t currentPiece);
     Texture2D getBoardTexture();
     
     //---// Input
