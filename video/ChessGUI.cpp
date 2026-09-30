@@ -1,7 +1,6 @@
 #include "ChessGUI.h"
 
 //-----// ChessBoard Class Methods //-----//
-
 ChessBoard::ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int boardSize)
 {
     _boardSize      = boardSize;
@@ -64,7 +63,7 @@ void ChessGUI::__initalize()
     // NOTE:
     //     this creates a cache for us to draw to so we dont have to render
     //     the image every frame, but rather only when there is a cahnge
-    _boardFrameCache   = LoadRenderTexture(_screenWidth, _screenHeight);
+    _fullGUITexture   = LoadRenderTexture(_screenWidth, _screenHeight);
 
     _biggestDimesion = std::max({_screenWidth, _screenHeight});
     _maxCellSize  = _biggestDimesion / ROW_COUNT;
@@ -151,13 +150,14 @@ void ChessGUI::_cacheBoardTexture()
 }
 
 /// @brief Renders the full GUI to a texture to be rendered if there are no updates
-void ChessGUI::_renderFullGUICache()
+void ChessGUI::_renderFullGUITexture()
 {
     // TODO: Maybe make this stored in each board and have a setup where only the one board renders
     //       that way if we are simulating hundreds of games and rendering them, they all can draw
     //       independantly.
-    _totalFrames++;
-    BeginTextureMode(_boardFrameCache);
+
+    // _totalFrames++; // was for debugging,commenting out for now
+    BeginTextureMode(_fullGUITexture);
     ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
     for (ChessBoard* board: _boards)
     {
@@ -379,6 +379,19 @@ void ChessGUI::handleKeyboardInputs(ChessBoard& board)
 /// @param board pointer to instance of ChessBoard
 void ChessGUI::handleMouseUpdates(ChessBoard& board)
 {
+    // NOTE | BUG:
+    //     This really should only be called once since there can only be one
+    //     board updated at a time. We should have a way to calculate which
+    //     board we are currently in, and then only check updates for it.
+    //     This would require keeping track of all board positions locally
+    //     or itterating trough each one (less performant I think) and
+    //     only calling that board to draw to cached texture and then
+    //     returning.
+    //
+    //     Right now this is called a ridiculous amount of times for no
+    //     reason and is still following the old structure which is only
+    //     good for when there is one board.
+
     int screenX = GetMouseX();
     int screenY = GetMouseY();
     
@@ -407,7 +420,6 @@ void ChessGUI::handleMouseUpdates(ChessBoard& board)
     if (board.cursorPosition() == mouseCursorPosition) { return; }
 
     board.cursorPosition(mouseCursorPosition);
-    piece_t piece = board.internalChessLogic()->boardState[board.cursorPosition()];
     board.setCurrentHighlightBitboard(
         board.internalChessLogic()->allLegalMoves[mouseCursorPosition]
     );
@@ -428,13 +440,17 @@ void ChessGUI::runGUI()
                 handleMouseUpdates(*board);
             }
 
-            if (_hasChange) _renderFullGUICache();
+            if (_hasChange) _renderFullGUITexture(); //
 
 
+            // NOTE:
+            //     This should be it's own function that is
+            //     specifically for rendering the current
+            //     full GUI texture.
             Rectangle source = {
                 0.0f, 0.0f,
-                (float)_boardFrameCache.texture.width,
-                -(float)_boardFrameCache.texture.height
+                (float)_fullGUITexture.texture.width,
+                -(float)_fullGUITexture.texture.height
             };
             Rectangle destination = {
                 0.0f, 0.0f,
@@ -443,7 +459,7 @@ void ChessGUI::runGUI()
             };
 
             DrawTexturePro(
-                _boardFrameCache.texture,
+                _fullGUITexture.texture,
                 source,
                 destination,
                 {0.0f,0.0f},

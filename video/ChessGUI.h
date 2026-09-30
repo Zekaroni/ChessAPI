@@ -1,7 +1,7 @@
 #include "../include/utils.h"
 #include "../chess/ChessLogic.cpp"
-
 // NOTE: Everthing is top-left oriented for the GUI
+
 class ChessBoard
 {
 private:
@@ -19,7 +19,6 @@ public:
     ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int boardSize);
 
     //---// Setters
-
     void setBoardSize(int size);
     void setBoardPostion(int x, int y); // NOTE: Top-left
     void setCurrentHighlightBitboard(bitboard_t bitboard){_currentHighlightBitboard = bitboard;};
@@ -33,7 +32,6 @@ public:
     
 
     //---// Getters
-
     int boardSize()      const { return _boardSize; };
     int boardX()         const { return _boardX; };
     int boardY()         const { return _boardY; };
@@ -62,22 +60,28 @@ private:
     static constexpr uint8_t playerPieceToTextureIndexHash [16] = {
         255, 0, 1, 2, 3, 4, 5, 255, 255, 6, 7, 8, 9, 10, 11, 255
     };
+
+    //---// Internal Properties Variables
     int _screenWidth;
     int _screenHeight;
     int _biggestDimesion;
     int _maxBoardSize;
     int _maxCellSize;
+
+
     std::vector<ChessBoard*> _boards;
-    std::vector<ChessLogic*> __chessLogicMemorySpace;
     bool _hasChange;
-    RenderTexture2D _boardFrameCache;
+
+    //---// Textures
+    RenderTexture2D _fullGUITexture;
     RenderTexture2D _boardTextureCache;
     Texture2D   _pieceTextures[PIECE_TEXTURE_COUNT] = {};
     
+    //---// Debug variables
     uint64_t _totalFrames = 0; // for debug purposes
+
     
     ///---// Internal Methods
-
     void __initalize();
 
     // Texture caching
@@ -87,7 +91,7 @@ private:
     // Render Methods
     void _renderBoard(ChessBoard& board);
     void _renderPieces(ChessBoard& board);
-    void _renderFullGUICache();
+    void _renderFullGUITexture();
 
     // Highlight and Overlays
     void _highlightCursor(ChessBoard& board);
