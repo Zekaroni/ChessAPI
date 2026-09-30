@@ -14,12 +14,13 @@ private:
     int _cellSize;
     int _boardFontSize;
     int _cursorPosition;
+    bool _hasUpdate;
     ChessLogic* _internalChessLogic = nullptr;
     bitboard_t  _currentHighlightBitboard;
     RenderTexture2D _currentBoardTexture;
 
     //---// Render Methods
-    void _renderBoard();
+    void _initalizeBoardTexture(ChessGUI* gui);
     void _renderPiecesToTexture(ChessGUI* gui);
 
     //---// Highlight and Overlays
@@ -29,6 +30,9 @@ private:
 
 public:
     ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int boardSize);
+    void refreshBoardTexture(ChessGUI* gui);
+    Texture2D* getBoardTexture();
+    bool hasUpdate();
 
     //---// Setters
     void setBoardSize(int size);
@@ -88,6 +92,7 @@ private:
     
     ///---// Internal Methods
     void __initalize();
+    void _refreshAllBoardTextures();
 
     //---// Texture caching
     void _cacheBoardTexture();
@@ -95,7 +100,7 @@ private:
     void _bakeFullGUITexture();
     
     //---// Render Methods
-    void renderFullGUITexture();
+    void _renderFullGUITexture();
 
     
 public:
@@ -105,6 +110,7 @@ public:
     Point getColumnAndRow(int index);
     void addBoard(ChessBoard* board);
     Texture2D getPieceTexture(piece_t currentPiece);
+    Texture2D getBoardTexture();
     
     //---// Input
     void handleKeyboardInputs();

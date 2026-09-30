@@ -13,6 +13,7 @@ ChessBoard::ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int bo
     _cursorPosition = 0;
     _internalChessLogic       = chessInstance;
     _currentHighlightBitboard = (bitboard_t)0;
+    _hasUpdate = true;
 };
 
 
@@ -35,50 +36,55 @@ void ChessBoard::setBoardSize(int size)
     _boardFontSize = _boardSize/(_cellsPerRow*6);
 }
 
-
-/// @brief Draws the passed board to the screen
-/// @param board pointer to instance of ChessBoard
-void ChessBoard::_renderBoard()
+/// @brief Reloads and rerenders entire board texture
+/// @param gui pointer to instance of ChessGUI
+void ChessBoard::refreshBoardTexture(ChessGUI* gui)
 {
-    // NOTE:
-    //     Look into rendering these independantly into textures
-    //     locally in their ChessBoard instance. This way we can
-    //     just render that texture to our full board texture
-    //     which will save on performance.
+    _initalizeBoardTexture(gui);
+    _renderFileRankTextToTexture();
+    _highlightCursor(gui);
+    _hightlightCurrentBitboardCells(gui);
+    _renderPiecesToTexture(gui);
+}
+
+Texture2D* ChessBoard::getBoardTexture()
+{
+    return &_currentBoardTexture.texture;
+}
+
+/// @brief Checks if the board has an update to render
+/// @return True if the board has an update, false otherwise
+bool ChessBoard::hasUpdate()
+{
+    return _hasUpdate;
+}
 
 
-    Rectangle source = {
-        0.0f, 0.0f,
-        (float)_currentBoardTexture.texture.width,
-        -(float)_currentBoardTexture.texture.height
-    };
-    Rectangle destination = {
-        (float)_boardX, (float)_boardY,
-        (float)_boardSize,
-        (float)_boardSize
-    };
-
-    DrawTexturePro(
-        _currentBoardTexture.texture,
-        source,
-        destination,
-        {0.0f,0.0f},
-        0.0f,
-        WHITE
-    );
-};
+/// @brief Creates a board texture that will dynamically render it's own game
+/// @param gui pointer to instance of ChessGUI
+void ChessBoard::_initalizeBoardTexture(ChessGUI* gui)
+{
+    // NOTE: It may be smart to save the texture as a lot smaller of an texture
+    // Copies the board texture as the biggest possible board size
+    _currentBoardTexture = LoadRenderTexture(gui->getBoardTexture().width, gui->getBoardTexture().height);
+    BeginTextureMode(_currentBoardTexture);
+    DrawTexture(gui->getBoardTexture(), 0, 0, WHITE);
+    EndTextureMode();
+}
 
 /// @brief Renders the `ChessBoard`'s pieces to the screen
-/// @param board pointer to instance of ChessBoard
+/// @param board pointer to instance of ChessGUI
 void ChessBoard::_renderPiecesToTexture(ChessGUI* gui)
 {
     // NOTE:
-    //     Same as the "_renderBoard" where we should render these
+    //     Same as the "_initalizeBoardTexture" where we should render these
     //     locally to the texture AND only rerender the piece(s) that
     //     was/were effected
-
+    
     Point position;
     piece_t currentPiece;
+    BeginTextureMode(_currentBoardTexture);
+    DrawTexture(gui->getBoardTexture(), 0, 0, WHITE);
     for (int i = 63; i >= 0; i--)
     {
         currentPiece = _internalChessLogic->boardState[63-i];
@@ -95,8 +101,8 @@ void ChessBoard::_renderPiecesToTexture(ChessGUI* gui)
         };
 
         Rectangle destination = {
-            (float)(_boardX + (position.x) * _cellSize),
-            (float)(_boardY + (position.y) * _cellSize),
+            (float)(position.x * _cellSize),
+            (float)(position.y * _cellSize),
             (float)(_cellSize),
             (float)(_cellSize)
         };
@@ -110,21 +116,20 @@ void ChessBoard::_renderPiecesToTexture(ChessGUI* gui)
             WHITE
         );
     }
+    EndTextureMode();
 }
 
-/// @brief Renders the file and rank text to the board in the GUI
-/// @param board pointer to instance of ChessBoard
+/// @brief Draw the file and rank text to the internal texture
+/// @param gui pointer to instance of ChessGUI
 void ChessBoard::_renderFileRankTextToTexture()
 {
-    // NOTE:
-    //     Read the above functions for the idea
-
+    BeginTextureMode(_currentBoardTexture);
     for(int j = 0; j < _cellsPerRow; j++)
     {
         DrawText(
             TextFormat("%d", _cellsPerRow-j),
-            _boardX,
-            _boardY + (j * _cellSize),
+            0,
+            j * _cellSize,
             _boardFontSize,
             *CHESS_GLOBALS::COLORS::PLAYERS[!(j % 2)]
         );
@@ -136,8 +141,8 @@ void ChessBoard::_renderFileRankTextToTexture()
                 // const char* file = TextFormat("%c", CHESS_GLOBALS::FILES::STRING[i]);
                 // int textWidth = MeasureText(file, board.boardFontSize());
 
-                float x = _boardX + ((float)i + 0.75) * _cellSize;
-                float y = _boardY + ((float)j + 0.75) * _cellSize;
+                float x = ((float)i + 0.75) * _cellSize;
+                float y = ((float)j + 0.75) * _cellSize;
 
                 DrawText(
                     TextFormat("%c", CHESS_GLOBALS::FILES::STRING[i]),
@@ -149,40 +154,39 @@ void ChessBoard::_renderFileRankTextToTexture()
             }
         }
     }
+    EndTextureMode();
 }
 
 
 //---// Highlight Methods
 
 /// @brief Highlights the currently selected cell in the ChessBoard instance
-/// @param board pointer to instance of ChessBoard
+/// @param gui pointer to instance of ChessGUI
 void ChessBoard::_highlightCursor(ChessGUI* gui)
 {
-    // NOTE:
-    //     This one should stay with the GUI I think. Unless
-    //     we want to account for when there are multiple games
-    //     running and want to render each cursor independantly
-
     if (_cursorPosition < 64)
     {
+        BeginTextureMode(_currentBoardTexture);
         Point cursor = gui->getColumnAndRow(_cursorPosition);
         DrawRectangle(
-            _boardX + ((_cellsPerRow - cursor.x - 1) * _cellSize),
-            _boardY + ((_cellsPerRow - cursor.y - 1) * _cellSize),
+            (_cellsPerRow - cursor.x - 1) * _cellSize,
+            (_cellsPerRow - cursor.y - 1) * _cellSize,
             _cellSize,
             _cellSize,
             CHESS_GLOBALS::COLORS::CURSOR
         );
         // loggingHelper.streamToTerminal(std::to_string(board.cursorPosition()) + " ");
+        EndTextureMode();
     }
 }
 
 /// @brief Hightlights the currently selected pieces legal moves
-/// @param board pointer to instance of ChessBoard
+/// @param gui pointer to instance of ChessGUI
 void ChessBoard::_hightlightCurrentBitboardCells(ChessGUI* gui)
 {
     if (_cursorPosition < 64)
     {
+        BeginTextureMode(_currentBoardTexture);
         Point currentPosition;
         for (int i = 63; i >= 0; i--)
         {
@@ -190,14 +194,15 @@ void ChessBoard::_hightlightCurrentBitboardCells(ChessGUI* gui)
             {
                 currentPosition = gui->getColumnAndRow(i);
                 DrawRectangle(
-                    _boardX + ((_cellsPerRow - currentPosition.x - 1) * _cellSize),
-                    _boardY + ((_cellsPerRow - currentPosition.y - 1) * _cellSize),
+                    (_cellsPerRow - currentPosition.x - 1) * _cellSize,
+                    (_cellsPerRow - currentPosition.y - 1) * _cellSize,
                     _cellSize,
                     _cellSize,
                     CHESS_GLOBALS::COLORS::HIGHLIGHT
                 );
             }
         }
+        EndTextureMode();
     }
 }
 
@@ -222,7 +227,7 @@ ChessGUI::ChessGUI(int screenWidth,int screenHeight)
 void ChessGUI::__initalize()
 {
     SetTraceLogLevel(LOG_NONE);
-    // SetTargetFPS(60);
+    SetTargetFPS(60);
 
     InitWindow(_screenWidth, _screenHeight, "Chess");
 
@@ -242,6 +247,11 @@ void ChessGUI::__initalize()
 
     _cachePieceTextures();
     _cacheBoardTexture();
+
+    for (ChessBoard* board: _boards)
+    {
+        board->refreshBoardTexture(this);
+    }
 }
 
 /// @brief Adds a `ChessBoard` to the GUI to be rendered and handled
@@ -249,6 +259,16 @@ void ChessGUI::__initalize()
 void ChessGUI::addBoard(ChessBoard* board)
 {
     _boards.push_back(board);
+    board->refreshBoardTexture(this);
+}
+
+/// @brief Reloads all `ChessBoard`'s local textures
+void ChessGUI::_refreshAllBoardTextures()
+{
+    for (ChessBoard* board: _boards)
+    {
+        board->refreshBoardTexture(this);
+    }
 }
 
 /// @brief Gets the GUI column and row from the `ChessLogic` format of the board
@@ -265,6 +285,11 @@ Point ChessGUI::getColumnAndRow(int index)
 Texture2D ChessGUI::getPieceTexture(piece_t currentPiece)
 {
     return _pieceTextures[_playerPieceToTextureIndexHash[currentPiece]];
+}
+
+Texture2D ChessGUI::getBoardTexture()
+{
+    return _boardTextureCache.texture;
 }
 
 
@@ -332,13 +357,36 @@ void ChessGUI::_bakeFullGUITexture()
     ClearBackground(CHESS_GLOBALS::COLORS::BACKGROUND);
     for (ChessBoard* board: _boards)
     {
-        continue;
+        if (board->hasUpdate())
+        {
+            // board->refreshBoardTexture();
+            Texture* boardTexture =  board->getBoardTexture();
+            Rectangle source = {
+                0.0f, 0.0f,
+                (float)(*boardTexture).width,
+                -(float)(*boardTexture).height
+            };
+            Rectangle destination = {
+                (float)board->boardX(), (float)board->boardY(),
+                (float)board->boardSize(),
+                (float)board->boardSize()
+            };
+
+            DrawTexturePro(
+                *boardTexture,
+                source,
+                destination,
+                {0.0f,0.0f},
+                0.0f,
+                WHITE
+            );
+        }   
     }
     EndTextureMode();
     _hasChange = false;
 }
 
-void ChessGUI::renderFullGUITexture()
+void ChessGUI::_renderFullGUITexture()
 {
     Rectangle source = {
         0.0f, 0.0f,
@@ -456,18 +504,17 @@ void ChessGUI::handleMouseUpdates()
 /// @warning This runs an infinte loop (blocking)
 void ChessGUI::runGUI()
 {
+    _hasChange = true;
     while (!WindowShouldClose())
     {
-        BeginDrawing();
         if (!_boards.empty())
         {
-           handleMouseUpdates();
-
-            if (_hasChange) _bakeFullGUITexture();
-
-            renderFullGUITexture();
+            // handleMouseUpdates();
+            _bakeFullGUITexture();
+            BeginDrawing();
+            _renderFullGUITexture();
+            EndDrawing();
         }
-        EndDrawing();
         // loggingHelper.streamToTerminal(TextFormat("FPS: %d", GetFPS()));
     }
     CloseWindow();
