@@ -40,25 +40,11 @@ void ChessBoard::setBoardSize(int size)
 /// @param gui pointer to instance of ChessGUI
 void ChessBoard::refreshBoardTexture(ChessGUI* gui)
 {
-    loggingHelper.printToTerminal("Starting board initialization\n");
     _initalizeBoardTexture(gui);
-    loggingHelper.printToTerminal("Finished board initialization\n");
-    
-    loggingHelper.printToTerminal("Starting text drawing\n");
     _renderFileRankTextToTexture();
-    loggingHelper.printToTerminal("Finished text drawing\n");
-    
-    loggingHelper.printToTerminal("Highlighting cursor\n");
     _highlightCursor(gui);
-    loggingHelper.printToTerminal("Highlighted cursor\n");
-
-    loggingHelper.printToTerminal("Highlighting legal moves\n");
     _hightlightCurrentBitboardCells(gui);
-    loggingHelper.printToTerminal("Highlighted legal moves\n");
-    
-    loggingHelper.printToTerminal("Drawing pieces\n");
     _renderPiecesToTexture(gui);
-    loggingHelper.printToTerminal("Pieces drawn\n");
 }
 
 Texture2D* ChessBoard::getBoardTexture()
@@ -530,7 +516,7 @@ void ChessGUI::runGUI()
             _renderFullGUITexture();
             EndDrawing();
         }
-        // loggingHelper.streamToTerminal(TextFormat("FPS: %d", GetFPS()));
+        loggingHelper.streamToTerminal(TextFormat("FPS: %d  ", GetFPS()));
     }
     CloseWindow();
 };
