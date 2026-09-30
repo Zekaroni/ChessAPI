@@ -1,5 +1,11 @@
 #include "./video/ChessGUI.cpp"
 
+// BUG:
+//     When having multiple boards, anytime the mouse is moved inside the boards
+//     the FPS stay fairly high, but when moving outside of the board the frames
+//     drop by roughly 90%
+
+
 int main()
 {
     if (loggingHelper.logStartupTime()) loggingHelper.startStartupTimer();

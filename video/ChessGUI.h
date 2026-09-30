@@ -1,7 +1,7 @@
 #include "../include/utils.h"
 #include "../chess/ChessLogic.cpp"
 
-// NOTE: Everthing is top-left oriented
+// NOTE: Everthing is top-left oriented for the GUI
 class ChessBoard
 {
 private:
@@ -18,7 +18,8 @@ private:
 public:
     ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int boardSize);
 
-    // Setters
+    //---// Setters
+
     void setBoardSize(int size);
     void setBoardPostion(int x, int y); // NOTE: Top-left
     void setCurrentHighlightBitboard(bitboard_t bitboard){_currentHighlightBitboard = bitboard;};
@@ -30,7 +31,9 @@ public:
     void boardFontSize(int fontSize) { _boardFontSize  = fontSize; };
     void cursorPosition(int position){ _cursorPosition = position; };
     
-    // Getters
+
+    //---// Getters
+
     int boardSize()      const { return _boardSize; };
     int boardX()         const { return _boardX; };
     int boardY()         const { return _boardY; };
@@ -46,6 +49,19 @@ public:
 class ChessGUI
 {
 private:
+    // NOTE: Storing the baked images in GUI because it isn't
+    // really any part of the logic.
+    static constexpr uint64_t _bakedChessPieceImages[6][32] = {
+        {0},
+        {0},
+        {0},
+        {0},
+        {0},
+        {0}
+    };    
+    static constexpr uint8_t playerPieceToTextureIndexHash [16] = {
+        255, 0, 1, 2, 3, 4, 5, 255, 255, 6, 7, 8, 9, 10, 11, 255
+    };
     int _screenWidth;
     int _screenHeight;
     int _biggestDimesion;
@@ -57,36 +73,42 @@ private:
     RenderTexture2D _boardFrameCache;
     RenderTexture2D _boardTextureCache;
     Texture2D   _pieceTextures[PIECE_TEXTURE_COUNT] = {};
-
+    
     uint64_t _totalFrames = 0; // for debug purposes
+    
+    ///---// Internal Methods
+
+    void __initalize();
+
+    // Texture caching
+    void _cacheBoardTexture();
+    void _cachePieceTextures();
+    
+    // Render Methods
+    void _renderBoard(ChessBoard& board);
+    void _renderPieces(ChessBoard& board);
+    void _renderFullGUICache();
+
+    // Highlight and Overlays
+    void _highlightCursor(ChessBoard& board);
+    void _hightlightCurrentBitboardCells(ChessBoard& board);
+    void _renderFileRankText(ChessBoard& board);
     
 public:
     ChessGUI(int screenWidth, int screenHeight);
-    void initalize();
     Point getColumnAndRow(int index);
 
     // Add a board to the GUI
     void addBoard(ChessBoard* board);
     
-    // Texture caching
-    void cacheBoardTexture();
-    void cachePieceTextures();
-
     // Input
-    void handleInputs(ChessBoard& board);
-    void handleMouse(ChessBoard& board);
+    void handleKeyboardInputs(ChessBoard& board);
+    void handleMouseUpdates(ChessBoard& board);
+    
 
-    // NOTE: The idea is there can be multiple boards that all have different
-    //       states and we can render them individually
-
-    // Render Methods
-    void renderBoard(ChessBoard& board);
-    void renderPieces(ChessBoard& board);
-    void renderBoardCache();
-    // Highlight and Overlays
-    void highlightCursor(ChessBoard& board);
-    void hightlightCurrentBitboardCells(ChessBoard& board);
-    void renderFileRankText(ChessBoard& board);
+    // Internal Chess API Calls
+    bool movePiece();
+    void updateAllLegalMoves();
 
     void runGUI();
 };
