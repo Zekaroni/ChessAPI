@@ -1,6 +1,6 @@
 #include "../include/utils.h"
 #include "../chess/ChessLogic.cpp"
-
+#pragma once
 // NOTE: Everthing is top-left oriented
 class ChessBoard
 {
@@ -62,6 +62,7 @@ private:
     
 public:
     ChessGUI(int screenWidth, int screenHeight);
+    //Screen Size
     void initalize();
     Point getColumnAndRow(int index);
 

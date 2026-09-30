@@ -1,17 +1,16 @@
 #include "./video/ChessGUI.cpp"
-
+#include "./devtool/Devtool.cpp"
 int main()
 {
     if (loggingHelper.logStartupTime()) loggingHelper.startStartupTimer();
 
     
-    int screenSize  = 920;
-    ChessGUI chessGUI(screenSize, screenSize);
+    int screenSize  = 900;
+    ChessGUI chessGUI(screenSize+500, screenSize);
     ChessLogic chess;
     ChessBoard board(&chess,0,0,screenSize);
     chessGUI.addBoard(&board);
     chess.loadFEN("1r2qrk1/pN4p1/2b1p2p/3nN3/P2P1p2/Q7/1P3PPP/R2R2K1 b");
-    
     // int chessGridAmount = 8;
     // const int chessGameCount = 64;
     // std::vector<ChessLogic> chessGames;
