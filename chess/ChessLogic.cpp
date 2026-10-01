@@ -5,6 +5,8 @@ ChessLogic::ChessLogic()
     loadFEN(CHESS_GLOBALS::STARTING_FEN_STRING);
     currentPlayer = WHITESIDE;
     loggingHelper.debug_pieces(boardState);
+    calculateEdge();
+    getRookBlockerBitBoards();
 }
 
 void ChessLogic::loadFEN(std::string fenString)
@@ -180,7 +182,7 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
             ;
         break;
         case CHESS_GLOBALS::PIECES::ROOK:
-            legalMoves = rookPositions[position];
+            legalMoves = rookBlockerConfigurations[55];// rookBlockerConfigurations[500];
         break;
         case CHESS_GLOBALS::PIECES::QUEEN:
             legalMoves = queenPositions[position];
@@ -200,17 +202,20 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
 //Magic Bitboards function
 void ChessLogic::getRookBlockerBitBoards()
 {
-    bitboard_t rookWithOutEdge = ((edgeBitBoard&rookPositions[28])^rookPositions[28]);
+    bitboard_t rookWithOutEdge = (rookPositions[28]);
     bitboard_t subset = rookWithOutEdge;
     for (int i = 0;i<sizeof(rookBlockerConfigurations)/sizeof(bitboard_t);i++)
     {
-        int counter = 0;
-        while (true)
-        {
-           // rookWithOutEdge[i] =| 1<<counter
-            counter++;
-        }
+        rookBlockerConfigurations[i] = subset;
+        rookLegalMoveConfigurations[i] = rookBlockerConfigurations[i]^rookPositions[28];
         subset = (subset-1)&rookWithOutEdge;
+        for (int i = 0;i<8;i++)
+        {
+            if (rookLegalMoveConfigurations[i] << i*8 & 0)
+            {
+                rookLegalMoveConfigurations[i] |= 1<<i*8;
+            }
+        }
     }
 }
 
