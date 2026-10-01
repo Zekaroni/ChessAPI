@@ -42,7 +42,6 @@ void ChessLogic::loadFEN(std::string fenString)
     occupiedBitboards[0] = 0;
     occupiedBitboards[1] = 0;
     generateBlackAndWhiteOccupiedBitboards();
-    getRookLegalMoves();
 }
 
 void ChessLogic::generateBlackAndWhiteOccupiedBitboards()
@@ -184,7 +183,7 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
             ;
         break;
         case CHESS_GLOBALS::PIECES::ROOK:
-            legalMoves = rookLegalMoveConfigurations[800];// rookBlockerConfigurations[500];
+            legalMoves = rookLegalMoveConfigurations[254];// rookBlockerConfigurations[500];
         break;
         case CHESS_GLOBALS::PIECES::QUEEN:
             legalMoves = queenPositions[position];
@@ -216,27 +215,52 @@ void ChessLogic::getRookLegalMoves()
 {
     //for (int i = 0; i < 1024; i++)
    // {
-        int i = 800;
-        int j = 1;
-       //for (int j = 0;j<8;j++)
-       //{
-            uint64_t mask = 1ULL << (29+j);
-            if ((mask&rookBlockerConfigurations[i])!=0)
+        int i = 254;
+        int j = 0;
+        bool topFound = false;
+        bool bottomFound = false;
+        bool rightFound = false;
+        bool leftFound = false;
+       for (int j = 0;j<4;j++)
+       {
+            bitboard_t mask = 1ULL << (29+j);
+            bitboard_t maskedBitboard = mask&rookBlockerConfigurations[i];
+            if ((mask&((rookBlockerConfigurations[i]))!=0) && !leftFound)
             {
-                //break;
-            }else
+                leftFound = true;
+            }else if (!leftFound)
             {
+                
                 rookLegalMoveConfigurations[i] |= mask;
             }
-            // if (!((rookBlockerConfigurations[i]&mask) != 0))
-            // {
-               // rookLegalMoveConfigurations[i] |= mask;
-               //rookLegalMoveConfigurations[i] |= (bitboard_t)1<<j+29;
-            // }else
-            // {
-            //     break;
-            // }
-      // }
+            mask = 1ULL << (29-j);
+            if (((mask&rookBlockerConfigurations[i])!=0) && !rightFound)
+            {
+                rightFound = true;
+            }else if (!rightFound)
+            {
+                
+                rookLegalMoveConfigurations[i] |= mask;
+            }
+            mask = 1ULL << (28+j*8);
+            if (((mask&rookBlockerConfigurations[i])!=0) && !topFound)
+            {
+                topFound = true;
+            }else if (!topFound)
+            {
+                
+                rookLegalMoveConfigurations[i] |= mask;
+            }
+            mask = 1ULL << (28-j*8);
+            if (((mask&rookBlockerConfigurations[i])!=0) && !bottomFound)
+            {
+                bottomFound = true;
+            }else if (!bottomFound)
+            {
+                
+                rookLegalMoveConfigurations[i] |= mask;
+            }
+       }
 
    // }
     
