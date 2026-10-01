@@ -1,6 +1,6 @@
 #include "../include/utils.h"
 #include "../chess/ChessLogic.cpp"
-
+#pragma once
 // NOTE: Everthing is top-left oriented
 class ChessBoard
 {
@@ -48,20 +48,29 @@ class ChessGUI
 private:
     int _screenWidth;
     int _screenHeight;
+    int _biggestDimesion;
+    int _maxBoardSize;
+    int _maxCellSize;
     std::vector<ChessBoard*> _boards;
+    std::vector<ChessLogic*> __chessLogicMemorySpace;
     bool _hasChange;
     RenderTexture2D _boardFrameCache;
+    RenderTexture2D _boardTextureCache;
     Texture2D   _pieceTextures[PIECE_TEXTURE_COUNT] = {};
 
     uint64_t _totalFrames = 0; // for debug purposes
     
 public:
     ChessGUI(int screenWidth, int screenHeight);
+    //Screen Size
     void initalize();
     Point getColumnAndRow(int index);
 
     // Add a board to the GUI
-    void addBoard(ChessBoard& board);
+    void addBoard(ChessBoard* board);
+    
+    // Texture caching
+    void cacheBoardTexture();
     void cachePieceTextures();
 
     // Input

@@ -1,6 +1,6 @@
-rm main.exe
+rm ./bin/main.exe
 git pull
 
 ./scripts/windows/compile.sh
 
-./main.exe
+./bin/main.exe

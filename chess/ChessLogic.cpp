@@ -5,6 +5,8 @@ ChessLogic::ChessLogic()
     loadFEN(CHESS_GLOBALS::STARTING_FEN_STRING);
     currentPlayer = WHITESIDE;
     loggingHelper.debug_pieces(boardState);
+    calculateEdge();
+    getRookBlockerBitBoards();
 }
 
 void ChessLogic::loadFEN(std::string fenString)
@@ -177,9 +179,10 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
         break;
         case CHESS_GLOBALS::PIECES::BISHOP:
             legalMoves = bishopPositions[position];
+            ;
         break;
         case CHESS_GLOBALS::PIECES::ROOK:
-            legalMoves = rookPositions[position];
+            legalMoves = rookBlockerConfigurations[55];// rookBlockerConfigurations[500];
         break;
         case CHESS_GLOBALS::PIECES::QUEEN:
             legalMoves = queenPositions[position];
@@ -196,31 +199,48 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
 } 
 
 
-// Beautiful function to derive moves
- void ChessLogic::calculateBlackPawnMoves()
- {
-    for (int i = 63; i >= 0; i--) // Loops through all squares
+//Magic Bitboards function
+void ChessLogic::getRookBlockerBitBoards()
+{
+    bitboard_t rookWithOutEdge = (rookPositions[28]);
+    bitboard_t subset = rookWithOutEdge;
+    for (int i = 0;i<sizeof(rookBlockerConfigurations)/sizeof(bitboard_t);i++)
     {
+        rookBlockerConfigurations[i] = subset;
+        rookLegalMoveConfigurations[i] = rookBlockerConfigurations[i]^rookPositions[28];
+        subset = (subset-1)&rookWithOutEdge;
+        for (int i = 0;i<8;i++)
+        {
+            if (rookLegalMoveConfigurations[i] << i*8 & 0)
+            {
+                rookLegalMoveConfigurations[i] |= 1<<i*8;
+            }
+        }
+    }
+}
+
+
+// Beautiful function to derive moves
+ void ChessLogic::calculateEdge()
+ {
+   // for (int i = 63; i >= 0; i--) // Loops through all squares
+   // {
         bitboard_t currentBoard = {0};
-        int y = int(i/8); 
-        int x = int(i%8);
+       // int y = int(i/8); 
+       // int x = int(i%8);
         for (int j=0;j<64;j++) 
         {
             int currentY = int(j/8);
             int currentX = int(j%8);
-            if (currentY < y && y <= 6) // checks if the slope is 1 or -1
-            {
-                if (y == 6 && currentY == 6-2 && currentX == x)  
-                {   
-                    currentBoard |= (uint64_t)1<<j; // appends the legal square
-                }
-                if (y-1 <= 7 && currentY == y-1 &&  (currentX == x || currentX == x+1 || currentX == x-1))
+           // if (currentY < y && y <= 6) // checks if the slope is 1 or -1
+           // {
+                if((currentX == 0 || currentX == 7) || (currentY == 0 || currentY == 7))
                 {
-                    currentBoard |= (uint64_t)1<<j; // appends the legal square
+                    currentBoard |= (uint64_t)1<<j;
                 }
-            }
+           // }
         }
         // std::cout << currentBoard << "ULL," <<std::endl;
-        // blackPawnPositions[i] = currentBoard;
-    }
+        edgeBitBoard = currentBoard;
+    //}
  }
