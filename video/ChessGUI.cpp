@@ -254,7 +254,7 @@ ChessGUI::ChessGUI(int screenWidth,int screenHeight)
 void ChessGUI::__initalize()
 {
     SetTraceLogLevel(LOG_NONE);
-    // SetTargetFPS(60);
+    SetTargetFPS(60);
 
     InitWindow(_screenWidth, _screenHeight, "Chess");
 

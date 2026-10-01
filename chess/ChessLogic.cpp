@@ -7,6 +7,7 @@ ChessLogic::ChessLogic()
     loggingHelper.debug_pieces(boardState);
     calculateEdge();
     getRookBlockerBitBoards();
+    getRookLegalMoves();
 }
 
 void ChessLogic::loadFEN(std::string fenString)
@@ -41,6 +42,7 @@ void ChessLogic::loadFEN(std::string fenString)
     occupiedBitboards[0] = 0;
     occupiedBitboards[1] = 0;
     generateBlackAndWhiteOccupiedBitboards();
+    getRookLegalMoves();
 }
 
 void ChessLogic::generateBlackAndWhiteOccupiedBitboards()
@@ -182,7 +184,7 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
             ;
         break;
         case CHESS_GLOBALS::PIECES::ROOK:
-            legalMoves = rookBlockerConfigurations[55];// rookBlockerConfigurations[500];
+            legalMoves = rookLegalMoveConfigurations[800];// rookBlockerConfigurations[500];
         break;
         case CHESS_GLOBALS::PIECES::QUEEN:
             legalMoves = queenPositions[position];
@@ -202,23 +204,43 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
 //Magic Bitboards function
 void ChessLogic::getRookBlockerBitBoards()
 {
-    bitboard_t rookWithOutEdge = (rookPositions[28]);
+    bitboard_t rookWithOutEdge = ~(rookPositions[28]&edgeBitBoard)&rookPositions[28];
     bitboard_t subset = rookWithOutEdge;
     for (int i = 0;i<sizeof(rookBlockerConfigurations)/sizeof(bitboard_t);i++)
     {
         rookBlockerConfigurations[i] = subset;
-        rookLegalMoveConfigurations[i] = rookBlockerConfigurations[i]^rookPositions[28];
         subset = (subset-1)&rookWithOutEdge;
-        for (int i = 0;i<8;i++)
-        {
-            if (rookLegalMoveConfigurations[i] << i*8 & 0)
-            {
-                rookLegalMoveConfigurations[i] |= 1<<i*8;
-            }
-        }
     }
 }
+void ChessLogic::getRookLegalMoves()
+{
+    //for (int i = 0; i < 1024; i++)
+   // {
+        int i = 800;
+        int j = 1;
+       //for (int j = 0;j<8;j++)
+       //{
+            uint64_t mask = 1ULL << (29+j);
+            if ((mask&rookBlockerConfigurations[i])!=0)
+            {
+                //break;
+            }else
+            {
+                rookLegalMoveConfigurations[i] |= mask;
+            }
+            // if (!((rookBlockerConfigurations[i]&mask) != 0))
+            // {
+               // rookLegalMoveConfigurations[i] |= mask;
+               //rookLegalMoveConfigurations[i] |= (bitboard_t)1<<j+29;
+            // }else
+            // {
+            //     break;
+            // }
+      // }
 
+   // }
+    
+}
 
 // Beautiful function to derive moves
  void ChessLogic::calculateEdge()
