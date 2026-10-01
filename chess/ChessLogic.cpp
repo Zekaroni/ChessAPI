@@ -9,7 +9,7 @@ ChessLogic::ChessLogic()
     int thing = 28;
     getRookBlockerBitBoards(thing);
     getRookLegalMoves(thing);
-    generateRookMoveTable();
+    //generateRookMoveTable();
 }
 
 void ChessLogic::loadFEN(std::string fenString)
@@ -185,7 +185,7 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
             ;
         break;
         case CHESS_GLOBALS::PIECES::ROOK:
-            legalMoves = rookLegalMoveConfigurations[1];
+            legalMoves = rookLegalMoveConfigurations[200];
         break;
         case CHESS_GLOBALS::PIECES::QUEEN:
             legalMoves = queenPositions[position];
@@ -219,25 +219,24 @@ void ChessLogic::getRookBlockerBitBoards(int index)
     bitboard_t rookWithOutEdge = rookPositions[index];
     if (pos.x != 0 && pos.x != 7)
     {
-        rookWithOutEdge&~(rookPositions[index]&edgeBitBoard[0]);
+        rookWithOutEdge = rookWithOutEdge&~(rookPositions[index]&edgeBitBoard[0]);
     }
-    if (pos.y != 0 && pos.x != 7)
+    if (pos.y != 0 && pos.y != 7)
     {
-        rookWithOutEdge&~(rookPositions[index]&edgeBitBoard[1]);
+        rookWithOutEdge = rookWithOutEdge&~(rookPositions[index]&edgeBitBoard[1]);
     }
-    bitboard_t subset = rookWithOutEdge;
     int counter = 0;
-    for (bitboard_t subset = rookWithOutEdge;subset;subset=(rookWithOutEdge-1)&rookWithOutEdge)
+    for (bitboard_t subset = rookWithOutEdge;subset;subset=(subset-1)&rookWithOutEdge)
     {
-        rookBlockerConfigurations[counter] = subset;
-        subset = (subset-1)&rookWithOutEdge;
-        counter++;
+        rookBlockerConfigurations.push_back(subset);
     }
+    rookBlockerConfigurations.push_back(0);
 }
 void ChessLogic::getRookLegalMoves(int index)
 {
     for (int i = 0; i < 1024; i++)
     {
+        bitboard_t currentBitboard = 0;
         //dir
         for (int topDir = 1;topDir < 8;topDir++)
         {
@@ -248,7 +247,7 @@ void ChessLogic::getRookLegalMoves(int index)
                 break;
             }else
             {
-                rookLegalMoveConfigurations[i] |= mask;
+                currentBitboard |= mask;
             }
         }
         for (int bottomDir = 1;bottomDir < 8;bottomDir++)
@@ -260,7 +259,7 @@ void ChessLogic::getRookLegalMoves(int index)
                 break;
             }else
             {
-                rookLegalMoveConfigurations[i] |= mask;
+                currentBitboard |= mask;
             }
         }
         for (int leftDir = 1;leftDir < 8;leftDir++)
@@ -272,7 +271,7 @@ void ChessLogic::getRookLegalMoves(int index)
                 break;
             }else
             {
-                rookLegalMoveConfigurations[i] |= mask;
+                currentBitboard |= mask;
             }
         }
         for (int rightDir = 1;rightDir < 8;rightDir++)
@@ -284,9 +283,10 @@ void ChessLogic::getRookLegalMoves(int index)
                 break;
             }else
             {
-                rookLegalMoveConfigurations[i] |= mask;
+                currentBitboard |= mask;
             }
         }
+        rookLegalMoveConfigurations.push_back(currentBitboard);
     }
 }
 
