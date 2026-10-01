@@ -1,9 +1,11 @@
+#pragma once
 #include "../include/utils.h"
 #include "../chess/ChessLogic.cpp"
 // NOTE: Everthing is top-left oriented for the GUI
 
 class ChessGUI;
 
+// NOTE: Everthing is top-left oriented
 class ChessBoard
 {
 private:

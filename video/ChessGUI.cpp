@@ -244,7 +244,7 @@ ChessGUI::ChessGUI(int screenWidth,int screenHeight)
 {
     _screenWidth  = screenWidth;
     _screenHeight = screenHeight;
-    _hasChange    = true; // to render first frame
+    _hasChange    = true;
     
     __initalize();
 };
