@@ -8,7 +8,6 @@ ChessLogic::ChessLogic()
     calculateEdge();
     int thing = 28;
     getRookBlockerBitBoards(thing);
-    getRookLegalMoves(thing);
     //generateRookMoveTable();
 }
 
@@ -207,8 +206,7 @@ void ChessLogic::generateRookMoveTable()
 {
     for (int i = 0;i < 64;i++)
     {
-        getRookBlockerBitBoards(i);
-        getRookLegalMoves(i);
+        //getRookBlockerBitBoards(i);
     }
 }
 
@@ -226,15 +224,7 @@ void ChessLogic::getRookBlockerBitBoards(int index)
         rookWithOutEdge = rookWithOutEdge&~(rookPositions[index]&edgeBitBoard[1]);
     }
     int counter = 0;
-    for (bitboard_t subset = rookWithOutEdge;subset;subset=(subset-1)&rookWithOutEdge)
-    {
-        rookBlockerConfigurations.push_back(subset);
-    }
-    rookBlockerConfigurations.push_back(0);
-}
-void ChessLogic::getRookLegalMoves(int index)
-{
-    for (int i = 0; i < 1024; i++)
+    for (bitboard_t rookBlockerConfigurations = rookWithOutEdge;rookBlockerConfigurations;rookBlockerConfigurations=(rookBlockerConfigurations-1)&rookWithOutEdge)
     {
         bitboard_t currentBitboard = 0;
         //dir
@@ -242,7 +232,7 @@ void ChessLogic::getRookLegalMoves(int index)
         {
             bitboard_t mask = (bitboard_t)1<<index+topDir*8;
             if (getFileAndRank(index+topDir).y > 7){break;}
-            if ((mask&rookBlockerConfigurations[i])!=0)
+            if ((mask&rookBlockerConfigurations)!=0)
             {
                 break;
             }else
@@ -254,7 +244,7 @@ void ChessLogic::getRookLegalMoves(int index)
         {
             bitboard_t mask = (bitboard_t)1<<index-bottomDir*8;
             if (getFileAndRank(index+bottomDir).y <= 0){break;}
-            if ((mask&rookBlockerConfigurations[i])!=0)
+            if ((mask&rookBlockerConfigurations)!=0)
             {
                 break;
             }else
@@ -266,7 +256,7 @@ void ChessLogic::getRookLegalMoves(int index)
         {
             bitboard_t mask = (bitboard_t)1<<(index+leftDir);
             if (getFileAndRank(index+leftDir).x >= 7){break;}
-            if ((mask&rookBlockerConfigurations[i])!=0)
+            if ((mask&rookBlockerConfigurations)!=0)
             {
                 break;
             }else
@@ -278,7 +268,7 @@ void ChessLogic::getRookLegalMoves(int index)
         {
             if (getFileAndRank(index-rightDir).x <= 0){break;}
             bitboard_t mask = (bitboard_t)1<<(index-rightDir);
-            if ((mask&rookBlockerConfigurations[i])!=0)
+            if ((mask&rookBlockerConfigurations)!=0)
             {
                 break;
             }else
