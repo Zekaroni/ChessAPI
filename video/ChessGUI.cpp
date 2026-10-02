@@ -14,6 +14,7 @@ ChessBoard::ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int bo
     _internalChessLogic       = chessInstance;
     _currentLegalMoves = (bitboard_t)0;
     _hasUpdate = true;
+    _initBoardTexture();
 };
 
 
@@ -43,6 +44,13 @@ void ChessBoard::setCurrentLegalMoves(bitboard_t legalMoves)
     _currentLegalMoves = legalMoves;
 }
 
+/// @brief Creates a texture the size of the board in memory
+void ChessBoard::_initBoardTexture()
+{
+    if (_currentBoardTexture.texture.id != 0) UnloadRenderTexture(_currentBoardTexture);
+    _currentBoardTexture = LoadRenderTexture(_boardSize, _boardSize);
+}
+
 /// @brief Reloads and rerenders entire board texture
 /// @param gui pointer to instance of ChessGUI
 void ChessBoard::refreshBoardTexture(ChessGUI* gui)
@@ -51,8 +59,6 @@ void ChessBoard::refreshBoardTexture(ChessGUI* gui)
         internalChessLogic()->boardState[_cursorPosition],
         _cursorPosition
     );
-    if (_currentBoardTexture.texture.id != 0) UnloadRenderTexture(_currentBoardTexture);
-    _currentBoardTexture = LoadRenderTexture(_boardSize, _boardSize);
     
     BeginTextureMode(_currentBoardTexture);
 
@@ -512,13 +518,13 @@ void ChessGUI::handleMouseUpdates()
                 board->hasUpdate(true);
                 _hasChange = true;
             }
-            return;
+            continue;;
         }
         mouse_boardX = ((screenX  - board->boardX()) / board->cellSize()) + 1;
         mouse_boardY = (screenY - board->boardY()) / board->cellSize();
         mouseCursorPosition = board->internalChessLogic()->getIndex({mouse_boardX, mouse_boardY});
 
-        if (board->cursorPosition() == mouseCursorPosition) { return; }
+        if (board->cursorPosition() == mouseCursorPosition) { continue; }
 
         board->cursorPosition(mouseCursorPosition);
         board->setCurrentLegalMoves(

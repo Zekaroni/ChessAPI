@@ -7,8 +7,8 @@ int main()
     if (loggingHelper.logStartupTime()) loggingHelper.startStartupTimer();
     loggingHelper.globalLog(true);
     
-    int screenSize = 900;
-    int chessGameCount = 10000;
+    int screenSize = 1000;
+    int chessGameCount = 100'000;
 
     int chessGridAmount = (int)std::sqrt(chessGameCount);
 
@@ -26,13 +26,13 @@ int main()
     {
         for (int i = 0; i < chessGridAmount; i++)
         {
-            chessGames.emplace_back();
-            chessBoards.emplace_back(ChessBoard(&chessGames[i], {i * boardSpacing}, (j * boardSpacing), boardSpacing));
-            chessGUI.addBoard(&chessBoards.back());
+            chessGames.push_back(*(new ChessLogic()));
+            chessBoards.emplace_back(*(new ChessBoard(&chessGames[i+(chessGridAmount*j)], {i * boardSpacing}, (j * boardSpacing), boardSpacing)));
+            chessGUI.addBoard(&chessBoards[i+(chessGridAmount*j)]);
         }
     }
     
-    // chessGames[0].loadFEN("1r2qrk1/pN4p1/2b1p2p/3nN3/P2P1p2/Q7/1P3PPP/R2R2K1 b");
+    chessGames[0].loadFEN("1r2qrk1/pN4p1/2b1p2p/3nN3/P2P1p2/Q7/1P3PPP/R2R2K1 b");
     
     
     if (loggingHelper.logStartupTime())

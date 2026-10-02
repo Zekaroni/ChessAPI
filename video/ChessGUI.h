@@ -21,6 +21,8 @@ private:
     bitboard_t  _currentLegalMoves;
     RenderTexture2D _currentBoardTexture;
 
+    void _initBoardTexture();
+
     //---// Render Methods
     void _renderBoardTexture(ChessGUI* gui);
     void _renderPiecesToTexture(ChessGUI* gui);
