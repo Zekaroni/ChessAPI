@@ -1,7 +1,7 @@
 from PIL import Image
 
 piecesPath = "../../../assets/images/"
-pieceNames = ["p", "k", "b", "r", "q", "k"]
+pieceNames = ["p", "n", "b", "r", "q", "k"]
 
 colorLookup = {
     (0, 0, 0, 0):         0,
