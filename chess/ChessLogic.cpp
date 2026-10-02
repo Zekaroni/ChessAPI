@@ -6,8 +6,7 @@ ChessLogic::ChessLogic()
     currentPlayer = WHITESIDE;
     loggingHelper.debug_pieces(boardState);
     calculateEdge();
-    int thing = 28;
-    getRookBlockerBitBoards(thing);
+    getRookBlockerBitBoards(28);
     //generateRookMoveTable();
 }
 
