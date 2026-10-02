@@ -353,6 +353,8 @@ void ChessGUI::_cachePieceTextures()
                 uint64_t pieceColorIndex;
                 Color pieceColor;
                 pieceColorIndex = currentRowValue >> ((31 - x) * 2) & 0b11;
+                pieceColor = _pieceColors[pieceColorIndex];
+
                 if (i > 5)
                 {
                     if ((pieceColorIndex > 0) && (pieceColorIndex < 3))
@@ -365,11 +367,7 @@ void ChessGUI::_cachePieceTextures()
                         pieceColor.r = 255 - pieceColor.r;
                         pieceColor.g = 255 - pieceColor.g;
                         pieceColor.b = 255 - pieceColor.b;
-                    } else {
-                        pieceColor = _pieceColors[pieceColorIndex];
                     }
-                } else {
-                    pieceColor = _pieceColors[pieceColorIndex];
                 }
 
                 DrawPixel(
