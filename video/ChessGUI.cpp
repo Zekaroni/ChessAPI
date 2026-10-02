@@ -10,7 +10,7 @@ ChessBoard::ChessBoard(ChessLogic* chessInstance, int boardX, int boardY, int bo
     _cellSize       = boardSize / 8;
     _boardSize      = _cellSize * 8;
     _boardFontSize  = _cellSize / 4;
-    _cursorPosition = 0; // none selected state
+    _cursorPosition = 64; // none selected state
     _internalChessLogic       = chessInstance;
     _currentLegalMoves = (bitboard_t)0;
     _hasUpdate = true;
@@ -254,9 +254,10 @@ ChessGUI::ChessGUI(int screenWidth,int screenHeight)
 void ChessGUI::__initalize()
 {
     SetTraceLogLevel(LOG_NONE);
-    // SetTargetFPS(60);
-
+    SetTargetFPS(60);
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(_screenWidth, _screenHeight, "Chess");
+    
 
     // NOTE:
     //     this creates a cache for us to draw to so we dont have to render
@@ -537,8 +538,16 @@ void ChessGUI::runGUI()
     // _currentBoardSelected = _boards[0];
     while (!WindowShouldClose())
     {
+        if (IsWindowResized())
+        {
+            _screenWidth = GetScreenWidth();
+            _screenHeight = GetScreenHeight();
+        }
+
         handleMouseUpdates();
+
         if (_hasChange) _bakeFullGUITexture();
+
         BeginDrawing();
         _renderFullGUITexture();
         EndDrawing();
