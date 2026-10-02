@@ -153,7 +153,7 @@ void ChessBoard::_renderPiecesToTexture(ChessGUI* gui)
             destination,
             {0.0f,0.0f},
             0.0f,
-            WHITE
+            {255,255,255,255}
         );
     }
 }
@@ -330,11 +330,10 @@ Texture2D ChessGUI::getBoardTexture()
 /// @brief Caches all of the piece textures to `_pieceTextures` for better performance
 void ChessGUI::_cachePieceTextures()
 {
-    Image img;
-    std::string pathString;
     bool unloadTextures = _pieceTextures[0].id > 0;
+    RenderTexture2D pieceTexture;
     
-    for (int i = 0; i < PIECE_TEXTURE_COUNT/2;i++)
+    for (int i = 0; i < PIECE_TEXTURE_COUNT; i++)
     {
         if (unloadTextures)
         {
@@ -343,12 +342,44 @@ void ChessGUI::_cachePieceTextures()
             _pieceTextures[i] = {};
             _pieceTextures[i+6] = {};
         }
-        pathString = std::string("./assets/images/") + CHESS_GLOBALS::INDEX_TO_FEN_LETTER[i+1] + ".png";
-        img = LoadImage(pathString.c_str());
-        _pieceTextures[i] = LoadTextureFromImage(img); // black pieces
-        ImageColorInvert(&img);  // for white pieces
-        _pieceTextures[i+6] = LoadTextureFromImage(img);
-        UnloadImage(img);
+        pieceTexture = LoadRenderTexture(32, 32);
+        BeginTextureMode(pieceTexture);
+        uint64_t currentRowValue = 0;
+        for (int y = _pieceTextreSize; y >= 0; y--)
+        {
+            currentRowValue = _bakedChessPieceBin[i % 6][31 - y];
+            for (int x = _pieceTextreSize; x >= 0; x--)
+            {
+                uint64_t pieceColorIndex;
+                Color pieceColor;
+                pieceColorIndex = currentRowValue >> ((31 - x) * 2) & 0b11;
+                if (i > 5)
+                {
+                    if ((pieceColorIndex > 0) && (pieceColorIndex < 3))
+                    {
+                        if (pieceColorIndex == 1) pieceColorIndex = 2;
+                        else pieceColorIndex = 1;
+                        pieceColor = _pieceColors[pieceColorIndex];
+                    } else if (pieceColorIndex == 3) {
+                        pieceColor = _pieceColors[pieceColorIndex];
+                        pieceColor.r = 255 - pieceColor.r;
+                        pieceColor.g = 255 - pieceColor.g;
+                        pieceColor.b = 255 - pieceColor.b;
+                    } else {
+                        pieceColor = _pieceColors[pieceColorIndex];
+                    }
+                } else {
+                    pieceColor = _pieceColors[pieceColorIndex];
+                }
+
+                DrawPixel(
+                    x, y, 
+                    pieceColor
+                );
+            }
+        }
+        EndTextureMode();
+        _pieceTextures[i] = pieceTexture.texture;
     }
 }
 

@@ -1,6 +1,5 @@
 #include "./video/ChessGUI.cpp"
 #include "./devtool/Devtool.cpp"
-#include <thread>
 
 int main()
 {
@@ -32,7 +31,7 @@ int main()
         }
     }
     
-    chessGames[0].loadFEN("8/8/8/8/3R4/8/8/8 b");
+    // chessGames[0].loadFEN("8/8/8/8/3R4/8/8/8 b");
     
     
     if (loggingHelper.logStartupTime())
