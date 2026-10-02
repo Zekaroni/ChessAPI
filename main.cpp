@@ -1,31 +1,34 @@
 #include "./video/ChessGUI.cpp"
 #include "./devtool/Devtool.cpp"
+#include <thread>
+
 int main()
 {
     if (loggingHelper.logStartupTime()) loggingHelper.startStartupTimer();
     loggingHelper.globalLog(true);
     
-    int screenSize  = 900;
-    ChessGUI chessGUI(screenSize, screenSize);
-    
-    int chessGameCount = 1;
-    int chessGridAmount = std::sqrt(chessGameCount);
+    int screenSize = 1000;
+    int chessGameCount = 100'000;
+
+    int chessGridAmount = (int)std::sqrt(chessGameCount);
+
+    int boardSpacing = screenSize / chessGridAmount;
+    screenSize = boardSpacing * chessGridAmount;
     chessGameCount = chessGridAmount * chessGridAmount;
-    loggingHelper.printToTerminal(std::to_string(chessGameCount));
+
+    ChessGUI chessGUI(screenSize, screenSize);
     std::vector<ChessLogic> chessGames;
     std::vector<ChessBoard> chessBoards;
 
-    
-    int boardSpacing = screenSize / chessGridAmount;
     chessGames.reserve(chessGameCount);
     chessBoards.reserve(chessGameCount);
     for (int j = 0; j < chessGridAmount; j++)
     {
         for (int i = 0; i < chessGridAmount; i++)
         {
-            chessGames.emplace_back();
-            chessBoards.emplace_back(ChessBoard(&chessGames[i], {i * boardSpacing}, (j * boardSpacing), boardSpacing));
-            chessGUI.addBoard(&chessBoards.back());
+            chessGames.push_back(*(new ChessLogic()));
+            chessBoards.emplace_back(*(new ChessBoard(&chessGames[i+(chessGridAmount*j)], {i * boardSpacing}, (j * boardSpacing), boardSpacing)));
+            chessGUI.addBoard(&chessBoards[i+(chessGridAmount*j)]);
         }
     }
     
@@ -38,6 +41,8 @@ int main()
         loggingHelper.logStartupTimer(false);
     }
     
+
     chessGUI.runGUI();
+
     return 0;
 }

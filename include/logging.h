@@ -10,6 +10,7 @@ class Logging
 private:
     std::ofstream debugFile;
     bool _logStartupTime = false;
+    bool _logMemoryUsage = false;
     bool _globalLog      = true;
     std::chrono::_V2::steady_clock::time_point _startupStartTime;
     std::chrono::_V2::steady_clock::time_point _startupEndTime;
@@ -22,6 +23,7 @@ public:
         initDebugFile(debugFilePath);
     };
     void globalLog(bool log){_globalLog = log;};
+    void logMemoryUsage(bool log){_logMemoryUsage = log;};
 
     void startStartupTimer(){_startupStartTime = Clock::now();};
     void endStartupTimer()  {_startupEndTime   = Clock::now();};
