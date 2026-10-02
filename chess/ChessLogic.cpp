@@ -6,8 +6,8 @@ ChessLogic::ChessLogic()
     currentPlayer = WHITESIDE;
     loggingHelper.debug_pieces(boardState);
     calculateEdge();
-    getRookBlockerBitBoards(28);
-    //generateRookMoveTable();
+    //getRookBlockerBitBoards(28);
+    generateRookMoveTable();
 }
 
 void ChessLogic::loadFEN(std::string fenString)
@@ -183,7 +183,7 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
             ;
         break;
         case CHESS_GLOBALS::PIECES::ROOK:
-            legalMoves = rookLegalMoveConfigurations[200];
+            legalMoves = rookMoveStorage[rookMoveTable[28]+200];
         break;
         case CHESS_GLOBALS::PIECES::QUEEN:
             legalMoves = queenPositions[position];
@@ -205,8 +205,9 @@ void ChessLogic::generateRookMoveTable()
 {
     for (int i = 0;i < 64;i++)
     {
-        //getRookBlockerBitBoards(i);
+        getRookBlockerBitBoards(i);
     }
+    std::cout<<rookMoveTable[0]<<std::endl;
 }
 
 
@@ -214,6 +215,7 @@ void ChessLogic::getRookBlockerBitBoards(int index)
 {
     Point pos = getFileAndRank(index);
     bitboard_t rookWithOutEdge = rookPositions[index];
+    int counter = 0;
     if (pos.x != 0 && pos.x != 7)
     {
         rookWithOutEdge = rookWithOutEdge&~(rookPositions[index]&edgeBitBoard[0]);
@@ -222,7 +224,6 @@ void ChessLogic::getRookBlockerBitBoards(int index)
     {
         rookWithOutEdge = rookWithOutEdge&~(rookPositions[index]&edgeBitBoard[1]);
     }
-    int counter = 0;
     for (bitboard_t rookBlockerConfigurations = rookWithOutEdge;rookBlockerConfigurations;rookBlockerConfigurations=(rookBlockerConfigurations-1)&rookWithOutEdge)
     {
         bitboard_t currentBitboard = 0;
@@ -275,8 +276,10 @@ void ChessLogic::getRookBlockerBitBoards(int index)
                 currentBitboard |= mask;
             }
         }
-        rookLegalMoveConfigurations.push_back(currentBitboard);
+        counter++;
+        rookMoveStorage.push_back(currentBitboard);
     }
+    rookMoveTable[index]=(rookMoveStorage.size()-counter);
 }
 
 // Beautiful function to derive moves
