@@ -8,7 +8,7 @@ int main()
     loggingHelper.globalLog(true);
     
     int screenSize = 1000;
-    int chessGameCount = 100'000;
+    int chessGameCount = 1;
 
     int chessGridAmount = (int)std::sqrt(chessGameCount);
 
