@@ -48,6 +48,7 @@ public:
     void generateBlackAndWhiteOccupiedBitboards();
     void generateRookMoveTable();
     void getRookBlockerBitBoards(int index);
+    int generateMagicNumber(bitboard_t occBoard,int index);
     bitboard_t getPiecePositionBitboard(piece_t piece, int position);
     bitboard_t getLegalMovesBitboard(piece_t piece, int position);
 };

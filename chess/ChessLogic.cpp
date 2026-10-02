@@ -183,7 +183,7 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
             ;
         break;
         case CHESS_GLOBALS::PIECES::ROOK:
-            legalMoves = rookMoveStorage[rookMoveTable[28]+200];
+            legalMoves = rookMoveStorage[position+generateMagicNumber(occupiedBitboards[0]&rookPositions[position],position)];
         break;
         case CHESS_GLOBALS::PIECES::QUEEN:
             legalMoves = queenPositions[position];
@@ -207,7 +207,6 @@ void ChessLogic::generateRookMoveTable()
     {
         getRookBlockerBitBoards(i);
     }
-    std::cout<<rookMoveTable[0]<<std::endl;
 }
 
 
@@ -280,6 +279,14 @@ void ChessLogic::getRookBlockerBitBoards(int index)
         rookMoveStorage.push_back(currentBitboard);
     }
     rookMoveTable[index]=(rookMoveStorage.size()-counter);
+}
+int ChessLogic::generateMagicNumber(bitboard_t occBoard,int index)
+{
+    bitboard_t magicNumber = GetRandomValue(0,~(bitboard_t)0);
+    int newIndex = (occBoard*magicNumber) << (63-);
+    std::cout<<newIndex<<std::endl; 
+    return newIndex;
+
 }
 
 // Beautiful function to derive moves
