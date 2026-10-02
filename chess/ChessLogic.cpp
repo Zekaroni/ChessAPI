@@ -6,7 +6,8 @@ ChessLogic::ChessLogic()
     currentPlayer = WHITESIDE;
     loggingHelper.debug_pieces(boardState);
     calculateEdge();
-    getRookBlockerBitBoards();
+    getRookBlockerBitBoards(28);
+    //generateRookMoveTable();
 }
 
 void ChessLogic::loadFEN(std::string fenString)
@@ -182,7 +183,7 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
             ;
         break;
         case CHESS_GLOBALS::PIECES::ROOK:
-            legalMoves = rookBlockerConfigurations[55];// rookBlockerConfigurations[500];
+            legalMoves = rookLegalMoveConfigurations[200];
         break;
         case CHESS_GLOBALS::PIECES::QUEEN:
             legalMoves = queenPositions[position];
@@ -200,32 +201,91 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
 
 
 //Magic Bitboards function
-void ChessLogic::getRookBlockerBitBoards()
+void ChessLogic::generateRookMoveTable()
 {
-    bitboard_t rookWithOutEdge = (rookPositions[28]);
-    bitboard_t subset = rookWithOutEdge;
-    for (int i = 0;i<sizeof(rookBlockerConfigurations)/sizeof(bitboard_t);i++)
+    for (int i = 0;i < 64;i++)
     {
-        rookBlockerConfigurations[i] = subset;
-        rookLegalMoveConfigurations[i] = rookBlockerConfigurations[i]^rookPositions[28];
-        subset = (subset-1)&rookWithOutEdge;
-        for (int i = 0;i<8;i++)
-        {
-            if (rookLegalMoveConfigurations[i] << i*8 & 0)
-            {
-                rookLegalMoveConfigurations[i] |= 1<<i*8;
-            }
-        }
+        //getRookBlockerBitBoards(i);
     }
 }
 
+
+void ChessLogic::getRookBlockerBitBoards(int index)
+{
+    Point pos = getFileAndRank(index);
+    bitboard_t rookWithOutEdge = rookPositions[index];
+    if (pos.x != 0 && pos.x != 7)
+    {
+        rookWithOutEdge = rookWithOutEdge&~(rookPositions[index]&edgeBitBoard[0]);
+    }
+    if (pos.y != 0 && pos.y != 7)
+    {
+        rookWithOutEdge = rookWithOutEdge&~(rookPositions[index]&edgeBitBoard[1]);
+    }
+    int counter = 0;
+    for (bitboard_t rookBlockerConfigurations = rookWithOutEdge;rookBlockerConfigurations;rookBlockerConfigurations=(rookBlockerConfigurations-1)&rookWithOutEdge)
+    {
+        bitboard_t currentBitboard = 0;
+        //dir
+        for (int topDir = 1;topDir < 8;topDir++)
+        {
+            bitboard_t mask = (bitboard_t)1<<index+topDir*8;
+            if (getFileAndRank(index+topDir).y > 7){break;}
+            if ((mask&rookBlockerConfigurations)!=0)
+            {
+                break;
+            }else
+            {
+                currentBitboard |= mask;
+            }
+        }
+        for (int bottomDir = 1;bottomDir < 8;bottomDir++)
+        {
+            bitboard_t mask = (bitboard_t)1<<index-bottomDir*8;
+            if (getFileAndRank(index+bottomDir).y <= 0){break;}
+            if ((mask&rookBlockerConfigurations)!=0)
+            {
+                break;
+            }else
+            {
+                currentBitboard |= mask;
+            }
+        }
+        for (int leftDir = 1;leftDir < 8;leftDir++)
+        {
+            bitboard_t mask = (bitboard_t)1<<(index+leftDir);
+            if (getFileAndRank(index+leftDir).x >= 7){break;}
+            if ((mask&rookBlockerConfigurations)!=0)
+            {
+                break;
+            }else
+            {
+                currentBitboard |= mask;
+            }
+        }
+        for (int rightDir = 1;rightDir < 8;rightDir++)
+        {
+            if (getFileAndRank(index-rightDir).x <= 0){break;}
+            bitboard_t mask = (bitboard_t)1<<(index-rightDir);
+            if ((mask&rookBlockerConfigurations)!=0)
+            {
+                break;
+            }else
+            {
+                currentBitboard |= mask;
+            }
+        }
+        rookLegalMoveConfigurations.push_back(currentBitboard);
+    }
+}
 
 // Beautiful function to derive moves
  void ChessLogic::calculateEdge()
  {
    // for (int i = 63; i >= 0; i--) // Loops through all squares
    // {
-        bitboard_t currentBoard = {0};
+        bitboard_t currentBoardX = {0};
+        bitboard_t currentBoardY = {0};
        // int y = int(i/8); 
        // int x = int(i%8);
         for (int j=0;j<64;j++) 
@@ -234,13 +294,18 @@ void ChessLogic::getRookBlockerBitBoards()
             int currentX = int(j%8);
            // if (currentY < y && y <= 6) // checks if the slope is 1 or -1
            // {
-                if((currentX == 0 || currentX == 7) || (currentY == 0 || currentY == 7))
+                if(currentX == 0 || currentX == 7)
                 {
-                    currentBoard |= (uint64_t)1<<j;
+                    currentBoardX |= (uint64_t)1<<j;
+                }
+                if (currentY == 0 || currentY == 7)
+                {
+                    currentBoardY |= (uint64_t)1<<j;
                 }
            // }
         }
         // std::cout << currentBoard << "ULL," <<std::endl;
-        edgeBitBoard = currentBoard;
+        edgeBitBoard[0] = currentBoardX;
+        edgeBitBoard[1] = currentBoardY;
     //}
  }

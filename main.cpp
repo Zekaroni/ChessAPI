@@ -32,7 +32,7 @@ int main()
         }
     }
     
-    chessGames[0].loadFEN("1r2qrk1/pN4p1/2b1p2p/3nN3/P2P1p2/Q7/1P3PPP/R2R2K1 b");
+    chessGames[0].loadFEN("8/8/8/8/3R4/8/8/8 b");
     
     
     if (loggingHelper.logStartupTime())
