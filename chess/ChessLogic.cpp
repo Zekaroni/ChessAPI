@@ -283,7 +283,7 @@ void ChessLogic::getRookBlockerBitBoards(int index)
 int ChessLogic::generateMagicNumber(bitboard_t occBoard,int index)
 {
     bitboard_t magicNumber = GetRandomValue(0,~(bitboard_t)0);
-    int newIndex = (occBoard*magicNumber) << (63-);
+    int newIndex = (occBoard*magicNumber) << (63-5);
     std::cout<<newIndex<<std::endl; 
     return newIndex;
 
