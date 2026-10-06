@@ -1,0 +1,64 @@
+0: Popcount: 16| RunTime: 253 | Blocker Count: 6
+1: Popcount: 14| RunTime: 115 | Blocker Count: 6
+2: Popcount: 15| RunTime: 481 | Blocker Count: 6
+3: Popcount: 15| RunTime: 607 | Blocker Count: 6
+4: Popcount: 15| RunTime: 81 | Blocker Count: 6
+5: Popcount: 17| RunTime: 183 | Blocker Count: 6
+6: Popcount: 15| RunTime: 480 | Blocker Count: 6
+7: Popcount: 10| RunTime: 191866 | Blocker Count: 6
+17: Popcount: 12| RunTime: 141169 | Blocker Count: 10
+18: Popcount: 12| RunTime: 41817 | Blocker Count: 10
+20: Popcount: 14| RunTime: 560812 | Blocker Count: 10
+22: Popcount: 16| RunTime: 46825 | Blocker Count: 10
+25: Popcount: 13| RunTime: 976582 | Blocker Count: 10
+27: Popcount: 11| RunTime: 868069 | Blocker Count: 10
+29: Popcount: 12| RunTime: 332514 | Blocker Count: 10
+30: Popcount: 12| RunTime: 43605 | Blocker Count: 10
+34: Popcount: 14| RunTime: 250834 | Blocker Count: 10
+38: Popcount: 14| RunTime: 29488 | Blocker Count: 10
+41: Popcount: 10| RunTime: 760553 | Blocker Count: 10
+44: Popcount: 10| RunTime: 435338 | Blocker Count: 10
+46: Popcount: 13| RunTime: 42207 | Blocker Count: 10
+48: Popcount: 18| RunTime: 1181 | Blocker Count: 12
+62: Popcount: 22| RunTime: 5936 | Blocker Count: 6
+8: Popcount: 17
+8: Popcount: 19
+8: Popcount: 18
+8: Popcount: 20
+8: Popcount: 13
+8: Popcount: 16
+8: Popcount: 14
+8: Popcount: 18
+8: Popcount: 17
+8: Popcount: 16
+8: Popcount: 14
+8: Popcount: 17
+8: Popcount: 14
+8: Popcount: 21
+8: Popcount: 17
+8: Popcount: 16
+8: Popcount: 14
+8: Popcount: 17
+8: Popcount: 15
+8: Popcount: 13
+8: Popcount: 16
+8: Popcount: 19
+8: Popcount: 19
+8: Popcount: 18
+8: Popcount: 18
+8: Popcount: 18
+8: Popcount: 20
+8: Popcount: 18
+8: Popcount: 23
+8: Popcount: 10
+8: Popcount: 14
+8: Popcount: 13
+8: Popcount: 21
+8: Popcount: 13
+8: Popcount: 18
+8: Popcount: 20
+8: Popcount: 11
+8: Popcount: 9
+8: Popcount: 14
+8: Popcount: 11
+

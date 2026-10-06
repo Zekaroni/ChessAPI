@@ -20,7 +20,12 @@ public:
     
     int rookMoveTable[64];
     std::vector<bitboard_t> rookMoveStorage;
-    bitboard_t edgeBitBoard[2] = {0};
+    std::vector<bitboard_t> magicNumbers;
+    std::vector<bitboard_t> rookNoedges;
+    std::vector<int> shiftValuesAtIndex;
+    std::vector<bitboard_t> rookBlockerAtIndex;
+    std::vector<bitboard_t> maxBlockerAtIndex;
+    bitboard_t edgeBitBoard[4] = {0};
 
     static constexpr piece_t playerPieceToPieceHash[16] = {
         CHESS_GLOBALS::PIECES::EMPTY,CHESS_GLOBALS::PIECES::PAWN,CHESS_GLOBALS::PIECES::KNIGHT,CHESS_GLOBALS::PIECES::BISHOP,
@@ -48,7 +53,9 @@ public:
     void generateBlackAndWhiteOccupiedBitboards();
     void generateRookMoveTable();
     void getRookBlockerBitBoards(int index);
-    int generateMagicNumber(bitboard_t occBoard,int index);
+    void testMagicNumbers();
+    void generateMagicNumber(int index);
+    void createFinalMovetable();
     bitboard_t getPiecePositionBitboard(piece_t piece, int position);
     bitboard_t getLegalMovesBitboard(piece_t piece, int position);
 };
