@@ -97,40 +97,28 @@ bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
     {
         case CHESS_GLOBALS::PLAYER_PIECES::WHITE_PAWN:
             return whitePawnPositions[position];
-        break;
         case CHESS_GLOBALS::PLAYER_PIECES::WHITE_KNIGHT:
             return knightPositions[position];
-        break;
         case CHESS_GLOBALS::PLAYER_PIECES::WHITE_BISHOP:
             return bishopPositions[position];
-        break;
         case CHESS_GLOBALS::PLAYER_PIECES::WHITE_ROOK:
             return rookPositions[position];
-        break;
         case CHESS_GLOBALS::PLAYER_PIECES::WHITE_QUEEN:
             return queenPositions[position];
-        break;
         case CHESS_GLOBALS::PLAYER_PIECES::WHITE_KING:
             return kingPositions[position];
-        break;
         case CHESS_GLOBALS::PLAYER_PIECES::BLACK_PAWN:
             return blackPawnPositions[position];
-        break;
         case CHESS_GLOBALS::PLAYER_PIECES::BLACK_KNIGHT:
             return knightPositions[position];
-        break;
         case CHESS_GLOBALS::PLAYER_PIECES::BLACK_BISHOP:
             return bishopPositions[position];
-        break;
         case CHESS_GLOBALS::PLAYER_PIECES::BLACK_ROOK:
             return rookPositions[position];
-        break;
         case CHESS_GLOBALS::PLAYER_PIECES::BLACK_QUEEN:
             return queenPositions[position];
-        break;
         case CHESS_GLOBALS::PLAYER_PIECES::BLACK_KING:
             return kingPositions[position];
-        break;
         default:
             return CHESS_GLOBALS::PIECES::EMPTY;
     }
