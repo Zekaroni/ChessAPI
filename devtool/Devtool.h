@@ -1,12 +1,13 @@
 #pragma once    
 #include "../video/ChessGUI.h"
+
 class Devtool
 {
 private:
-ChessGUI* chessGraphics;
-int width;
-int height;
+    ChessGUI* chessGraphics;
+    int width;
+    int height;
 public:
-Devtool(ChessGUI* chessGraphics);
-void devtoolGUI();
+    Devtool(ChessGUI* chessGraphics);
+    void run();
 };

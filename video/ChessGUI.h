@@ -1,6 +1,5 @@
 #pragma once
-#include "../include/utils.h"
-#include "../chess/ChessLogic.cpp"
+#include "../chess/ChessLogic.h"
 // NOTE: Everthing is top-left oriented for the GUI
 
 class ChessGUI;
@@ -319,6 +318,10 @@ private:
 
     
 public:
+
+    /// @brief Initializes the ChessGUI with the passed screen sizes
+    /// @param screenWidth 
+    /// @param screenHeight 
     ChessGUI(int screenWidth, int screenHeight);
     
     //---// Helper Functions

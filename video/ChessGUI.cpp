@@ -562,6 +562,7 @@ void ChessGUI::handleMouseUpdates()
         board->hasUpdate(true);
         _hasChange = true;
         loggingHelper.streamToTerminal(std::to_string(board->cursorPosition()) + "   ");
+        break;
     }
 }
 
@@ -570,7 +571,6 @@ void ChessGUI::handleMouseUpdates()
 void ChessGUI::runGUI()
 {
     _hasChange = true;
-    // _currentBoardSelected = _boards[0];
     while (!WindowShouldClose())
     {
         if (IsWindowResized())
@@ -586,7 +586,6 @@ void ChessGUI::runGUI()
         BeginDrawing();
         _renderFullGUITexture();
         EndDrawing();
-        // loggingHelper.streamToTerminal(TextFormat("FPS: %d  ", GetFPS()));
     }
     CloseWindow();
 };

@@ -1,5 +1,6 @@
-#include "./video/ChessGUI.cpp"
-#include "./devtool/Devtool.cpp"
+#include "./video/ChessGUI.h"
+
+Logging loggingHelper = Logging();
 
 int main()
 {

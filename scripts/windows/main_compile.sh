@@ -1,5 +1,5 @@
-# Run from the project root
-g++ main.cpp -o ./bin/main.exe \
+g++ main.cpp ./chess/ChessLogic.cpp ./video/ChessGUI.cpp \
+    -o ./bin/main.exe \
     -O2 \
     -DNDEBUG \
     -flto \
@@ -12,8 +12,3 @@ g++ main.cpp -o ./bin/main.exe \
     -Wl,--gc-sections \
     -Wl,--strip-all \
     $(pkg-config --cflags --libs raylib)
-
-# g++ main.cpp -o ./bin/main.exe \
-#     -O2 \
-#     $(pkg-config --cflags --libs raylib)
-

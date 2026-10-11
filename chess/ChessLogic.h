@@ -1,5 +1,6 @@
-#include "../include/utils.h"
 #pragma once
+
+#include "../include/utils.h"
 // NOTE: Position on board is bottom-right to top-left, 0-63
 
 class ChessLogic
