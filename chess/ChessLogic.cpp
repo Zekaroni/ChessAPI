@@ -93,12 +93,6 @@ piece_t ChessLogic::fenToPiece(char fenPiece)
 
 bitboard_t ChessLogic::getPiecePositionBitboard(piece_t piece, int position)
 {
-    // if (piece == 0b1001 || piece == 0b0001)
-    // {
-    //     return (&(pieceBitmapLookup[playerPieceToPieceHash[piece]])[piece & 0b100])[position];
-    // } else {
-    //     return pieceBitmapLookup[playerPieceToPieceHash[piece]][position];
-    // }
     switch(piece)
     {
         case CHESS_GLOBALS::PLAYER_PIECES::WHITE_PAWN:

@@ -103,8 +103,8 @@ private:
     bool _logStartupTime = false;
     bool _logMemoryUsage = false;
     bool _globalLog      = true;
-    std::chrono::_V2::steady_clock::time_point _startupStartTime;
-    std::chrono::_V2::steady_clock::time_point _startupEndTime;
+    std::chrono::steady_clock::time_point _startupStartTime;
+    std::chrono::steady_clock::time_point _startupEndTime;
     
     
 public:

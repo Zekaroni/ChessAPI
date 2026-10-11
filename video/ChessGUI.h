@@ -277,10 +277,10 @@ private:
     static constexpr uint8_t _pieceTextreSize = 32; // pixels squared
 
     Color _pieceColors[4] = {
-        Color(0,0,0,0),
-        Color(242, 242, 242, 255),
-        Color(13, 13, 13, 255),
-        Color(204, 204, 204, 255),
+        {0,0,0,0},
+        {242, 242, 242, 255},
+        {13, 13, 13, 255},
+        {204, 204, 204, 255},
     };
 
     //---// Internal Properties Variables

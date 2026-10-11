@@ -32,9 +32,8 @@ int main()
         }
     }
     
-    // chessGames[0].loadFEN("8/8/8/8/3R4/8/8/8 b");
-    
-    
+    // chessGames[0].loadFEN("8/8/8/8/3R4/8/8/8 b");pacman -S --needed mingw-w64-ucrt-x86_64-emscripten
+
     if (loggingHelper.logStartupTime())
     {
         loggingHelper.endStartupTimer();
