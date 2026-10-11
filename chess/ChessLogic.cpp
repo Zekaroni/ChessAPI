@@ -9,7 +9,9 @@ ChessLogic::ChessLogic()
     generateRookMoveTable();
     //std::cout<<rookMoveStorage[rookMoveTable[28]+200]<<std::endl;
     //77124358367642720
+    //std::cout<<std::ceil((63-1*8)/8)<<std::endl;
     testMagicNumbers();
+    
 }
 
 void ChessLogic::loadFEN(std::string fenString)
@@ -185,7 +187,7 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
             ;
         break;
         case CHESS_GLOBALS::PIECES::ROOK:
-            legalMoves = rookMoveStorage[rookMoveTable[8]+1];//68719476736;
+            legalMoves = magicRookStorage[magicRookMoveTable[position]+(((occupiedBitboards[playerPieceToPlayerHash[piece]]&maxBlockerAtIndex[position])*magicNumbers[position])>>shiftValuesAtIndex[position])];
         break;
         case CHESS_GLOBALS::PIECES::QUEEN:
             legalMoves = queenPositions[position];
@@ -225,11 +227,11 @@ void ChessLogic::getRookBlockerBitBoards(int index)
     {
         rookWithOutEdge = rookWithOutEdge&~(rookPositions[index]&edgeBitBoard[1]);
     }
-    if (8 - pos.y != 0)
+    if (pos.y != 0)
     {
         rookWithOutEdge = rookWithOutEdge&~(rookPositions[index]&edgeBitBoard[2]);
     }
-    if (8-pos.y != 7)
+    if (pos.y != 7)
     {
         rookWithOutEdge = rookWithOutEdge&~(rookPositions[index]&edgeBitBoard[3]);
     }
@@ -241,26 +243,26 @@ void ChessLogic::getRookBlockerBitBoards(int index)
         //dir
         for (int topDir = 1;topDir < 8;topDir++)
         {
-            bitboard_t mask = (bitboard_t)1<<index+topDir*8;
-            if (getFileAndRank(index+topDir*8).y > 7 || getFileAndRank(index+topDir*8).y < pos.y){break;}
-            if ((mask&rookBlockerConfigurations)!=0)
-            {
-                break;
-            }else
-            {
-                //currentBitboard |= mask;
-            }
-        }
-        for (int bottomDir = 1;bottomDir < 8;bottomDir++)
-        {
-            bitboard_t mask = (bitboard_t)1<<index-bottomDir*8;
-            if (getFileAndRank(index-bottomDir*8).y <= 0 || getFileAndRank(index-bottomDir*8).y > pos.y){break;}
+            bitboard_t mask = (bitboard_t)1<<(index+topDir*8);
+            if ((index+topDir*8)/8 > 6){break;}
             if ((mask&rookBlockerConfigurations)!=0)
             {
                 break;
             }else
             {
                 currentBitboard |= mask;
+            }
+        }
+        for (int bottomDir = 1;bottomDir < 8;bottomDir++)
+        {
+            bitboard_t mask = (bitboard_t)1<<(index-bottomDir*8);
+            if ((index-bottomDir*8)/8 < 1){break;}
+            if ((mask&rookBlockerConfigurations)!=0)
+            {
+                break;
+            }else
+            {
+                //currentBitboard |= mask;
             }
         }
         for (int leftDir = 1;leftDir < 8;leftDir++)
@@ -328,6 +330,11 @@ void ChessLogic::generateMagicNumber(int index)
         {
             //std::cout<< index << ": "<<"Popcount: "<< std::__popcount(magicNumber)<<" | RunTime: " << runTime << " | Blocker Count: "<<std::__popcount(maxBlockerAtIndex[index])<<std::endl;
             magicNumbers.push_back(magicNumber);
+            magicRookMoveTable[index] = magicRookStorage.size();
+            for (int i = 0; i < tempRookMoveStorage.size(); i++)
+            {
+                magicRookStorage.push_back(tempRookMoveStorage[i]);
+            }
             solved = true;
             break;
         };
@@ -342,7 +349,6 @@ void ChessLogic::testMagicNumbers()
         std::cout<<magicNumbers[i]<< ",\n" <<std::endl;
     }
 }
-
 // Beautiful function to derive moves
  void ChessLogic::calculateEdge()
  {
