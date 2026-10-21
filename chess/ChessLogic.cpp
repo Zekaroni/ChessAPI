@@ -10,7 +10,8 @@ ChessLogic::ChessLogic()
     //std::cout<<rookMoveStorage[rookMoveTable[28]+200]<<std::endl;
     //77124358367642720
     //std::cout<<std::ceil((63-1*8)/8)<<std::endl;
-    testMagicNumbers();
+    //testMagicNumbers();
+    fillRookMoveTable();
     
 }
 
@@ -183,11 +184,11 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
             legalMoves = knightPositions[position] & ~occupiedBitboards[playerPieceToPlayerHash[piece]];
         break;
         case CHESS_GLOBALS::PIECES::BISHOP:
-            legalMoves = bishopPositions[position];
+            legalMoves = bishopBlockerAtIndex[28];
             ;
         break;
         case CHESS_GLOBALS::PIECES::ROOK:
-            legalMoves = magicRookStorage[magicRookMoveTable[position]+(((occupiedBitboards[playerPieceToPlayerHash[piece]]&maxBlockerAtIndex[position])*magicNumbers[position])>>shiftValuesAtIndex[position])];
+            legalMoves = magicRookStorage[magicRookMoveTable[position]+(((occupiedBitboards[playerPieceToPlayerHash[piece]]&maxRookBlockerAtIndex[position])*magicNumbers[position])>>shiftValuesAtIndex[position])];
         break;
         case CHESS_GLOBALS::PIECES::QUEEN:
             legalMoves = queenPositions[position];
@@ -205,16 +206,21 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
 
 
 //Magic Bitboards function
+
+/// @brief This function generates a rook move table at every board index
 void ChessLogic::generateRookMoveTable()
 {
     for (int i = 0;i < 64;i++)
     {
-        getRookBlockerBitBoards(i);
+        getBishopBlockerBitBoardsAndLegalMoves(i);
+        getRookBlockerBitBoardsAndLegalMoves(i);
     }
 }
 
-
-void ChessLogic::getRookBlockerBitBoards(int index)
+/// @brief This function generates the legal moves of a bitboard by looping through each direction the rook can move along until it hits a blocker
+        // As well this function as a byproduct generates all blocker configurations
+/// @param index this is the square that we are currently checking on the chess board 0-63
+void ChessLogic::getRookBlockerBitBoardsAndLegalMoves(int index)
 {
     Point pos = getFileAndRank(index);
     bitboard_t rookWithOutEdge = rookPositions[index];
@@ -235,7 +241,7 @@ void ChessLogic::getRookBlockerBitBoards(int index)
     {
         rookWithOutEdge = rookWithOutEdge&~(rookPositions[index]&edgeBitBoard[3]);
     }
-    maxBlockerAtIndex.push_back(rookWithOutEdge);
+    maxRookBlockerAtIndex.push_back(rookWithOutEdge);
     for (bitboard_t rookBlockerConfigurations = rookWithOutEdge;rookBlockerConfigurations;rookBlockerConfigurations=(rookBlockerConfigurations-1)&rookWithOutEdge)
     {
         rookBlockerAtIndex.push_back(rookBlockerConfigurations);
@@ -262,7 +268,7 @@ void ChessLogic::getRookBlockerBitBoards(int index)
                 break;
             }else
             {
-                //currentBitboard |= mask;
+                currentBitboard |= mask;
             }
         }
         for (int leftDir = 1;leftDir < 8;leftDir++)
@@ -294,41 +300,49 @@ void ChessLogic::getRookBlockerBitBoards(int index)
     }
     rookMoveTable[index]=(rookMoveStorage.size()-counter);
 }
-
+void ChessLogic::getBishopBlockerBitBoardsAndLegalMoves(int index)
+{
+    Point pos = getFileAndRank(index);
+    bitboard_t bishopWithOutEdge = bishopPositions[index];
+    int counter = 0;
+    bishopWithOutEdge = bishopWithOutEdge | edgeBitBoard[0];
+    maxRookBlockerAtIndex.push_back(bishopWithOutEdge);
+    for (bitboard_t bishopBlockerConfigurations = bishopWithOutEdge;bishopBlockerConfigurations;bishopBlockerConfigurations=(bishopBlockerConfigurations-1)&bishopWithOutEdge)
+    {
+        bishopBlockerAtIndex.push_back(bishopBlockerConfigurations);
+        bitboard_t currentBitboard = 0;
+    }
+    rookMoveTable[index]=(rookMoveStorage.size()-counter);
+}
+/// @brief This function test out millions of magic numbers until it finds one with no collisions and then it saves the result in an array of shift values and magic numbers
+/// @param index The square it is generating the number on 0-63
 void ChessLogic::generateMagicNumber(int index)
 {
     bool solved = false;
-    int runTime = 0;
-    int shiftAmount = (64-std::__popcount(maxBlockerAtIndex[index]));
+    int shiftAmount = (64-std::__popcount(maxRookBlockerAtIndex[index]));
     shiftValuesAtIndex.push_back(shiftAmount);
     bitboard_t magicNumber;
-    std::vector<bitboard_t> tempRookMoveStorage(1<<std::__popcount(maxBlockerAtIndex[index]));
-    while (!solved && runTime<10000000)
+    std::vector<bitboard_t> tempRookMoveStorage(1<<std::__popcount(maxRookBlockerAtIndex[index]));
+    while (!solved)
     {
-        int magicNumberAttempts = 0;
-        int magicIndex = 0;
         std::fill(tempRookMoveStorage.begin(),tempRookMoveStorage.end(),0xFFFFFFFFFFFFFFFF);
         bool incorrectNumber = false;
         bitboard_t num1 = (bitboard_t)GetRandomValue(0,65535) | (bitboard_t)GetRandomValue(0,65535)<<16 | (bitboard_t)GetRandomValue(0,65535)<<32 | (bitboard_t)GetRandomValue(0,65535)<<48;
         bitboard_t num2 = (bitboard_t)GetRandomValue(0,65535) | (bitboard_t)GetRandomValue(0,65535)<<16 | (bitboard_t)GetRandomValue(0,65535)<<32 | (bitboard_t)GetRandomValue(0,65535)<<48;
         magicNumber = num1&num2;
-        for (int i = 0; i < 1<<std::__popcount(maxBlockerAtIndex[index]); i++)
+        for (int i = 0; i < 1<<std::__popcount(maxRookBlockerAtIndex[index]); i++)
         {
-            magicNumberAttempts++;
             if (tempRookMoveStorage[(rookBlockerAtIndex[rookMoveTable[index]+i]*magicNumber>>shiftAmount)] == 0xFFFFFFFFFFFFFFFF || tempRookMoveStorage[(rookBlockerAtIndex[rookMoveTable[index]+i]*magicNumber>>shiftAmount)] == rookMoveStorage[rookMoveTable[index]+i])
             {
                 tempRookMoveStorage[(rookBlockerAtIndex[rookMoveTable[index]+i]*magicNumber>>shiftAmount)] = rookMoveStorage[rookMoveTable[index]+i];
             }else
             {
-                //std::cout<<std::__popcount(maxBlockerAtIndex[index])<<std::endl;
-                //std::cout<< index << ": "<<"Popcount Of Current Blocker Config: "<< std::__popcount((rookBlockerAtIndex[rookMoveTable[index]+i])) << " | Number Before Rejected: "<<magicNumberAttempts<<std::endl;
                 incorrectNumber = true;
                 break;
             }
         }
         if (!incorrectNumber)
         {
-            //std::cout<< index << ": "<<"Popcount: "<< std::__popcount(magicNumber)<<" | RunTime: " << runTime << " | Blocker Count: "<<std::__popcount(maxBlockerAtIndex[index])<<std::endl;
             magicNumbers.push_back(magicNumber);
             magicRookMoveTable[index] = magicRookStorage.size();
             for (int i = 0; i < tempRookMoveStorage.size(); i++)
@@ -338,16 +352,30 @@ void ChessLogic::generateMagicNumber(int index)
             solved = true;
             break;
         };
-        runTime++;
     }
 }
+/// @brief This function generates and test the magic numbers for each square on the chess board
 void ChessLogic::testMagicNumbers()
 {
     for (int i = 0; i < 64; i++)
     {
         generateMagicNumber(i);
-        std::cout<<magicNumbers[i]<< ",\n" <<std::endl;
+        //std::cout<<magicNumbers[i]<< ",\n" <<std::endl;
     }
+}
+/// @brief This function uses the valid magic numbers and shift values to map rooks move table
+void ChessLogic::fillRookMoveTable()
+{
+    for (int index = 0; index < 64; index++)
+    {
+        
+        for (int i = 0; i < 1<<std::__popcount(maxRookBlockerAtIndex[index]); i++)
+        {
+            magicRookMoveTable[(rookBlockerAtIndex[rookMoveTable[index]+i]*magicRookNumbers[index]>>rookShiftValues[index])] = rookMoveStorage[rookMoveTable[index]+i];
+        }
+    }
+    
+    
 }
 // Beautiful function to derive moves
  void ChessLogic::calculateEdge()
