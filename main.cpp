@@ -33,7 +33,7 @@ int main()
     }
     
     chessGames[0].loadFEN("8/8/3R4/3P4/8/8/8/8 b");
-    chessGames[0].loadFEN("8/8/8/3R2P/8/8/8/8 b");
+    chessGames[0].loadFEN("8/8/3p4/3R2P/8/8/8/8 b");
     
     
     if (loggingHelper.logStartupTime())

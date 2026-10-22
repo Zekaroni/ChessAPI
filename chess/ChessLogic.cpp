@@ -7,9 +7,6 @@ ChessLogic::ChessLogic()
     loggingHelper.debug_pieces(boardState);
     calculateEdge();
     generateRookMoveTable();
-    //std::cout<<rookMoveStorage[rookMoveTable[28]+200]<<std::endl;
-    //77124358367642720
-    //std::cout<<std::ceil((63-1*8)/8)<<std::endl;
     //testMagicNumbers();
     fillRookMoveTable();
     
@@ -184,11 +181,10 @@ bitboard_t ChessLogic::getLegalMovesBitboard(piece_t piece,int position)
             legalMoves = knightPositions[position] & ~occupiedBitboards[playerPieceToPlayerHash[piece]];
         break;
         case CHESS_GLOBALS::PIECES::BISHOP:
-            legalMoves = bishopBlockerAtIndex[28];
-            ;
+            legalMoves = bishopPositions[position];//bishopBlockerAtIndex[28];
         break;
         case CHESS_GLOBALS::PIECES::ROOK:
-            legalMoves = magicRookStorage[magicRookMoveTable[position]+(((occupiedBitboards[playerPieceToPlayerHash[piece]]&maxRookBlockerAtIndex[position])*magicNumbers[position])>>shiftValuesAtIndex[position])];
+            legalMoves = magicRookStorage[magicRookMoveTable[position]+(((occupiedBitboards[playerPieceToPlayerHash[piece]]&maxRookBlockerAtIndex[position])*magicRookNumbers[position])>>rookShiftValues[position])];
         break;
         case CHESS_GLOBALS::PIECES::QUEEN:
             legalMoves = queenPositions[position];
@@ -212,7 +208,7 @@ void ChessLogic::generateRookMoveTable()
 {
     for (int i = 0;i < 64;i++)
     {
-        getBishopBlockerBitBoardsAndLegalMoves(i);
+        //getBishopBlockerBitBoardsAndLegalMoves(i);
         getRookBlockerBitBoardsAndLegalMoves(i);
     }
 }
@@ -300,7 +296,7 @@ void ChessLogic::getRookBlockerBitBoardsAndLegalMoves(int index)
     }
     rookMoveTable[index]=(rookMoveStorage.size()-counter);
 }
-void ChessLogic::getBishopBlockerBitBoardsAndLegalMoves(int index)
+/*void ChessLogic::getBishopBlockerBitBoardsAndLegalMoves(int index)
 {
     Point pos = getFileAndRank(index);
     bitboard_t bishopWithOutEdge = bishopPositions[index];
@@ -309,11 +305,11 @@ void ChessLogic::getBishopBlockerBitBoardsAndLegalMoves(int index)
     maxRookBlockerAtIndex.push_back(bishopWithOutEdge);
     for (bitboard_t bishopBlockerConfigurations = bishopWithOutEdge;bishopBlockerConfigurations;bishopBlockerConfigurations=(bishopBlockerConfigurations-1)&bishopWithOutEdge)
     {
-        bishopBlockerAtIndex.push_back(bishopBlockerConfigurations);
+       // bishopBlockerAtIndex.push_back(bishopBlockerConfigurations);
         bitboard_t currentBitboard = 0;
     }
     rookMoveTable[index]=(rookMoveStorage.size()-counter);
-}
+}*/
 /// @brief This function test out millions of magic numbers until it finds one with no collisions and then it saves the result in an array of shift values and magic numbers
 /// @param index The square it is generating the number on 0-63
 void ChessLogic::generateMagicNumber(int index)
@@ -360,22 +356,24 @@ void ChessLogic::testMagicNumbers()
     for (int i = 0; i < 64; i++)
     {
         generateMagicNumber(i);
-        //std::cout<<magicNumbers[i]<< ",\n" <<std::endl;
     }
 }
 /// @brief This function uses the valid magic numbers and shift values to map rooks move table
 void ChessLogic::fillRookMoveTable()
 {
-    for (int index = 0; index < 64; index++)
+    for(int index = 0; index < 64; index++)
     {
-        
+        std::vector<bitboard_t> tempRookMoveStorage(1<<std::__popcount(maxRookBlockerAtIndex[index]));
         for (int i = 0; i < 1<<std::__popcount(maxRookBlockerAtIndex[index]); i++)
         {
-            magicRookMoveTable[(rookBlockerAtIndex[rookMoveTable[index]+i]*magicRookNumbers[index]>>rookShiftValues[index])] = rookMoveStorage[rookMoveTable[index]+i];
+            tempRookMoveStorage[(rookBlockerAtIndex[rookMoveTable[index]+i]*magicRookNumbers[index]>>rookShiftValues[index])] = rookMoveStorage[rookMoveTable[index]+i];
+        }
+        magicRookMoveTable[index] = magicRookStorage.size();
+        for (int i = 0; i < tempRookMoveStorage.size(); i++)
+        {
+            magicRookStorage.push_back(tempRookMoveStorage[i]);
         }
     }
-    
-    
 }
 // Beautiful function to derive moves
  void ChessLogic::calculateEdge()

@@ -27,19 +27,19 @@ public:
     std::vector<bitboard_t> rookMoveStorage;
     std::vector<bitboard_t> magicRookStorage;
     int                     magicRookMoveTable[64];
-    bitboard_t rookPositionsNoEdge[64];
+    bitboard_t              rookPositionsNoEdge[64];
     std::vector<bitboard_t> rookBlockerAtIndex;
     std::vector<bitboard_t> maxRookBlockerAtIndex;
     //End
     
     //Bishop Moving
-    std::vector<bitboard_t> bishopMoveStorage;
+    /*std::vector<bitboard_t> bishopMoveStorage;
     std::vector<bitboard_t> magicBishopStorage;
     int                     magicBishopMoveTable[64];
     bitboard_t BishopPositionsNoEdge[64];
     std::vector<bitboard_t> bishopBlockerAtIndex;
     std::vector<bitboard_t> maxBishopBlockerAtIndex;
-    //End
+    //End*/
     std::vector<bitboard_t> magicNumbers;
     std::vector<int>        shiftValuesAtIndex;
     bitboard_t              edgeBitBoard[4] = {0};
